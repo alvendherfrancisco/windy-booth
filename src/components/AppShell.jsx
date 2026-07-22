@@ -6,12 +6,12 @@ import { useAuth } from "@/lib/AuthContext";
 import { useBoothWizard } from "@/components/booth/BoothWizardContext";
 
 const items = [
-  { to: "/dashboard", label: "Home", icon: Home },
-  { to: "/booth", label: "New Booth", icon: Camera },
-  { to: "/my-booths", label: "My Booths", icon: Images },
-  { to: "/print-shop", label: "Print", icon: Printer },
-  { to: "/profile", label: "Profile", icon: UserRound },
-];
+{ to: "/dashboard", label: "Home", icon: Home },
+{ to: "/booth", label: "New Booth", icon: Camera },
+{ to: "/my-booths", label: "My Booths", icon: Images },
+{ to: "/print-shop", label: "Print", icon: Printer },
+{ to: "/profile", label: "Profile", icon: UserRound }];
+
 
 export default function AppShell() {
   const { user } = useAuth();
@@ -36,38 +36,38 @@ export default function AppShell() {
           <Flower2 size={23} strokeWidth={1.7} className="text-[#DC3522]" />Vendi
         </Link>
         <nav className="mt-12 space-y-1">
-          {items.map(({ to, label, icon: Icon }) => (
-            <Link
-              key={to}
-              to={to}
-              className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold ${
-                location.pathname === to ? "bg-[#FDE8E4] text-[#DC3522]" : "text-[#5C5953] hover:bg-[#EEF2FF]"
-              }`}
-            >
+          {items.map(({ to, label, icon: Icon }) =>
+          <Link
+            key={to}
+            to={to}
+            className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold ${
+            location.pathname === to ? "bg-[#FDE8E4] text-[#DC3522]" : "text-[#5C5953] hover:bg-[#EEF2FF]"}`
+            }>
+            
               <Icon size={19} />
               {label}
             </Link>
-          ))}
+          )}
         </nav>
       </aside>
 
-      <header className="sticky top-0 z-20 flex h-16 items-center border-b border-[#E8E2D8] bg-[#F9F7F2] px-4 md:px-10">
-        {isBooth ? (
-          step > 1 && (
-            <button onClick={goBack} className="flex items-center gap-1.5 text-sm font-bold text-[#2D2D2D] hover:text-[#4F46E5]">
+      <header className="sticky top-0 z-20 flex h-16 items-center border-b border-[#E8E2D8] px-4 md:px-10 bg-[hsl(var(--background))]">
+        {isBooth ?
+        step > 1 &&
+        <button onClick={goBack} className="flex items-center gap-1.5 text-sm font-bold text-[#2D2D2D] hover:text-[#4F46E5]">
               <ArrowLeft size={16} />Back
-            </button>
-          )
-        ) : (
-          <Link to="/notifications" className="relative ml-auto rounded-full p-2 hover:bg-[#F5F0EA]">
+            </button> :
+
+
+        <Link to="/notifications" className="relative ml-auto rounded-full p-2 hover:bg-[#F5F0EA]">
             <Bell size={21} />
-            {unread > 0 && (
-              <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#DC3522] px-1 text-[9px] font-bold text-white">
+            {unread > 0 &&
+          <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#DC3522] px-1 text-[9px] font-bold text-white">
                 {unread}
               </span>
-            )}
+          }
           </Link>
-        )}
+        }
       </header>
 
       <main className="mx-auto max-w-5xl px-4 py-6 md:px-10 md:py-10">
@@ -75,19 +75,19 @@ export default function AppShell() {
       </main>
 
       <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t border-[#E8E2D8] bg-white px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 md:hidden">
-        {items.map(({ to, label, icon: Icon }) => (
-          <Link
-            key={to}
-            to={to}
-            className={`flex flex-1 flex-col items-center gap-1 py-1 text-[10px] font-bold ${
-              location.pathname === to ? "text-[#DC3522]" : "text-[#8A8580]"
-            }`}
-          >
+        {items.map(({ to, label, icon: Icon }) =>
+        <Link
+          key={to}
+          to={to}
+          className={`flex flex-1 flex-col items-center gap-1 py-1 text-[10px] font-bold ${
+          location.pathname === to ? "text-[#DC3522]" : "text-[#8A8580]"}`
+          }>
+          
             <Icon size={19} />
             {label}
           </Link>
-        ))}
+        )}
       </nav>
-    </div>
-  );
+    </div>);
+
 }
