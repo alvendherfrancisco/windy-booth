@@ -9,7 +9,7 @@ const items = [
   { to: "/dashboard", label: "Home", icon: Home },
   { to: "/booth", label: "New Booth", icon: Camera },
   { to: "/my-booths", label: "My Booths", icon: Images },
-  { to: "/print-shop", label: "Print", icon: Printer },
+  { to: "/print-shop", label: "Print Shop", icon: Printer },
   { to: "/profile", label: "Profile", icon: UserRound },
 ];
 

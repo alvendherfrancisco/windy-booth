@@ -1,11 +1,11 @@
 import React from "react";
 import { Check } from "lucide-react";
-import { includedItems } from "@/components/printshop/data";
+import { BUNDLES, includedItems } from "@/components/printshop/data";
 
 export default function BundleGrid({ selected, onSelect }) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {BUNDLES_LIST.map((b) => {
+      {BUNDLES.map((b) => {
         const active = selected?.id === b.id;
         return (
           <button
@@ -44,5 +44,3 @@ export default function BundleGrid({ selected, onSelect }) {
     </div>
   );
 }
-
-import { BUNDLES as BUNDLES_LIST } from "@/components/printshop/data";
