@@ -33,20 +33,20 @@ export default function Booth() {
   const plan = user?.plan || "free";
   const used = user?.sessions_used_this_month || 0;
 
-  useEffect(() => { base44.entities.Template.filter({ active: true }).then(setTemplates); }, []);
+  useEffect(() => {base44.entities.Template.filter({ active: true }).then(setTemplates);}, []);
   // Fresh entry always starts the wizard at Design.
-  useEffect(() => { setStep(1); /* eslint-disable-next-line */ }, []);
+  useEffect(() => {setStep(1); /* eslint-disable-next-line */}, []);
 
   const resetAll = () => {
-    setStep(1); setSelected(null); setMode(null); setPhotos([]); setRawFiles([]); setFilter("none");
+    setStep(1);setSelected(null);setMode(null);setPhotos([]);setRawFiles([]);setFilter("none");
   };
 
-  const filteredTemplates = templates.filter(t =>
-    (category === "all" || t.category === category) &&
-    t.name.toLowerCase().includes(query.toLowerCase())
+  const filteredTemplates = templates.filter((t) =>
+  (category === "all" || t.category === category) &&
+  t.name.toLowerCase().includes(query.toLowerCase())
   );
 
-  const choose = t => {
+  const choose = (t) => {
     if (t.tier === "premium" && plan === "free") return nav("/profile");
     setSelected(t);
   };
@@ -55,14 +55,14 @@ export default function Booth() {
   const addFiles = (files) => {
     const remaining = 3 - photos.length;
     const picked = Array.from(files).slice(0, remaining);
-    const urls = picked.map(f => URL.createObjectURL(f));
-    setPhotos(p => [...p, ...urls]);
-    setRawFiles(r => [...r, ...picked]);
+    const urls = picked.map((f) => URL.createObjectURL(f));
+    setPhotos((p) => [...p, ...urls]);
+    setRawFiles((r) => [...r, ...picked]);
   };
 
   const removePhoto = (i) => {
-    setPhotos(p => p.filter((_, idx) => idx !== i));
-    setRawFiles(r => r.filter((_, idx) => idx !== i));
+    setPhotos((p) => p.filter((_, idx) => idx !== i));
+    setRawFiles((r) => r.filter((_, idx) => idx !== i));
   };
 
   const bakeFile = async (file) => {
@@ -73,14 +73,14 @@ export default function Booth() {
     }
     const img = new Image();
     img.src = URL.createObjectURL(file);
-    await new Promise((res, rej) => { img.onload = res; img.onerror = rej; });
+    await new Promise((res, rej) => {img.onload = res;img.onerror = rej;});
     const canvas = document.createElement("canvas");
     canvas.width = img.naturalWidth || 640;
     canvas.height = img.naturalHeight || 480;
     const ctx = canvas.getContext("2d");
     ctx.filter = css;
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    const blob = await new Promise(res => canvas.toBlob(res, "image/jpeg", 0.92));
+    const blob = await new Promise((res) => canvas.toBlob(res, "image/jpeg", 0.92));
     const baked = new File([blob], `vendi-${Date.now()}.jpg`, { type: "image/jpeg" });
     const r = await base44.integrations.Core.UploadFile({ file: baked });
     return r.file_url;
@@ -133,28 +133,28 @@ export default function Booth() {
     <div className="mx-auto max-w-4xl pb-32 md:pb-28">
       <div className="mb-6"><BoothStepper step={step} /></div>
       {/* STEP 1 — Design */}
-      {step === 1 && (
-        <>
+      {step === 1 &&
+      <>
           <h1 className="font-heading text-3xl font-extrabold text-[#2D2D2D]">Choose your design</h1>
           <p className="mt-1 text-sm text-[#8A8580]">Every booth starts with a good frame.</p>
-          {plan === "free" && used >= 10 ? (
-            <div className="mt-7 rounded-[18px] bg-[#FDE8E4] p-5">
+          {plan === "free" && used >= 10 ?
+        <div className="mt-7 rounded-[18px] bg-[#FDE8E4] p-5">
               <b className="text-[#2D2D2D]">Your 10 sessions are used.</b>
               <Link to="/profile" className="mt-2 block text-sm font-bold text-[#DC3522]">Upgrade to keep making memories →</Link>
-            </div>
-          ) : (
-            <>
+            </div> :
+
+        <>
               <TemplateFilters category={category} onCategoryChange={setCategory} query={query} onQueryChange={setQuery} />
               <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-                {filteredTemplates.map(t => (
-                  <TemplateCard key={t.id} template={t} selected={selected?.id === t.id} locked={t.tier === "premium" && plan === "free"} onSelect={choose} />
-                ))}
-                {filteredTemplates.length === 0 && (
-                  <p className="col-span-4 py-10 text-center text-sm text-[#8A8580]">No templates found.</p>
-                )}
+                {filteredTemplates.map((t) =>
+            <TemplateCard key={t.id} template={t} selected={selected?.id === t.id} locked={t.tier === "premium" && plan === "free"} onSelect={choose} />
+            )}
+                {filteredTemplates.length === 0 &&
+            <p className="col-span-4 py-10 text-center text-sm text-[#8A8580]">No templates found.</p>
+            }
               </div>
             </>
-          )}
+        }
           <StickyAction>
             <div className="flex items-center justify-between gap-3">
               <span className="text-xs text-[#8A8580]">{selected ? `${selected.name} selected` : "Choose a design"}</span>
@@ -162,60 +162,60 @@ export default function Booth() {
             </div>
           </StickyAction>
         </>
-      )}
+      }
 
       {/* STEP 2 — Mode */}
-      {step === 2 && (
-        <>
+      {step === 2 &&
+      <>
           <h1 className="font-heading text-2xl font-extrabold text-[#2D2D2D]">How would you like to add your photos?</h1>
           <div className="mt-7 grid grid-cols-2 gap-4">
-            <button onClick={() => { setMode("camera"); setStep(3); }} className="flex flex-col items-center gap-3 rounded-[18px] border border-[#E8E2D8] bg-white p-8 text-center transition hover:border-[#DC3522] hover:bg-[#FDE8E4]">
+            <button onClick={() => {setMode("camera");setStep(3);}} className="flex flex-col items-center gap-3 rounded-[18px] border border-[#E8E2D8] bg-white p-8 text-center transition hover:border-[#DC3522] hover:bg-[#FDE8E4]">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FDE8E4]"><Camera size={22} className="text-[#DC3522]" /></div>
               <div><b className="block text-sm text-[#2D2D2D]">Take Photos</b><small className="text-[#8A8580]">Use your camera</small></div>
             </button>
-            <button onClick={() => { setMode("upload"); setStep(3); }} className="flex flex-col items-center gap-3 rounded-[18px] border border-[#E8E2D8] bg-white p-8 text-center transition hover:border-[#DC3522] hover:bg-[#FDE8E4]">
+            <button onClick={() => {setMode("upload");setStep(3);}} className="flex flex-col items-center gap-3 rounded-[18px] border border-[#E8E2D8] bg-white p-8 text-center transition hover:border-[#DC3522] hover:bg-[#FDE8E4]">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FDE8E4]"><ImageUp size={22} className="text-[#DC3522]" /></div>
               <div><b className="block text-sm text-[#2D2D2D]">Upload Photos</b><small className="text-[#8A8580]">Choose from gallery</small></div>
             </button>
           </div>
         </>
-      )}
+      }
 
       {/* STEP 3 — Capture */}
-      {step === 3 && (
-        <>
+      {step === 3 &&
+      <>
           <h1 className="mb-5 font-heading text-2xl font-extrabold text-[#2D2D2D]">{mode === "camera" ? "Ready when you are" : "Pick three photos"}</h1>
-          {mode === "camera" ? (
-            <CameraCapture ref={captureRef} selected={selected} photos={photos} onPhotosChange={setPhotos} filter={filter} onFilterChange={setFilter} />
-          ) : (
-            <div className="space-y-4">
+          {mode === "camera" ?
+        <CameraCapture ref={captureRef} selected={selected} photos={photos} onPhotosChange={setPhotos} filter={filter} onFilterChange={setFilter} /> :
+
+        <div className="space-y-4">
               <div className="grid gap-4 lg:grid-cols-[1fr_170px]">
                 <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
                   <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#8A8580]">Live Preview</p>
-                  {photos.length < 3 ? (
-                    <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#CFC8BC] bg-[#F5F0EA] py-12 text-center">
+                  {photos.length < 3 ?
+              <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#CFC8BC] bg-[#F5F0EA] py-12 text-center">
                       <ImageUp className="mx-auto text-[#DC3522]" size={28} />
                       <p className="mt-3 font-bold text-[#2D2D2D]">{photos.length} of 3 photos added</p>
-                      <button onClick={() => fileInput.current.click()} className="mt-4 rounded-full bg-[#4F46E5] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#4338CA]">Choose photos</button>
-                      <input ref={fileInput} className="hidden" type="file" accept="image/*" multiple onChange={e => addFiles(e.target.files)} />
-                    </div>
-                  ) : (
-                    <div className="rounded-xl border border-[#E8E2D8] bg-[#F5F0EA] p-6 text-center">
+                      <button onClick={() => fileInput.current.click()} className="mt-4 rounded-full bg-[#4F46E5] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#4338CA] hidden">Choose photos</button>
+                      <input ref={fileInput} className="hidden" type="file" accept="image/*" multiple onChange={(e) => addFiles(e.target.files)} />
+                    </div> :
+
+              <div className="rounded-xl border border-[#E8E2D8] bg-[#F5F0EA] p-6 text-center">
                       <p className="font-bold text-[#DC3522]">All 3 photos uploaded!</p>
                       <p className="mt-1 text-sm text-[#8A8580]">3 / 3 uploaded</p>
                     </div>
-                  )}
+              }
                   <div className="mt-4 flex gap-2">
-                    {[0, 1, 2].map(i => (
-                      <div key={i} className={`relative h-16 w-16 overflow-hidden rounded-lg border-2 ${i < photos.length ? "border-[#DC3522]" : "border-dashed border-[#E8E2D8]"} bg-[#F5F0EA]`}>
-                        {photos[i] && (
-                          <>
+                    {[0, 1, 2].map((i) =>
+                <div key={i} className={`relative h-16 w-16 overflow-hidden rounded-lg border-2 ${i < photos.length ? "border-[#DC3522]" : "border-dashed border-[#E8E2D8]"} bg-[#F5F0EA]`}>
+                        {photos[i] &&
+                  <>
                             <img src={photos[i]} alt="" className="h-full w-full object-cover" style={{ filter: uploadFilterCss }} />
                             <button onClick={() => removePhoto(i)} className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-black/60 text-[10px] font-bold text-white">×</button>
                           </>
-                        )}
+                  }
                       </div>
-                    ))}
+                )}
                   </div>
                 </div>
                 <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
@@ -225,55 +225,55 @@ export default function Booth() {
               </div>
               <FilterCard filter={filter} onFilterChange={setFilter} />
             </div>
-          )}
+        }
           <StickyAction>
             <div className="flex items-center justify-between gap-3">
               <span className="text-xs text-[#8A8580]">
-                {mode === "camera"
-                  ? (photos.length < 3 ? "Ready to start — takes 3 photos automatically" : "All 3 photos captured!")
-                  : (photos.length < 3 ? `${photos.length} / 3 photos added` : "All 3 photos ready!")}
+                {mode === "camera" ?
+              photos.length < 3 ? "Ready to start — takes 3 photos automatically" : "All 3 photos captured!" :
+              photos.length < 3 ? `${photos.length} / 3 photos added` : "All 3 photos ready!"}
               </span>
-              {mode === "camera" ? (
-                photos.length < 3 ? (
-                  <button disabled={saving} onClick={() => captureRef.current?.capture()} className="flex items-center gap-2 rounded-full bg-[#4F46E5] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#4338CA] disabled:bg-[#E8E2D8] disabled:text-[#8A8580]">
+              {mode === "camera" ?
+            photos.length < 3 ?
+            <button disabled={saving} onClick={() => captureRef.current?.capture()} className="flex items-center gap-2 rounded-full bg-[#4F46E5] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#4338CA] disabled:bg-[#E8E2D8] disabled:text-[#8A8580]">
                     <Camera size={16} />Start
-                  </button>
-                ) : (
-                  <button onClick={finish} disabled={saving} className="rounded-full bg-[#4F46E5] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#4338CA] disabled:bg-[#E8E2D8]">
+                  </button> :
+
+            <button onClick={finish} disabled={saving} className="rounded-full bg-[#4F46E5] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#4338CA] disabled:bg-[#E8E2D8]">
                     {saving ? "Making your strip…" : "Reveal my strip →"}
-                  </button>
-                )
-              ) : (
-                <button disabled={photos.length !== 3 || saving} onClick={finish} className="rounded-full bg-[#4F46E5] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#4338CA] disabled:bg-[#E8E2D8] disabled:text-[#8A8580]">
+                  </button> :
+
+
+            <button disabled={photos.length !== 3 || saving} onClick={finish} className="rounded-full bg-[#4F46E5] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#4338CA] disabled:bg-[#E8E2D8] disabled:text-[#8A8580]">
                   {saving ? "Making your strip…" : photos.length === 3 ? "Continue →" : "Add 3 photos to continue"}
                 </button>
-              )}
+            }
             </div>
           </StickyAction>
         </>
-      )}
+      }
 
       {/* STEP 4 — Download */}
-      {step === 4 && (
-        <div className="mx-auto max-w-sm text-center">
+      {step === 4 &&
+      <div className="mx-auto max-w-sm text-center">
           <div className="mt-4 rounded-[22px] border border-[#E8E2D8] bg-white p-6">
             <StripPreview template={selected} photos={photos} className="mx-auto max-w-[180px]" />
             <p className="mt-5 font-heading text-xl font-extrabold text-[#2D2D2D]">Your strip is ready!</p>
-            {plan === "free" && used >= 10 && (
-              <p className="mt-2 text-sm text-[#8A8580]">Your oldest strip was replaced — download it to keep it.</p>
-            )}
+            {plan === "free" && used >= 10 &&
+          <p className="mt-2 text-sm text-[#8A8580]">Your oldest strip was replaced — download it to keep it.</p>
+          }
             <div className="mt-6 space-y-3">
               <button onClick={download} className="flex w-full items-center justify-center gap-2 rounded-full bg-[#4F46E5] px-5 py-4 text-sm font-bold text-white transition hover:bg-[#4338CA]">
                 <Download size={16} />Download Strip
               </button>
-              <button onClick={() => { setPhotos([]); setRawFiles([]); setStep(3); }} className="flex w-full items-center justify-center gap-2 rounded-full border border-[#E8E2D8] px-5 py-3 text-sm font-bold text-[#5C5953]">
+              <button onClick={() => {setPhotos([]);setRawFiles([]);setStep(3);}} className="flex w-full items-center justify-center gap-2 rounded-full border border-[#E8E2D8] px-5 py-3 text-sm font-bold text-[#5C5953]">
                 <RotateCcw size={14} />Retake Photos
               </button>
               <button onClick={resetAll} className="block w-full text-sm font-bold text-[#DC3522]">Start over with a new design →</button>
             </div>
           </div>
         </div>
-      )}
-    </div>
-  );
+      }
+    </div>);
+
 }
