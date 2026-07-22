@@ -1,0 +1,36 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "plan": {
+      "type": "string",
+      "enum": [
+        "free",
+        "premium"
+      ],
+      "default": "free"
+    },
+    "plan_renewed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "plan_expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sessions_used_this_month": {
+      "type": "number",
+      "default": 0
+    },
+    "downgrade_grace_until": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "paymongo_customer_id": {
+      "type": "string"
+    },
+    "paymongo_payment_method_id": {
+      "type": "string"
+    }
+  }
+}

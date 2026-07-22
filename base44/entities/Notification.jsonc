@@ -1,0 +1,42 @@
+{
+  "name": "Notification",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "order_update",
+        "payment",
+        "subscription",
+        "usage_limit",
+        "storage_expiry",
+        "storage_eviction",
+        "booth_activity"
+      ]
+    },
+    "message": {
+      "type": "string"
+    },
+    "link": {
+      "type": "string"
+    },
+    "read": {
+      "type": "boolean",
+      "default": false
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "user_id",
+    "type",
+    "message",
+    "read",
+    "created_at"
+  ]
+}

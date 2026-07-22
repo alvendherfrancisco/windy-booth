@@ -1,0 +1,3 @@
+import React from "react";
+import { Link } from "react-router-dom";
+export default function PrintShop(){return <div className="max-w-xl"><h1 className="font-heading text-3xl font-extrabold">Print Shop</h1><p className="mt-2 text-sm text-[#8B8D93]">Print bundles are next in the booth experience.</p><div className="mt-7 rounded-[18px] border border-[#D8D9DC] bg-white p-6"><p className="font-bold">Keep your memories in hand.</p><p className="mt-2 text-sm text-[#8B8D93]">Create a few more strips while we prepare the physical bundle checkout.</p><Link to="/booth" className="mt-5 inline-block rounded-full bg-[#15161A] px-5 py-3 text-sm font-bold text-white">Start a booth</Link></div></div>}

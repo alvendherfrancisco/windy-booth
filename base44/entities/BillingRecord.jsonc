@@ -1,0 +1,44 @@
+{
+  "name": "BillingRecord",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "subscription",
+        "print_order"
+      ]
+    },
+    "amount": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "paid",
+        "failed",
+        "refunded"
+      ]
+    },
+    "paymongo_transaction_id": {
+      "type": "string"
+    },
+    "receipt_url": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "user_id",
+    "type",
+    "amount",
+    "status",
+    "created_at"
+  ]
+}

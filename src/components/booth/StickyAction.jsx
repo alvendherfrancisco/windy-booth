@@ -1,0 +1,2 @@
+import React from "react";
+export default function StickyAction({ children }) { return <div className="sticky bottom-16 z-10 -mx-4 mt-6 border-t border-[#D8D9DC] bg-[#FAF9F6]/95 px-4 py-3 backdrop-blur md:bottom-0">{children}</div>; }

@@ -1,0 +1,2 @@
+import React from "react";
+export default function Progress({ step }) { return <div className="mb-7"><div className="flex justify-between text-[10px] font-bold uppercase tracking-[.12em] text-[#8B8D93]">{["Design", "Mode", "Capture", "Download"].map((label, i) => <span key={label} className={i + 1 <= step ? "text-[#3E5670]" : ""}>{label}</span>)}</div><div className="mt-2 flex gap-1">{[1,2,3,4].map(i => <span key={i} className={`h-1 flex-1 rounded-full ${i <= step ? "bg-[#3E5670]" : "bg-[#D8D9DC]"}`} />)}</div></div>; }

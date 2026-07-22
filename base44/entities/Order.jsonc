@@ -1,0 +1,91 @@
+{
+  "name": "Order",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "strip_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "bundle_type": {
+      "type": "string"
+    },
+    "paper_type": {
+      "type": "string",
+      "enum": [
+        "matte",
+        "glossy"
+      ]
+    },
+    "quantity_required": {
+      "type": "number"
+    },
+    "quantity_selected": {
+      "type": "number"
+    },
+    "shipping_address": {
+      "type": "string"
+    },
+    "shipping_cost": {
+      "type": "number"
+    },
+    "shipping_method": {
+      "type": "string",
+      "enum": [
+        "jt_live",
+        "zone_fallback"
+      ]
+    },
+    "subtotal": {
+      "type": "number"
+    },
+    "total": {
+      "type": "number"
+    },
+    "payment_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "processing",
+        "paid",
+        "failed",
+        "refunded"
+      ],
+      "default": "pending"
+    },
+    "fulfillment_status": {
+      "type": "string",
+      "enum": [
+        "processing",
+        "printed",
+        "shipped",
+        "delivered"
+      ],
+      "default": "processing"
+    },
+    "paymongo_payment_id": {
+      "type": "string"
+    },
+    "jt_tracking_number": {
+      "type": "string"
+    },
+    "retain_until": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "user_id",
+    "strip_ids",
+    "bundle_type",
+    "paper_type",
+    "quantity_required",
+    "quantity_selected",
+    "subtotal",
+    "total"
+  ]
+}

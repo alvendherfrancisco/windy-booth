@@ -1,0 +1,50 @@
+{
+  "name": "Strip",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "template_id": {
+      "type": "string"
+    },
+    "photo_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rendered_strip_url": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "saved": {
+      "type": "boolean",
+      "default": true
+    },
+    "filter_applied": {
+      "type": "string",
+      "enum": [
+        "none",
+        "sepia",
+        "bw",
+        "vintage"
+      ],
+      "default": "none"
+    }
+  },
+  "required": [
+    "user_id",
+    "template_id",
+    "photo_urls",
+    "created_at",
+    "saved"
+  ]
+}
