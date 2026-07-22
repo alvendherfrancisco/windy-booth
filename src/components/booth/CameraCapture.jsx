@@ -49,7 +49,8 @@ const CameraCapture = forwardRef(function CameraCapture(
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     return new Promise(resolve =>
       canvas.toBlob(async blob => {
-        const result = await base44.integrations.Core.UploadFile({ file: blob });
+        const file = new File([blob], `vendi-${Date.now()}.jpg`, { type: "image/jpeg" });
+        const result = await base44.integrations.Core.UploadFile({ file });
         resolve(result.file_url);
       }, "image/jpeg", 0.92)
     );
