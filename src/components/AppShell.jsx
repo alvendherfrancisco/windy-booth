@@ -41,7 +41,7 @@ export default function AppShell() {
               key={to}
               to={to}
               className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold ${
-                location.pathname === to ? "bg-[#FDE8E4] text-[#DC3522]" : "text-[#5C5953] hover:bg-[#F5F0EA]"
+                location.pathname === to ? "bg-[#FDE8E4] text-[#DC3522]" : "text-[#5C5953] hover:bg-[#EEF2FF]"
               }`}
             >
               <Icon size={19} />
@@ -54,7 +54,7 @@ export default function AppShell() {
       <header className="sticky top-0 z-20 flex h-16 items-center border-b border-[#E8E2D8] bg-[#F9F7F2] px-4 md:px-10">
         {isBooth ? (
           step > 1 && (
-            <button onClick={goBack} className="flex items-center gap-1.5 text-sm font-bold text-[#2D2D2D] hover:text-[#DC3522]">
+            <button onClick={goBack} className="flex items-center gap-1.5 text-sm font-bold text-[#2D2D2D] hover:text-[#4F46E5]">
               <ArrowLeft size={16} />Back
             </button>
           )

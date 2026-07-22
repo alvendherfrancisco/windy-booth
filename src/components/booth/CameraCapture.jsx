@@ -122,7 +122,7 @@ const CameraCapture = forwardRef(function CameraCapture(
               <div
                 key={i}
                 className={`flex h-14 w-14 items-center justify-center overflow-hidden rounded-lg border-2 ${
-                  i < photos.length ? "border-[#DC3522]" : "border-dashed border-[#E8E2D8]"
+                  i < photos.length ? "border-[#4F46E5]" : "border-dashed border-[#E8E2D8]"
                 } bg-[#F5F0EA]`}
               >
                 {photos[i] ? (
@@ -154,8 +154,8 @@ const CameraCapture = forwardRef(function CameraCapture(
               onClick={() => setTimerVal(t)}
               className={`rounded-lg border px-4 py-1.5 text-xs font-bold transition ${
                 timerVal === t
-                  ? "border-[#DC3522] bg-[#DC3522] text-white"
-                  : "border-[#E8E2D8] bg-white text-[#5C5953] hover:border-[#DC3522]"
+                  ? "border-[#4F46E5] bg-[#4F46E5] text-white"
+                  : "border-[#E8E2D8] bg-white text-[#5C5953] hover:border-[#4F46E5]"
               }`}
             >
               {t}s
