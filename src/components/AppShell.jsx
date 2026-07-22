@@ -4,7 +4,6 @@ import { ArrowLeft, Bell, Camera, Flower2, Home, Images, Printer, UserRound } fr
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { useBoothWizard } from "@/components/booth/BoothWizardContext";
-import BoothStepper from "@/components/booth/BoothStepper";
 
 const items = [
   { to: "/dashboard", label: "Home", icon: Home },
@@ -52,21 +51,13 @@ export default function AppShell() {
         </nav>
       </aside>
 
-      <header className="sticky top-0 z-20 flex h-16 items-center border-b border-[#E8E2D8] bg-[#F9F7F2]/95 px-4 backdrop-blur md:px-10">
+      <header className="sticky top-0 z-20 flex h-16 items-center border-b border-[#E8E2D8] bg-[#F9F7F2] px-4 md:px-10">
         {isBooth ? (
-          <div className="flex w-full items-center">
-            <div className="flex-1">
-              {step > 1 && (
-                <button onClick={goBack} className="flex items-center gap-1.5 text-sm font-bold text-[#2D2D2D] hover:text-[#DC3522]">
-                  <ArrowLeft size={16} />Back
-                </button>
-              )}
-            </div>
-            <div className="flex flex-1 justify-center">
-              <BoothStepper step={step} />
-            </div>
-            <div className="flex-1" />
-          </div>
+          step > 1 && (
+            <button onClick={goBack} className="flex items-center gap-1.5 text-sm font-bold text-[#2D2D2D] hover:text-[#DC3522]">
+              <ArrowLeft size={16} />Back
+            </button>
+          )
         ) : (
           <Link to="/notifications" className="relative ml-auto rounded-full p-2 hover:bg-[#F5F0EA]">
             <Bell size={21} />

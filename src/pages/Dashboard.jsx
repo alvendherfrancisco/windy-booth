@@ -9,15 +9,17 @@ export default function Dashboard() {
   const { user } = useAuth();
   const [strips, setStrips] = useState([]);
   const [order, setOrder] = useState(null);
+  const [used, setUsed] = useState(0);
   const plan = user?.plan || "free";
   const load = async () => {
     if (!user) return;
     setStrips(await base44.entities.Strip.filter({ user_id: user.id, saved: true }, "-created_at", 5));
     const orders = await base44.entities.Order.filter({ user_id: user.id }, "-created_date", 1);
     setOrder(orders[0]);
+    const me = await base44.auth.me();
+    setUsed(me.sessions_used_this_month || 0);
   };
   useEffect(() => { load(); const off = base44.entities.Strip.subscribe(load); return off; }, [user?.id]);
-  const used = user?.sessions_used_this_month || 0;
   const orderStrip = strips.find(strip => order?.strip_ids?.includes(strip.id));
   return <div className="space-y-7"><section><p className="text-sm text-[#8B8D93]">Welcome back{user?.full_name ? `, ${user.full_name.split(" ")[0]}` : ""}.</p><div className="mt-1 flex items-center gap-3"><h1 className="font-heading text-3xl font-extrabold">Your little booth</h1><span className="rounded-full bg-[#EFF3F7] px-3 py-1 text-xs font-bold capitalize text-[#3E5670]">{plan}</span></div></section>
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(280px,0.8fr)]"><Link to="/booth" className="block rounded-[18px] bg-[#15161A] p-6 text-white transition hover:bg-[#3E5670]"><Camera size={25}/><h2 className="mt-8 font-heading text-2xl font-extrabold">Start a new booth</h2><p className="mt-1 text-sm text-[#D8D9DC]">Pick a frame, strike a pose, take it with you.</p><span className="mt-5 inline-flex items-center gap-2 text-sm font-bold">Begin <ArrowRight size={16}/></span></Link>

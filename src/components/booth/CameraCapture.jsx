@@ -99,13 +99,13 @@ const CameraCapture = forwardRef(function CameraCapture(
               {camError}
             </div>
           ) : (
-            <div className="relative overflow-hidden rounded-xl bg-black">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-black">
               <video
                 ref={videoRef}
                 autoPlay
                 playsInline
                 muted
-                className="w-full"
+                className="h-full w-full object-cover"
                 style={{ transform: "scaleX(-1)", filter: filterCss(filter) }}
               />
               {countdown !== null && (

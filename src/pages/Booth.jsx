@@ -10,6 +10,7 @@ import TemplateFilters from "@/components/booth/TemplateFilters";
 import StripPreview from "@/components/booth/StripPreview";
 import StickyAction from "@/components/booth/StickyAction";
 import FilterCard from "@/components/booth/FilterCard";
+import BoothStepper from "@/components/booth/BoothStepper";
 import CameraCapture from "@/components/booth/CameraCapture";
 
 export default function Booth() {
@@ -129,7 +130,8 @@ export default function Booth() {
   const uploadFilterCss = mode === "upload" ? filterCss(filter) : "none";
 
   return (
-    <div className="mx-auto max-w-4xl pb-28 md:pb-24">
+    <div className="mx-auto max-w-4xl pb-32 md:pb-28">
+      <div className="mb-6"><BoothStepper step={step} /></div>
       {/* STEP 1 — Design */}
       {step === 1 && (
         <>
@@ -156,7 +158,7 @@ export default function Booth() {
           <StickyAction>
             <div className="flex items-center justify-between gap-3">
               <span className="text-xs text-[#8A8580]">{selected ? `${selected.name} selected` : "Choose a design"}</span>
-              <button disabled={!selected || used >= 10} onClick={() => setStep(2)} className="rounded-full bg-[#DC3522] px-5 py-3 text-sm font-bold text-white disabled:bg-[#E8E2D8] disabled:text-[#8A8580]">Continue</button>
+              <button disabled={!selected || used >= 10} onClick={() => setStep(2)} className="rounded-full bg-[#4F46E5] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#4338CA] disabled:bg-[#E8E2D8] disabled:text-[#8A8580]">Continue</button>
             </div>
           </StickyAction>
         </>
@@ -194,7 +196,7 @@ export default function Booth() {
                     <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#CFC8BC] bg-[#F5F0EA] py-12 text-center">
                       <ImageUp className="mx-auto text-[#DC3522]" size={28} />
                       <p className="mt-3 font-bold text-[#2D2D2D]">{photos.length} of 3 photos added</p>
-                      <button onClick={() => fileInput.current.click()} className="mt-4 rounded-full bg-[#DC3522] px-5 py-3 text-sm font-bold text-white">Choose photos</button>
+                      <button onClick={() => fileInput.current.click()} className="mt-4 rounded-full bg-[#4F46E5] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#4338CA]">Choose photos</button>
                       <input ref={fileInput} className="hidden" type="file" accept="image/*" multiple onChange={e => addFiles(e.target.files)} />
                     </div>
                   ) : (
@@ -233,16 +235,16 @@ export default function Booth() {
               </span>
               {mode === "camera" ? (
                 photos.length < 3 ? (
-                  <button disabled={saving} onClick={() => captureRef.current?.capture()} className="flex items-center gap-2 rounded-full bg-[#DC3522] px-5 py-3 text-sm font-bold text-white disabled:bg-[#E8E2D8] disabled:text-[#8A8580]">
+                  <button disabled={saving} onClick={() => captureRef.current?.capture()} className="flex items-center gap-2 rounded-full bg-[#4F46E5] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#4338CA] disabled:bg-[#E8E2D8] disabled:text-[#8A8580]">
                     <Camera size={16} />Start
                   </button>
                 ) : (
-                  <button onClick={finish} disabled={saving} className="rounded-full bg-[#2D2D2D] px-5 py-3 text-sm font-bold text-white disabled:bg-[#E8E2D8]">
+                  <button onClick={finish} disabled={saving} className="rounded-full bg-[#4F46E5] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#4338CA] disabled:bg-[#E8E2D8]">
                     {saving ? "Making your strip…" : "Reveal my strip →"}
                   </button>
                 )
               ) : (
-                <button disabled={photos.length !== 3 || saving} onClick={finish} className="rounded-full bg-[#DC3522] px-5 py-3 text-sm font-bold text-white disabled:bg-[#E8E2D8] disabled:text-[#8A8580]">
+                <button disabled={photos.length !== 3 || saving} onClick={finish} className="rounded-full bg-[#4F46E5] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#4338CA] disabled:bg-[#E8E2D8] disabled:text-[#8A8580]">
                   {saving ? "Making your strip…" : photos.length === 3 ? "Continue →" : "Add 3 photos to continue"}
                 </button>
               )}
@@ -261,7 +263,7 @@ export default function Booth() {
               <p className="mt-2 text-sm text-[#8A8580]">Your oldest strip was replaced — download it to keep it.</p>
             )}
             <div className="mt-6 space-y-3">
-              <button onClick={download} className="flex w-full items-center justify-center gap-2 rounded-full bg-[#DC3522] px-5 py-4 text-sm font-bold text-white">
+              <button onClick={download} className="flex w-full items-center justify-center gap-2 rounded-full bg-[#4F46E5] px-5 py-4 text-sm font-bold text-white transition hover:bg-[#4338CA]">
                 <Download size={16} />Download Strip
               </button>
               <button onClick={() => { setPhotos([]); setRawFiles([]); setStep(3); }} className="flex w-full items-center justify-center gap-2 rounded-full border border-[#E8E2D8] px-5 py-3 text-sm font-bold text-[#5C5953]">
