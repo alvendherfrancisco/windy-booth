@@ -8,6 +8,7 @@ import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword';
 import AppShell from '@/components/AppShell';
+import { BoothWizardProvider } from '@/components/booth/BoothWizardContext';
 import Dashboard from '@/pages/Dashboard';
 import Booth from '@/pages/Booth';
 import MyBooths from '@/pages/MyBooths';
@@ -42,7 +43,7 @@ const AuthenticatedApp = () => {
     <Route path="/forgot-password" element={<ForgotPassword />} />
     <Route path="/reset-password" element={<ResetPassword />} />
     <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
-      <Route element={<AppShell />}>
+      <Route element={<BoothWizardProvider><AppShell /></BoothWizardProvider>}>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/booth" element={<Booth />} />
