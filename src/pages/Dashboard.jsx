@@ -24,7 +24,7 @@ export default function Dashboard() {
   useEffect(() => {load();const off = base44.entities.Strip.subscribe(load);return off;}, [user?.id]);
   const orderStrip = strips.find((strip) => order?.strip_ids?.includes(strip.id));
   return <div className="space-y-7"><section><div className="mt-1 flex items-center gap-3"><h1 className="font-heading text-3xl font-extrabold">Your booth</h1><span className="rounded-full bg-[#fff3bf] px-3 py-1 text-xs font-bold capitalize text-[#e67700]">{plan}</span></div></section>
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(280px,0.8fr)]"><Link to="/booth" className="relative isolate block overflow-hidden rounded-[18px] p-6 text-white transition hover:bg-[#e64980] bg-[#8eaa27]">Start a new booth
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(280px,0.8fr)]"><Link to="/booth" className="relative isolate block overflow-hidden rounded-[18px] bg-[#f06595] p-6 text-white transition hover:bg-[#e64980]">Start a new booth
 
 Pick a frame, strike a pose, take it with you.
 
