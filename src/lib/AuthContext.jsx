@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { appParams } from '@/lib/app-params';
 import { createAxiosClient } from '@base44/sdk/dist/utils/axios-client';
+import { currentPeriod, isLifetime } from '@/lib/plans';
 
 const AuthContext = createContext();
 
@@ -97,6 +98,13 @@ export const AuthProvider = ({ children }) => {
       const currentUser = await base44.auth.me();
       setUser(currentUser);
       setIsAuthenticated(true);
+      // Free-plan session counter resets at the start of each billing month.
+      if (!isLifetime(currentUser) && currentUser.sessions_period !== currentPeriod()) {
+        try {
+          await base44.auth.updateMe({ sessions_used_this_month: 0, sessions_period: currentPeriod() });
+          setUser((u) => (u ? { ...u, sessions_used_this_month: 0, sessions_period: currentPeriod() } : u));
+        } catch { /* ignore reset failure */ }
+      }
       setIsLoadingAuth(false);
       setAuthChecked(true);
       // Google users (full_name is populated by Google) with no profile photo:

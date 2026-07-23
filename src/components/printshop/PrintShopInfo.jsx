@@ -5,8 +5,8 @@ import { formatPrice, FREE_SHIP_THRESHOLD } from "@/lib/printPricing";
 
 const PLANS = [
 { icon: Sparkles, color: "#228be6", title: "Free", tag: "Try the product", desc: 'The "Rolling 10" model — perfect for trying Vendi\'s Booth.' },
-{ icon: Crown, color: "#e64980", title: "Premium", tag: "₱99/month", desc: "Unlimited sessions & downloads + exclusive artist-designed template collections." },
-{ icon: Printer, color: "#37b24d", title: "Print Store", tag: "Print Club", desc: "Choose how many strips you want, customize the order, and pay based on quantity." }];
+{ icon: Crown, color: "#e64980", title: "Single Collection", tag: "₱49 one-time", desc: "Lifetime access to one exclusive artist-designed collection, with unlimited use of it." },
+{ icon: Printer, color: "#37b24d", title: "Lifetime Pass", tag: "₱299 one-time", desc: "Unlimited booth sessions, every current and future collection, and unlimited saved strips." }];
 
 
 const FREE_INCLUDES = [

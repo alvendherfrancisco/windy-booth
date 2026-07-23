@@ -1,14 +1,18 @@
 import React, { useRef, useState } from "react";
-import { Camera, Crown, LogOut, Shield } from "lucide-react";
+import { Camera, Crown, LogOut, Shield, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import UserAvatar from "@/components/UserAvatar";
 import PolkaDots from "@/components/PolkaDots";
+import UpgradeModal from "@/components/upgrade/UpgradeModal";
+import { isLifetime, LIFETIME_PRICE, planLabel } from "@/lib/plans";
 
 export default function Profile() {
   const { user } = useAuth();
   const plan = user?.plan || "free";
+  const lifetime = isLifetime(user);
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
   const fileRef = useRef();
   const [uploading, setUploading] = useState(false);
 
@@ -49,21 +53,18 @@ export default function Profile() {
           </div>
         </div>
       </section>
-      <section className="relative mt-4 overflow-hidden rounded-[18px] bg-[#fff3bf] p-6 text-[#2D2D2D]">
+      <section className="relative mt-4 overflow-hidden rounded-[18px] bg-[#fff0f6] p-6 text-[#2D2D2D]">
         <PolkaDots />
-        <Crown size={22} className="text-[#f59f00]" />
-        <p className="mt-6 text-sm text-[#5C5953]">Current plan</p>
-        <h2 className="font-heading text-2xl font-extrabold capitalize">{plan}</h2>
-        {plan === "free" ? (
-          <>
-            <p className="mt-2 text-sm text-[#5C5953]">Unlimited sessions, every template, one full year of saved strips.</p>
-            <p className="mt-5 text-xs font-bold text-[#e67700]">Premium checkout will be available with Stripe.</p>
-          </>
+        {lifetime ? <Sparkles size={22} className="text-[#e64980]" /> : <Crown size={22} className="text-[#f59f00]" />}
+        <p className="mt-6 text-sm text-[#5C5953]">Status</p>
+        <h2 className="font-heading text-2xl font-extrabold">{lifetime ? "Lifetime Pass Owner ✨" : planLabel(user)}</h2>
+        {lifetime ? (
+          <p className="mt-2 text-sm text-[#5C5953]">Unlimited booth sessions, every artist-designed collection, and unlimited saved strips — for life.</p>
         ) : (
-          <p className="mt-2 text-sm text-[#5C5953]">
-            Your next renewal is{" "}
-            {user?.plan_expires_at ? new Date(user.plan_expires_at).toLocaleDateString() : "coming up"}.
-          </p>
+          <>
+            <p className="mt-2 text-sm text-[#5C5953]">10 booth sessions per month and up to 10 saved strips. Upgrade anytime.</p>
+            <button onClick={() => setUpgradeOpen(true)} className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#f06595] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#e64980]"><Sparkles size={15} /> Get Lifetime Pass · ₱{LIFETIME_PRICE}</button>
+          </>
         )}
       </section>
       {user?.email === "alvendherfrancisco01@gmail.com" && (
@@ -74,6 +75,7 @@ export default function Profile() {
       <button onClick={() => base44.auth.logout("/login")} className="mt-7 flex items-center gap-2 text-sm font-bold text-[#55575E]">
         <LogOut size={17} />Log out
       </button>
+      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
     </div>
   );
 }

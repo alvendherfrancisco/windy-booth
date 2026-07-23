@@ -16,6 +16,8 @@ import ModeCardDecor from "@/components/booth/ModeCardDecor";
 import { downloadStrip } from "@/components/booth/downloadStrip";
 import PolkaDots from "@/components/PolkaDots";
 import FaceDoodles from "@/components/FaceDoodles";
+import UpgradeModal from "@/components/upgrade/UpgradeModal";
+import { canUseTemplate, currentPeriod, isLifetime, sessionLimitReached } from "@/lib/plans";
 
 export default function Booth() {
   const { user, updateUser } = useAuth();
@@ -38,6 +40,10 @@ export default function Booth() {
 
   const plan = user?.plan || "free";
   const used = user?.sessions_used_this_month || 0;
+  const lifetime = isLifetime(user);
+  const limitReached = sessionLimitReached(user);
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const [lockedTemplate, setLockedTemplate] = useState(null);
   const photos = mode === "camera" ? cameraPhotos : uploadPhotos;
 
   useEffect(() => {base44.entities.Template.filter({ active: true }).then(setTemplates);}, []);
@@ -54,7 +60,7 @@ export default function Booth() {
   );
 
   const choose = (t) => {
-    if (t.tier === "premium" && plan === "free") return nav("/profile");
+    if (!canUseTemplate(user, t)) { setLockedTemplate(t); return; }
     setSelected(t);
   };
 
@@ -104,22 +110,25 @@ export default function Booth() {
       }
       const now = new Date();
       const current = await base44.entities.Strip.filter({ user_id: user.id, saved: true }, "created_at");
-      const expires = plan === "premium" ? new Date(Date.now() + 31536000000).toISOString() : null;
+      const expires = null;
       await base44.entities.Strip.create({
         user_id: user.id, template_id: selected.id, photo_urls: finalUrls,
         created_at: now.toISOString(), expires_at: expires, saved: true, filter_applied: filter
       });
-      if (plan === "free" && current.length >= 10) {
+      if (!lifetime && current.length >= 10) {
         await base44.entities.Strip.delete(current[0].id);
         await base44.entities.Notification.create({ user_id: user.id, type: "storage_eviction", message: "Your oldest strip was removed to make room for your new one.", link: "/my-booths", read: false, created_at: now.toISOString() });
       }
-      const nextUsed = used + 1;
-      await base44.auth.updateMe({ sessions_used_this_month: nextUsed });
-      updateUser({ sessions_used_this_month: nextUsed });
-      await base44.entities.Notification.create({ user_id: user.id, type: "booth_activity", message: "Your strip is ready!", link: "/my-booths", read: false, created_at: now.toISOString() });
-      if (plan === "free" && (nextUsed === 8 || nextUsed === 10)) {
-        await base44.entities.Notification.create({ user_id: user.id, type: "usage_limit", message: `You've used ${nextUsed} of 10 sessions this month.`, link: "/profile", read: false, created_at: now.toISOString() });
+      if (!lifetime) {
+        const period = currentPeriod();
+        const nextUsed = user.sessions_period === period ? used + 1 : 1;
+        await base44.auth.updateMe({ sessions_used_this_month: nextUsed, sessions_period: period });
+        updateUser({ sessions_used_this_month: nextUsed, sessions_period: period });
+        if (nextUsed === 8 || nextUsed === 10) {
+          await base44.entities.Notification.create({ user_id: user.id, type: "usage_limit", message: `You've used ${nextUsed} of 10 sessions this month.`, link: "/profile", read: false, created_at: now.toISOString() });
+        }
       }
+      await base44.entities.Notification.create({ user_id: user.id, type: "booth_activity", message: "Your strip is ready!", link: "/my-booths", read: false, created_at: now.toISOString() });
       setFinalPhotos(finalUrls);
       setStep(4);
     } finally {
@@ -149,20 +158,20 @@ export default function Booth() {
       <>
           <h1 className="font-heading text-3xl font-extrabold text-[#2D2D2D]">Choose your design</h1>
           
-          {plan === "free" && used >= 10 ?
+          {limitReached ?
         <div className="relative isolate mt-7 overflow-hidden rounded-[18px] border border-dashed border-[#AEB0B5] bg-[#fff0f6] px-6 py-14 text-center">
               <PolkaDots />
               <FaceDoodles variant="empty" />
-              <p className="relative font-heading text-xl font-bold">Your 10 sessions are used</p>
-              <p className="relative mt-1 text-sm text-[#8B8D93]">Upgrade to keep making memories.</p>
-              <Link to="/profile" className="relative mt-5 inline-block rounded-full bg-[#f06595] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#e64980]">Upgrade to Premium</Link>
+              <p className="relative font-heading text-xl font-bold">You've used all 10 booth sessions this month</p>
+              <p className="relative mt-1 text-sm text-[#8B8D93]">Continue creating memories anytime with the Lifetime Pass.</p>
+              <button onClick={() => setUpgradeOpen(true)} className="relative mt-5 inline-block rounded-full bg-[#f06595] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#e64980]">Get Lifetime Pass</button>
             </div> :
 
         <>
               <TemplateFilters category={category} onCategoryChange={setCategory} query={query} onQueryChange={setQuery} />
               <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
                 {filteredTemplates.map((t) =>
-            <TemplateCard key={t.id} template={t} selected={selected?.id === t.id} locked={t.tier === "premium" && plan === "free"} onSelect={choose} />
+            <TemplateCard key={t.id} template={t} selected={selected?.id === t.id} locked={!canUseTemplate(user, t)} onSelect={choose} />
             )}
                 {filteredTemplates.length === 0 &&
             <p className="col-span-4 py-10 text-center text-sm text-[#8A8580]">No templates found.</p>
@@ -173,7 +182,7 @@ export default function Booth() {
           <StickyAction>
             <div className="flex items-center justify-between gap-3">
               <span className="text-xs text-[#8A8580]">{selected ? `${selected.name} selected` : "Choose a design"}</span>
-              <button disabled={!selected || used >= 10} onClick={() => setStep(2)} className="rounded-full bg-[#f06595] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#e64980] disabled:bg-[#E8E2D8] disabled:text-[#8A8580]">Continue</button>
+              <button disabled={!selected || limitReached} onClick={() => setStep(2)} className="rounded-full bg-[#f06595] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#e64980] disabled:bg-[#E8E2D8] disabled:text-[#8A8580]">Continue</button>
             </div>
           </StickyAction>
         </>
@@ -277,7 +286,7 @@ export default function Booth() {
               <StripPreview template={selected} photos={finalPhotos} />
             </div>
             <p className="mt-5 font-heading text-xl font-extrabold text-[#2D2D2D]">Your strip is ready!</p>
-            {plan === "free" && used >= 10 &&
+            {!lifetime && used >= 10 &&
           <p className="mt-2 text-sm text-[#8A8580]">Your oldest strip was replaced — download it to keep it.</p>
           }
             <div className="mt-6 space-y-3">
@@ -292,6 +301,8 @@ export default function Booth() {
           </div>
         </div>
       }
+      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
+      <UpgradeModal open={!!lockedTemplate} variant="collection" collection={lockedTemplate?.category || lockedTemplate?.name} onClose={() => setLockedTemplate(null)} />
     </div>);
 
 }
