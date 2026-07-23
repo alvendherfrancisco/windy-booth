@@ -2,6 +2,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import Stripe from 'npm:stripe@14.25.0';
 
 const BUNDLES = {
+  single: { name: "Single Strip", strips: 1, price: 49 },
   mini: { name: "Mini Bundle", strips: 4, price: 149 },
   classic: { name: "Classic Bundle", strips: 8, price: 249 },
   memory: { name: "Memory Bundle", strips: 12, price: 329 },
@@ -9,13 +10,20 @@ const BUNDLES = {
   collector: { name: "Collector Bundle", strips: 30, price: 699 },
 };
 const FREE_SHIP_THRESHOLD = 999;
-const JT_RATES = { metro: 75, provincial: 120 };
-
-const computeShipping = (region, subtotal) => {
+// J&T Express parcel rates (package under 1kg → 0–500g bracket) by destination zone.
+const JT_ZONE_RATES = { manila: 95, luzon: 85, visayas: 100, mindanao: 105, island: 115 };
+const ZONE_BY_REGION_CODE = {
+  "130000000": "manila", "140000000": "luzon", "010000000": "luzon", "020000000": "luzon",
+  "030000000": "luzon", "040000000": "luzon", "050000000": "luzon", "170000000": "luzon",
+  "060000000": "visayas", "070000000": "visayas", "080000000": "visayas",
+  "090000000": "mindanao", "100000000": "mindanao", "110000000": "mindanao",
+  "120000000": "mindanao", "160000000": "mindanao", "150000000": "mindanao",
+};
+const zoneForRegion = (code) => ZONE_BY_REGION_CODE[code] || "island";
+const computeShipping = (regionCode, subtotal) => {
+  if (!regionCode) return JT_ZONE_RATES.island;
   if (subtotal >= FREE_SHIP_THRESHOLD) return 0;
-  const r = (region || "").toLowerCase();
-  const isMetro = r.includes("metro manila") || r.includes("ncr") || r.includes("national capital");
-  return isMetro ? JT_RATES.metro : JT_RATES.provincial;
+  return JT_ZONE_RATES[zoneForRegion(regionCode)];
 };
 
 const CURRENCY = "php";
@@ -28,7 +36,7 @@ Deno.serve(async (req) => {
 
     const body = await req.json();
     const { origin, strip_ids, bundle, paper, quantity,
-      ship_full_name, ship_phone, ship_region, ship_province, ship_city, ship_barangay, ship_street, ship_postal
+      ship_full_name, ship_phone, ship_region, ship_region_code, ship_province, ship_city, ship_barangay, ship_street, ship_postal
     } = body;
     const b = BUNDLES[bundle];
     if (!b) return Response.json({ error: "Invalid bundle" }, { status: 400 });
@@ -45,14 +53,14 @@ Deno.serve(async (req) => {
       ship_street: String(ship_street || "").trim(),
       ship_postal: String(ship_postal || "").trim(),
     };
-    if (!ship.ship_full_name || !ship.ship_phone || !ship.ship_region || !ship.ship_province || !ship.ship_city || !ship.ship_barangay || !ship.ship_street)
+    if (!ship.ship_full_name || !ship.ship_phone || !ship.ship_region || !String(ship_region_code || "").trim() || !ship.ship_province || !ship.ship_city || !ship.ship_barangay || !ship.ship_street)
       return Response.json({ error: "Shipping address required" }, { status: 400 });
 
     const shipping_address = [ship.ship_full_name, ship.ship_phone, ship.ship_street, ship.ship_barangay, ship.ship_city, ship.ship_province, ship.ship_region, ship.ship_postal].filter(Boolean).join(", ");
 
     const qty = Math.max(1, Math.floor(Number(quantity) || 1));
     const subtotal = b.price * qty;
-    const shipCost = computeShipping(ship.ship_region, subtotal);
+    const shipCost = computeShipping(String(ship_region_code || "").trim(), subtotal);
     const total = subtotal + shipCost;
 
     const order = await base44.entities.Order.create({

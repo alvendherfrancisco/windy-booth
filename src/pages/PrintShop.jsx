@@ -44,11 +44,15 @@ export default function PrintShop() {
   }, [user?.id]);
 
   const bundleDef = BUNDLES.find((b) => b.id === bundle);
-  const pricing = computeTotal(bundle, quantity, ship.region);
+  const pricing = computeTotal(bundle, quantity, ship.regionCode);
 
   const totalSelected = Object.values(selected).reduce((a, b) => a + b, 0);
   const addStrip = (id) => {
-    if (selected[id] || totalSelected < bundleDef.strips) setSelected((prev) => ({ ...prev, [id]: (prev[id] || 0) + 1 }));
+    setSelected((prev) => {
+      const t = Object.values(prev).reduce((a, b) => a + b, 0);
+      if (t >= bundleDef.strips) return prev;
+      return { ...prev, [id]: (prev[id] || 0) + 1 };
+    });
   };
   const decStrip = (id) => {
     setSelected((prev) => { const n = (prev[id] || 0) - 1; const next = { ...prev }; if (n <= 0) delete next[id]; else next[id] = n; return next; });
@@ -69,6 +73,7 @@ export default function PrintShop() {
         ship_full_name: ship.full_name,
         ship_phone: ship.phone,
         ship_region: ship.region,
+        ship_region_code: ship.regionCode,
         ship_province: ship.province,
         ship_city: ship.city,
         ship_barangay: ship.barangay,
@@ -146,7 +151,9 @@ export default function PrintShop() {
           </Section>
 
           <Section title={`2. Select your strips (${totalSelected}/${bundleDef.strips})`} icon={Printer}>
-            <p className="mb-3 text-xs text-[#8A8580]">Tap a strip to add it — tap again for more copies. Use − to remove a copy.</p>
+            {totalSelected === bundleDef.strips ?
+              <p className="mb-3 text-xs font-bold text-[#37b24d]">✓ Bundle complete — use − to remove a copy, or remove all to swap a strip.</p> :
+              <p className="mb-3 text-xs text-[#8A8580]">Tap a strip to add it — tap again for more copies. Use − to remove a copy.</p>}
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
               {strips.map((s) => {
               const qty = selected[s.id] || 0;
@@ -187,13 +194,13 @@ export default function PrintShop() {
               </div>
               <ShipField label="Postal Code" value={ship.postal} onChange={(v) => setShip({ ...ship, postal: v })} placeholder="Postal code" />
             </div>
-            <p className="mt-3 text-xs text-[#8A8580]">J&T Express rates: Metro Manila ₱75 · Provincial ₱120 · Free on orders {formatPrice(FREE_SHIP_THRESHOLD)}+</p>
+            <p className="mt-3 text-xs text-[#8A8580]">J&T Express (under 1kg): Manila ₱95 · Luzon ₱85 · Visayas ₱100 · Mindanao ₱105 · Island ₱115 · Free on orders {formatPrice(FREE_SHIP_THRESHOLD)}+</p>
           </Section>
 
           <div className="sticky bottom-3 z-10 mt-6 rounded-2xl border border-[#E8E2D8] bg-white p-4 shadow-sm">
             <div className="space-y-1 text-sm">
               <Row label={`Bundle × ${quantity}`} value={formatPrice(pricing.subtotal)} />
-              <Row label="Shipping" value={pricing.shipping === 0 ? "FREE" : formatPrice(pricing.shipping)} />
+              <Row label="Shipping" value={pricing.shipping == null ? "Select region" : pricing.shipping === 0 ? "FREE" : formatPrice(pricing.shipping)} />
               <div className="my-1 border-t border-[#F0EBE2]" />
               <Row label="Total" value={formatPrice(pricing.total)} bold />
             </div>
