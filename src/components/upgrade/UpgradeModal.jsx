@@ -74,7 +74,7 @@ export default function UpgradeModal({ open, onClose, variant = "lifetime", coll
             <p className="text-xs text-[#8A8580]">No monthly subscription.</p>
             <div className="mt-5 space-y-2.5">
               <button onClick={() => start("lifetime")} disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-full bg-[#f06595] px-5 py-3.5 text-sm font-bold text-white transition hover:bg-[#e64980] disabled:bg-[#E8E2D8]">
-                {busy ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} className="hidden" />} Get Lifetime Pass
+                {busy ? <Loader2 size={16} className="animate-spin" /> : null} Get Lifetime Pass
               </button>
               <button onClick={onClose} className="block w-full pt-1 text-sm font-bold text-[#8A8580] hover:text-[#2D2D2D]">Maybe later</button>
             </div>
