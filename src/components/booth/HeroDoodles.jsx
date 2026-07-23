@@ -1,21 +1,40 @@
 import React from "react";
-import { Image } from "@/components/ui/image";
+import { FaceDoodle } from "@/components/FaceDoodles";
 
-// Each face is its own high-res square PNG on a solid #f06595 background,
-// so it blends into the card with no visible edge. Placed individually on
-// the card's open right side, sized small, rotated slightly for an organic
-// scatter. Hidden on mobile to keep the (full-width, wrapping) text legible.
-const DOODLES = [
-  { src: "https://media.base44.com/images/public/6a60bb3456cf14775962b360/ea5aa64d6_generated_image.png", top: "6%", right: "5%", size: 62, rotate: -8 },
-  { src: "https://media.base44.com/images/public/6a60bb3456cf14775962b360/e434da235_generated_image.png", top: "2%", right: "30%", size: 52, rotate: 12 },
-  { src: "https://media.base44.com/images/public/6a60bb3456cf14775962b360/7af779740_generated_image.png", top: "30%", right: "3%", size: 64, rotate: 6 },
-  { src: "https://media.base44.com/images/public/6a60bb3456cf14775962b360/80d3ec9dd_generated_image.png", top: "36%", right: "27%", size: 54, rotate: -12 },
-  { src: "https://media.base44.com/images/public/6a60bb3456cf14775962b360/e47d63297_generated_image.png", top: "60%", right: "8%", size: 58, rotate: 10 },
-  { src: "https://media.base44.com/images/public/6a60bb3456cf14775962b360/b92fc39c6_generated_image.png", top: "68%", right: "29%", size: 50, rotate: -6 },
-  { src: "https://media.base44.com/images/public/6a60bb3456cf14775962b360/404510230_generated_image.png", top: "14%", right: "36%", size: 50, rotate: 8 },
-  { src: "https://media.base44.com/images/public/6a60bb3456cf14775962b360/e85fb6104_generated_image.png", top: "48%", right: "34%", size: 56, rotate: -10 },
-  { src: "https://media.base44.com/images/public/6a60bb3456cf14775962b360/022d20ff4_generated_image.png", top: "80%", right: "20%", size: 50, rotate: 14 }
+// Pure inline-SVG face doodles scattered across the hero card's open right
+// side — no image containers, backgrounds, borders or shadows, just the white
+// outline linework at reduced opacity floating on the pink card. Two
+// identical copies stack vertically and drift upward as a seamless marquee
+// (translateY -50% = one copy height). Hidden on mobile so the wrapping text
+// keeps the full width.
+const PLACEMENT = [
+  { face: 0, top: "3%", right: "4%", size: 62, rotate: -10 },
+  { face: 1, top: "7%", right: "36%", size: 50, rotate: 12 },
+  { face: 2, top: "30%", right: "3%", size: 60, rotate: 6 },
+  { face: 3, top: "33%", right: "31%", size: 52, rotate: -12 },
+  { face: 4, top: "56%", right: "7%", size: 56, rotate: 10 },
+  { face: 5, top: "62%", right: "33%", size: 50, rotate: -6 },
+  { face: 6, top: "12%", right: "38%", size: 48, rotate: 8 },
+  { face: 7, top: "44%", right: "37%", size: 50, rotate: -10 },
+  { face: 8, top: "78%", right: "20%", size: 50, rotate: 14 }
 ];
+
+function DoodleSet() {
+  return PLACEMENT.map((p, i) => (
+    <FaceDoodle
+      key={i}
+      face={p.face}
+      className="absolute text-white opacity-70"
+      style={{
+        top: p.top,
+        right: p.right,
+        width: p.size,
+        height: p.size,
+        transform: `rotate(${p.rotate}deg)`
+      }}
+    />
+  ));
+}
 
 export default function HeroDoodles() {
   return (
@@ -24,21 +43,14 @@ export default function HeroDoodles() {
       style={{ zIndex: -1 }}
       aria-hidden="true"
     >
-      {DOODLES.map((d, i) => (
-        <Image
-          key={i}
-          src={d.src}
-          fittingType="fill"
-          className="absolute"
-          style={{
-            top: d.top,
-            right: d.right,
-            width: d.size,
-            height: d.size,
-            transform: `rotate(${d.rotate}deg)`
-          }}
-        />
-      ))}
+      <div className="doodle-marquee absolute left-0 right-0 top-0" style={{ height: "200%" }}>
+        <div className="absolute left-0 right-0 top-0" style={{ height: "50%" }}>
+          <DoodleSet />
+        </div>
+        <div className="absolute left-0 right-0" style={{ top: "50%", height: "50%" }}>
+          <DoodleSet />
+        </div>
+      </div>
     </div>
   );
 }
