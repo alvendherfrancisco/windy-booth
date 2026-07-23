@@ -41,8 +41,8 @@ export default function AppShell() {
   const mobileItems = [...items, { to: "/notifications", label: "Alerts", icon: Bell }];
 
   return (
-    <div className="min-h-screen bg-[#F9F7F2] text-[#2D2D2D] pb-20 md:pb-0 md:pl-20">
-      <aside className="hidden md:fixed md:inset-y-0 md:left-0 md:flex md:w-20 md:flex-col md:items-center md:border-r md:border-[#E8E2D8] md:bg-white md:py-5">
+    <div className="min-h-screen bg-white text-[#2D2D2D] pb-20 md:pb-0 md:pl-20">
+      <aside className="hidden md:fixed md:inset-y-0 md:left-0 md:flex md:w-20 md:flex-col md:items-center md:border-r md:border-[#E8E2D8] md:bg-[#F5F0EA] md:py-5">
         <Link to="/dashboard" className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#DC3522] text-white">
           <Flower2 size={20} strokeWidth={1.7} />
         </Link>
@@ -72,14 +72,12 @@ export default function AppShell() {
         </nav>
         <Link
           to="/profile"
-          className={`mt-2 flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 transition ${
+          title={user?.full_name || user?.email || "Profile"}
+          className={`mt-2 flex h-10 w-10 items-center justify-center rounded-full transition ${
             isActive("/profile") ? "bg-[#EEF2FF]" : "hover:bg-[#EEF2FF]"
           }`}
         >
           <UserAvatar user={user} size="sm" />
-          <p className="max-w-[72px] truncate text-center text-[10px] font-bold text-[#2D2D2D]">
-            {user?.full_name || user?.email || "You"}
-          </p>
         </Link>
       </aside>
 
