@@ -12,7 +12,15 @@ export default function TemplateCard({ template, selected, onSelect, locked }) {
           : "border-[#E8E2D8] bg-white"
       }`}
     >
-      <StripPreview template={template} className="max-w-[150px]" />
+      {template.thumbnail_url ? (
+        <img
+          src={template.thumbnail_url}
+          alt={template.name}
+          className="mx-auto max-w-[150px] rounded-md shadow-[0_8px_24px_rgba(40,30,20,.12)]"
+        />
+      ) : (
+        <StripPreview template={template} className="max-w-[150px]" />
+      )}
       <div className="mt-3 flex items-center justify-between px-1">
         <span>
           <b className="block text-sm text-[#2D2D2D]">{template.name}</b>
