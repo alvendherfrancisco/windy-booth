@@ -30,6 +30,30 @@
     "shipping_address": {
       "type": "string"
     },
+    "ship_full_name": {
+      "type": "string"
+    },
+    "ship_phone": {
+      "type": "string"
+    },
+    "ship_region": {
+      "type": "string"
+    },
+    "ship_province": {
+      "type": "string"
+    },
+    "ship_city": {
+      "type": "string"
+    },
+    "ship_barangay": {
+      "type": "string"
+    },
+    "ship_street": {
+      "type": "string"
+    },
+    "ship_postal": {
+      "type": "string"
+    },
     "shipping_cost": {
       "type": "number"
     },

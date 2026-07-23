@@ -133,12 +133,21 @@ export default function AdminOrders({ orders, users, strips, templates, onChange
                   <Info label="Tracking" value={view.jt_tracking_number || "—"} />
                   <Info label="Ordered" value={fmtDate(view.created_date)} />
                 </div>
-                {view.shipping_address && (
-                  <div className="rounded-lg border border-[#E8E2D8] bg-[#FBFAF7] px-3 py-2">
-                    <p className="text-xs font-bold uppercase tracking-wider text-[#8A8580]">Shipping address</p>
-                    <p className="whitespace-pre-wrap">{view.shipping_address}</p>
+                <div className="rounded-lg border border-[#E8E2D8] bg-[#FBFAF7] px-3 py-3">
+                  <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#8A8580]">Shipping (J&T Express)</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Info label="Recipient" value={view.ship_full_name || "—"} />
+                    <Info label="Phone" value={view.ship_phone || "—"} />
+                    <Info label="Region" value={view.ship_region || "—"} />
+                    <Info label="Province" value={view.ship_province || "—"} />
+                    <Info label="City / Municipality" value={view.ship_city || "—"} />
+                    <Info label="Barangay" value={view.ship_barangay || "—"} />
+                    <Info label="Postal Code" value={view.ship_postal || "—"} />
+                    <Info label="Shipping Cost" value={PESO(view.shipping_cost)} />
                   </div>
-                )}
+                  <p className="mt-2 text-xs font-bold uppercase tracking-wider text-[#8A8580]">Detailed Address</p>
+                  <p className="whitespace-pre-wrap">{view.ship_street || view.shipping_address || "—"}</p>
+                </div>
                 {orderStrips.length > 0 && (
                   <div>
                     <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#8A8580]">Strips in this order</p>

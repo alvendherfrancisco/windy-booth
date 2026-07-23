@@ -7,7 +7,7 @@ import StripPreview from "@/components/booth/StripPreview";
 import PolkaDots from "@/components/PolkaDots";
 import FaceDoodles from "@/components/FaceDoodles";
 import PrintShopInfo from "@/components/printshop/PrintShopInfo";
-import { BUNDLES, formatPrice, computeTotal, FREE_SHIP_THRESHOLD } from "@/lib/printPricing";
+import { BUNDLES, formatPrice, computeTotal, FREE_SHIP_THRESHOLD, PHILIPPINE_REGIONS } from "@/lib/printPricing";
 
 export default function PrintShop() {
   const { user } = useAuth();
@@ -17,7 +17,7 @@ export default function PrintShop() {
   const [selected, setSelected] = useState([]);
   const [paper, setPaper] = useState("matte");
   const [quantity, setQuantity] = useState(1);
-  const [address, setAddress] = useState("");
+  const [ship, setShip] = useState({ full_name: "", phone: "", region: "", province: "", city: "", barangay: "", street: "", postal: "" });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState(null);
@@ -43,7 +43,7 @@ export default function PrintShop() {
   }, [user?.id]);
 
   const bundleDef = BUNDLES.find((b) => b.id === bundle);
-  const pricing = computeTotal(bundle, quantity);
+  const pricing = computeTotal(bundle, quantity, ship.region);
 
   const toggleStrip = (id) => {
     setSelected((prev) => {
@@ -56,14 +56,15 @@ export default function PrintShop() {
   const checkout = async () => {
     setError("");
     if (selected.length === 0) {setError("Select at least one strip to print.");return;}
-    if (!address.trim()) {setError("Add a shipping address.");return;}
+    const required = ["full_name", "phone", "region", "province", "city", "barangay", "street"];
+    if (required.some((k) => !ship[k]?.trim())) {setError("Please complete all shipping fields.");return;}
     if (window.self !== window.top) {alert("Checkout works only from the published app.");return;}
     setBusy(true);
     try {
       const res = await base44.functions.invoke("createPrintCheckout", {
         origin: window.location.origin,
         strip_ids: selected,
-        bundle, paper, quantity, address: address.trim()
+        bundle, paper, quantity, ...ship
       });
       const data = res?.data ?? res;
       if (data?.url) window.location.href = data.url;else
@@ -158,9 +159,27 @@ export default function PrintShop() {
             </div>
           </Section>
 
-          <Section title="4. Shipping" icon={Truck}>
-            <textarea value={address} onChange={(e) => setAddress(e.target.value)} rows={3} placeholder="Full name, phone, street, city, province, postal code" className="input resize-none" />
-            <p className="mt-2 text-xs text-[#8A8580]">Shipping calculated at checkout · Free on orders {formatPrice(FREE_SHIP_THRESHOLD)}+</p>
+          <Section title="4. Shipping (J&T Express)" icon={Truck}>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <ShipField label="Full Name" value={ship.full_name} onChange={(v) => setShip({ ...ship, full_name: v })} placeholder="Juan Dela Cruz" />
+              <ShipField label="Phone Number" value={ship.phone} onChange={(v) => setShip({ ...ship, phone: v })} placeholder="09XX XXX XXXX" />
+              <label className="block">
+                <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-[#8A8580]">Region</span>
+                <select value={ship.region} onChange={(e) => setShip({ ...ship, region: e.target.value })} className="input">
+                  <option value="">Select region…</option>
+                  {PHILIPPINE_REGIONS.map((r) => <option key={r} value={r}>{r}</option>)}
+                </select>
+              </label>
+              <ShipField label="Province" value={ship.province} onChange={(v) => setShip({ ...ship, province: v })} placeholder="Province" />
+              <ShipField label="City / Municipality" value={ship.city} onChange={(v) => setShip({ ...ship, city: v })} placeholder="City / Municipality" />
+              <ShipField label="Barangay" value={ship.barangay} onChange={(v) => setShip({ ...ship, barangay: v })} placeholder="Barangay" />
+              <div className="sm:col-span-2">
+                <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-[#8A8580]">Detailed Address</span>
+                <textarea value={ship.street} onChange={(e) => setShip({ ...ship, street: e.target.value })} rows={2} placeholder="House no., street, block, lot" className="input resize-none" />
+              </div>
+              <ShipField label="Postal Code" value={ship.postal} onChange={(v) => setShip({ ...ship, postal: v })} placeholder="Postal code" />
+            </div>
+            <p className="mt-3 text-xs text-[#8A8580]">J&T Express rates: Metro Manila ₱75 · Provincial ₱120 · Free on orders {formatPrice(FREE_SHIP_THRESHOLD)}+</p>
           </Section>
 
           <div className="sticky bottom-3 z-10 mt-6 rounded-2xl border border-[#E8E2D8] bg-white p-4 shadow-sm">
@@ -197,4 +216,13 @@ function Row({ label, value, bold }) {
       <span className={bold ? "font-heading text-lg font-extrabold text-[#e64980]" : "font-medium text-[#2D2D2D]"}>{value}</span>
     </div>);
 
+}
+
+function ShipField({ label, value, onChange, placeholder, type = "text" }) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-[#8A8580]">{label}</span>
+      <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="input" />
+    </label>
+  );
 }

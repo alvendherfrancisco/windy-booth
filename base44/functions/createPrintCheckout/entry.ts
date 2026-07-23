@@ -9,7 +9,15 @@ const BUNDLES = {
   collector: { name: "Collector Bundle", strips: 30, price: 699 },
 };
 const FREE_SHIP_THRESHOLD = 999;
-const SHIP_FLAT = 80;
+const JT_RATES = { metro: 75, provincial: 120 };
+
+const computeShipping = (region, subtotal) => {
+  if (subtotal >= FREE_SHIP_THRESHOLD) return 0;
+  const r = (region || "").toLowerCase();
+  const isMetro = r.includes("metro manila") || r.includes("ncr") || r.includes("national capital");
+  return isMetro ? JT_RATES.metro : JT_RATES.provincial;
+};
+
 const CURRENCY = "php";
 
 Deno.serve(async (req) => {
@@ -19,16 +27,32 @@ Deno.serve(async (req) => {
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
     const body = await req.json();
-    const { origin, strip_ids, bundle, paper, quantity, address } = body;
+    const { origin, strip_ids, bundle, paper, quantity,
+      ship_full_name, ship_phone, ship_region, ship_province, ship_city, ship_barangay, ship_street, ship_postal
+    } = body;
     const b = BUNDLES[bundle];
     if (!b) return Response.json({ error: "Invalid bundle" }, { status: 400 });
     if (!Array.isArray(strip_ids) || strip_ids.length === 0) return Response.json({ error: "Select at least one strip" }, { status: 400 });
     if (strip_ids.length > b.strips) return Response.json({ error: "Too many strips for this bundle" }, { status: 400 });
-    if (!address || !String(address).trim()) return Response.json({ error: "Shipping address required" }, { status: 400 });
+
+    const ship = {
+      ship_full_name: String(ship_full_name || "").trim(),
+      ship_phone: String(ship_phone || "").trim(),
+      ship_region: String(ship_region || "").trim(),
+      ship_province: String(ship_province || "").trim(),
+      ship_city: String(ship_city || "").trim(),
+      ship_barangay: String(ship_barangay || "").trim(),
+      ship_street: String(ship_street || "").trim(),
+      ship_postal: String(ship_postal || "").trim(),
+    };
+    if (!ship.ship_full_name || !ship.ship_phone || !ship.ship_region || !ship.ship_province || !ship.ship_city || !ship.ship_barangay || !ship.ship_street)
+      return Response.json({ error: "Shipping address required" }, { status: 400 });
+
+    const shipping_address = [ship.ship_full_name, ship.ship_phone, ship.ship_street, ship.ship_barangay, ship.ship_city, ship.ship_province, ship.ship_region, ship.ship_postal].filter(Boolean).join(", ");
 
     const qty = Math.max(1, Math.floor(Number(quantity) || 1));
     const subtotal = b.price * qty;
-    const shipCost = subtotal >= FREE_SHIP_THRESHOLD ? 0 : SHIP_FLAT;
+    const shipCost = computeShipping(ship.ship_region, subtotal);
     const total = subtotal + shipCost;
 
     const order = await base44.entities.Order.create({
@@ -38,7 +62,8 @@ Deno.serve(async (req) => {
       paper_type: ["matte", "glossy"].includes(paper) ? paper : "matte",
       quantity_required: b.strips * qty,
       quantity_selected: strip_ids.length,
-      shipping_address: String(address).trim(),
+      shipping_address,
+      ...ship,
       shipping_cost: shipCost,
       shipping_method: "jt_live",
       subtotal,

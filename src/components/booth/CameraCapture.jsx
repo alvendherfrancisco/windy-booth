@@ -93,16 +93,16 @@ const CameraCapture = forwardRef(function CameraCapture(
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 lg:grid-cols-[1fr_260px]">
+      <div className="grid gap-4 lg:grid-cols-[1fr_220px]">
         {/* Live Preview card */}
-        <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
+        <div className="flex flex-col rounded-2xl border border-[#E8E2D8] bg-white p-4">
           <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#8A8580]">Live Preview</p>
           {camError ? (
             <div className="flex h-64 items-center justify-center rounded-xl bg-[#F5F0EA] p-4 text-center text-sm text-[#8A8580]">
               {camError}
             </div>
           ) : (
-            <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-black">
+            <div className="relative flex min-h-[200px] flex-1 overflow-hidden rounded-xl bg-black">
               <video
                 ref={videoRef}
                 autoPlay
@@ -138,7 +138,7 @@ const CameraCapture = forwardRef(function CameraCapture(
           </div>
         </div>
         {/* Your Strip card */}
-        <div className="self-start rounded-2xl border border-[#E8E2D8] bg-white p-4">
+        <div className="flex flex-col rounded-2xl border border-[#E8E2D8] bg-white p-4">
           <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#8A8580]">Your Strip</p>
           <StripPreview template={selected} photos={photos} />
         </div>

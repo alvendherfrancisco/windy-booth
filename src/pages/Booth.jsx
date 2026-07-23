@@ -204,13 +204,13 @@ export default function Booth() {
         <CameraCapture ref={captureRef} selected={selected} photos={cameraPhotos} onPhotosChange={setCameraPhotos} filter={filter} onFilterChange={setFilter} /> :
 
         <div className="space-y-4">
-              <div className="grid gap-4 lg:grid-cols-[1fr_260px]">
-                <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
+              <div className="grid gap-4 lg:grid-cols-[1fr_220px]">
+                <div className="flex flex-col rounded-2xl border border-[#E8E2D8] bg-white p-4">
                   <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#8A8580]">Live Preview</p>
                   <button
                 type="button"
                 onClick={() => {if (uploadPhotos.length < 3) fileInput.current.click();}}
-                className="flex w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#228be6] bg-[#e7f5ff] py-12 text-center transition hover:border-[#228be6]">
+                className="flex w-full flex-1 min-h-[200px] flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#228be6] bg-[#e7f5ff] text-center transition hover:border-[#228be6]">
                 
                     <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#228be6]"><ImageUp size={24} /></span>
                     <span className="mt-4 block font-bold text-[#2D2D2D]">Tap to choose a photo</span>
@@ -231,7 +231,7 @@ export default function Booth() {
                 )}
                   </div>
                 </div>
-                <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
+                <div className="flex flex-col rounded-2xl border border-[#E8E2D8] bg-white p-4">
                   <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#8A8580]">Your Strip</p>
                   <StripPreview template={selected} photos={uploadPhotos} imgFilter={uploadFilterCss} />
                 </div>
