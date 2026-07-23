@@ -21,7 +21,7 @@ Deno.serve(async (req) => {
         .map((r) => ({ code: r.code, name: r.name || r.regionName || "" }))
         .filter((r) => r.code && r.name)
         .sort((a, b) => a.name.localeCompare(b.name));
-      return Response.json({ data });
+      return Response.json(data);
     }
 
     if (level === "cities" && code) {
@@ -39,7 +39,7 @@ Deno.serve(async (req) => {
         })
         .filter((c) => c.code && c.name)
         .sort((a, b) => (a.province + a.name).localeCompare(b.province + b.name));
-      return Response.json({ data });
+      return Response.json(data);
     }
 
     if (level === "barangays" && code) {
@@ -48,7 +48,7 @@ Deno.serve(async (req) => {
         .map((b) => ({ code: b.code, name: b.name }))
         .filter((b) => b.code && b.name)
         .sort((a, b) => a.name.localeCompare(b.name));
-      return Response.json({ data });
+      return Response.json(data);
     }
 
     return Response.json({ error: "invalid params" }, { status: 400 });

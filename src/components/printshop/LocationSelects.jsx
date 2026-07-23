@@ -11,7 +11,7 @@ export default function LocationSelects({ value, onChange }) {
   const [barangays, setBarangays] = useState([]);
   const [loading, setLoading] = useState("");
 
-  const unwrap = (r) => r?.data ?? r ?? [];
+  const unwrap = (r) => (Array.isArray(r?.data) ? r.data : Array.isArray(r) ? r : []);
 
   useEffect(() => {
     setLoading("regions");
