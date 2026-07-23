@@ -52,7 +52,7 @@ export default function UpgradeModal({ open, onClose, variant = "lifetime", coll
             <p className="font-heading text-lg font-extrabold text-[#e64980]">Lifetime Pass · ₱{LIFETIME_PRICE}</p>
             <div className="mt-5 space-y-2.5">
               <button onClick={() => start("lifetime")} disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-full bg-[#f06595] px-5 py-3.5 text-sm font-bold text-white transition hover:bg-[#e64980] disabled:bg-[#E8E2D8]">
-                {busy ? <Loader2 size={16} className="animate-spin" /> : null} Get Lifetime Pass
+                {busy ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />} Get Lifetime Pass
               </button>
               <button onClick={() => start("collection")} disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-full border border-[#e64980] px-5 py-3.5 text-sm font-bold text-[#e64980] transition hover:bg-[#fff0f6] disabled:opacity-60">
                 {busy ? <Loader2 size={16} className="animate-spin" /> : null} Buy This Collection · ₱{COLLECTION_PRICE}
