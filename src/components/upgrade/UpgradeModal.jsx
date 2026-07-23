@@ -44,7 +44,7 @@ export default function UpgradeModal({ open, onClose, variant = "lifetime", coll
 
         {variant === "collection" ?
         <>
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#fff0f6]"><Sparkles size={22} className="text-[#e64980]" /></div>
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#fff0f6]"><VendiLogo size={28} color="#e64980" /></div>
             <h2 className="mt-3 font-heading text-2xl font-extrabold text-[#2D2D2D]">{collection || "Collection"}</h2>
             <p className="mt-2 text-sm text-[#5C5953]">Unlock this collection for <b className="text-[#2D2D2D]">₱{COLLECTION_PRICE}</b></p>
             <div className="my-4 flex items-center gap-3 text-xs text-[#8A8580]"><span className="h-px flex-1 bg-[#E8E2D8]" />or<span className="h-px flex-1 bg-[#E8E2D8]" /></div>

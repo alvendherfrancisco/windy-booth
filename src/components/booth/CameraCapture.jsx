@@ -145,7 +145,7 @@ const CameraCapture = forwardRef(function CameraCapture(
       </div>
 
       {/* Filter card (separate) */}
-      <FilterCard filter={filter} onFilterChange={onFilterChange} />
+      <FilterCard filter={filter} onFilterChange={onFilterChange} disabled={capturing} />
 
       {/* Countdown Timer card (separate) */}
       <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">

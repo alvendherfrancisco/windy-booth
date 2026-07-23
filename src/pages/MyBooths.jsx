@@ -48,7 +48,7 @@ export default function MyBooths() {
     <div>
       <header className="mb-6">
         <h1 className="font-heading text-3xl font-extrabold">Strips</h1>
-        <p className="mt-1 text-sm text-[#8B8D93]">{plan === "free" ? "Your 10 newest strips live here. New strips replace the oldest." : "Your strips are saved with no limit."}</p>
+        {plan === "free" && <p className="mt-1 text-sm text-[#8B8D93]">Your 10 newest strips live here. New strips replace the oldest.</p>}
         {plan === "free" && <button onClick={() => setUpgradeOpen(true)} className="mt-4 inline-block rounded-full bg-[#fff3bf] px-4 py-2 text-sm font-bold text-[#e67700]">Get Lifetime Pass</button>}
       </header>
       {strips.length ? (

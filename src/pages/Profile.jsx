@@ -8,6 +8,7 @@ import PolkaDots from "@/components/PolkaDots";
 import UpgradeModal from "@/components/upgrade/UpgradeModal";
 import { isLifetime, LIFETIME_PRICE, planLabel } from "@/lib/plans";
 import LegalLinks from "@/components/profile/LegalLinks";
+import VendiLogo from "@/components/VendiLogo";
 
 export default function Profile() {
   const { user } = useAuth();
@@ -56,7 +57,7 @@ export default function Profile() {
       </section>
       <section className="relative mt-4 overflow-hidden rounded-[18px] bg-[#fff0f6] p-6 text-[#2D2D2D]">
         <PolkaDots />
-        {lifetime ? <Sparkles size={22} className="text-[#e64980]" /> : <Crown size={22} className="text-[#f59f00]" />}
+        {lifetime ? <Sparkles size={22} className="text-[#e64980]" /> : <VendiLogo size={24} color="#f59f00" />}
         <p className="mt-6 text-sm text-[#5C5953]">Status</p>
         <h2 className="font-heading text-2xl font-extrabold">{lifetime ? "Lifetime Pass Owner ✨" : planLabel(user)}</h2>
         {lifetime ?
@@ -64,7 +65,7 @@ export default function Profile() {
 
         <>
             <p className="mt-2 text-sm text-[#5C5953]">10 booth sessions per month and up to 10 saved strips. Upgrade anytime.</p>
-            <button onClick={() => setUpgradeOpen(true)} className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#f06595] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#e64980]"> Get Lifetime Pass · ₱{LIFETIME_PRICE}</button>
+            <button onClick={() => setUpgradeOpen(true)} className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#f06595] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#e64980]">Get Lifetime Pass</button>
           </>
         }
       </section>
