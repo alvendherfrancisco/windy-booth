@@ -36,6 +36,7 @@ export default function Login() {
   return (
     <AuthLayout
       icon={VendiLogo}
+      bare
       title="Welcome back"
       subtitle="Log in to your account"
       footer={
