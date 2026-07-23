@@ -1,23 +1,24 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Search } from "lucide-react";
-
-const filters = [
-  { label: "All", value: "all" },
-  { label: "Vendi", value: "Vendi" },
-  { label: "Flowers", value: "Seasonal" },
-  { label: "Kawaii", value: "Kawaii" },
-  { label: "Minimal", value: "Minimal" },
-  { label: "Retro", value: "Retro" },
-];
+import { base44 } from "@/api/base44Client";
 
 export default function TemplateFilters({ category, onCategoryChange, query, onQueryChange }) {
+  const [cats, setCats] = useState([]);
+  useEffect(() => {
+    base44.entities.Category.list("order")
+      .then(setCats)
+      .catch(() => setCats([]));
+  }, []);
+
+  const filters = [{ label: "All", value: "all" }, ...cats.map((c) => ({ label: c.name, value: c.name }))];
+
   return (
     <div className="mt-6 space-y-3">
       <label className="flex items-center gap-2 rounded-xl border border-[#E8E2D8] bg-white px-3 py-2.5">
         <Search size={17} className="text-[#8A8580]" />
         <input
           value={query}
-          onChange={e => onQueryChange(e.target.value)}
+          onChange={(e) => onQueryChange(e.target.value)}
           placeholder="Search styles…"
           className="w-full bg-transparent text-sm outline-none placeholder:text-[#8A8580]"
         />

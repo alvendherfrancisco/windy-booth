@@ -1,19 +1,17 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Search, Plus, Trash2, Pencil, Upload, Star, CheckCircle2, Circle } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import StripPreview from "@/components/booth/StripPreview";
+import CategoryManager from "@/components/admin/CategoryManager";
 
-const DEFAULT_CATEGORIES = ["Vendi", "Seasonal", "Kawaii", "Minimal", "Retro"];
-const EMPTY = { name: "", code: "", category: "Vendi", tier: "free", canvas_asset_url: "", thumbnail_url: "", active: true, released_at: "" };
+const EMPTY = { name: "", code: "", category: "", tier: "free", canvas_asset_url: "", thumbnail_url: "", active: true, released_at: "" };
 
 export default function AdminTemplates({ templates, onChanged }) {
-  const list = useMemo(
-    () => Object.values(templates).sort((a, b) => (a.name || "").localeCompare(b.name || "")),
-    [templates]
-  );
+  const list = useMemo(() => Object.values(templates).sort((a, b) => (a.name || "").localeCompare(b.name || "")), [templates]);
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("all");
+  const [categories, setCategories] = useState([]);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(EMPTY);
@@ -23,11 +21,10 @@ export default function AdminTemplates({ templates, onChanged }) {
   const canvasRef = useRef();
   const thumbRef = useRef();
 
-  const cats = useMemo(() => {
-    const s = new Set(DEFAULT_CATEGORIES);
-    list.forEach((t) => t.category && s.add(t.category));
-    return ["all", ...Array.from(s)];
-  }, [list]);
+  const loadCats = () => base44.entities.Category.list("order").then(setCategories).catch(() => {});
+  useEffect(() => { loadCats(); }, []);
+
+  const cats = ["all", ...categories.map((c) => c.name)];
 
   const rows = useMemo(
     () => list.filter((t) =>
@@ -37,7 +34,7 @@ export default function AdminTemplates({ templates, onChanged }) {
     [list, cat, q]
   );
 
-  const openNew = () => { setEditing(null); setForm(EMPTY); setOpen(true); };
+  const openNew = () => { setEditing(null); setForm({ ...EMPTY, category: categories[0]?.name || "" }); setOpen(true); };
   const openEdit = (t) => {
     setEditing(t);
     setForm({ ...EMPTY, ...t, released_at: t.released_at ? t.released_at.slice(0, 10) : "" });
@@ -60,7 +57,7 @@ export default function AdminTemplates({ templates, onChanged }) {
       const payload = {
         name: form.name.trim(),
         code: form.code.trim(),
-        category: form.category.trim() || "Vendi",
+        category: form.category || categories[0]?.name || "Vendi",
         tier: form.tier,
         canvas_asset_url: form.canvas_asset_url,
         thumbnail_url: form.thumbnail_url || form.canvas_asset_url,
@@ -97,6 +94,8 @@ export default function AdminTemplates({ templates, onChanged }) {
           </button>
         </div>
       </div>
+
+      <CategoryManager categories={categories} onChanged={loadCats} onTemplatesChanged={onChanged} />
 
       <div className="flex gap-2 overflow-x-auto pb-1">
         {cats.map((c) => (
@@ -153,7 +152,11 @@ export default function AdminTemplates({ templates, onChanged }) {
                 <input value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value })} className="input" placeholder="sunset-bloom" />
               </Field>
               <Field label="Category">
-                <CategoryPicker value={form.category} onChange={(v) => setForm({ ...form, category: v })} options={cats.filter((c) => c !== "all")} />
+                <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="input">
+                  {categories.map((c) => <option key={c.id} value={c.name}>{c.name}</option>)}
+                  {form.category && !categories.some((c) => c.name === form.category) && <option value={form.category}>{form.category}</option>}
+                  {categories.length === 0 && <option value="">No categories yet</option>}
+                </select>
               </Field>
               <Field label="Tier">
                 <select value={form.tier} onChange={(e) => setForm({ ...form, tier: e.target.value })} className="input">
@@ -197,37 +200,6 @@ function Field({ label, children }) {
       <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-[#8A8580]">{label}</span>
       {children}
     </label>
-  );
-}
-
-function CategoryPicker({ value, onChange, options }) {
-  const [adding, setAdding] = useState(false);
-  const [draft, setDraft] = useState("");
-  const opts = Array.from(new Set([...options, ...DEFAULT_CATEGORIES]));
-  const custom = value && !opts.includes(value);
-  return (
-    <div>
-      <div className="flex flex-wrap gap-1.5">
-        {opts.map((c) => (
-          <button type="button" key={c} onClick={() => onChange(c)} className={`rounded-full border px-3 py-1.5 text-xs font-bold capitalize transition ${value === c ? "border-[#e64980] bg-[#fff0f6] text-[#e64980]" : "border-[#E8E2D8] bg-white text-[#5C5953] hover:border-[#e64980]"}`}>
-            {c}
-          </button>
-        ))}
-        {!adding && (
-          <button type="button" onClick={() => { setAdding(true); setDraft(""); }} className="rounded-full border border-dashed border-[#228be6] px-3 py-1.5 text-xs font-bold text-[#228be6] hover:bg-[#e7f5ff]">+ New</button>
-        )}
-      </div>
-      {adding && (
-        <div className="mt-2 flex items-center gap-2">
-          <input autoFocus value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Type a new category" className="input" />
-          <button type="button" onClick={() => { if (draft.trim()) { onChange(draft.trim()); setAdding(false); } }} className="rounded-full bg-[#228be6] px-3 py-1.5 text-xs font-bold text-white">Add</button>
-          <button type="button" onClick={() => setAdding(false)} className="rounded-full border border-[#E8E2D8] px-3 py-1.5 text-xs font-bold text-[#5C5953]">Cancel</button>
-        </div>
-      )}
-      {custom && !adding && (
-        <p className="mt-1.5 text-xs text-[#8A8580]">Selected: <b className="capitalize text-[#2D2D2D]">{value}</b></p>
-      )}
-    </div>
   );
 }
 
