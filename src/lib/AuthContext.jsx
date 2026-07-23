@@ -126,13 +126,9 @@ export const AuthProvider = ({ children }) => {
             sessionStorage.removeItem("vendi_google_consent");
           }
         } catch {
-          if (!sessionStorage.getItem("vendi_google_consent")) {
-            sessionStorage.setItem("vendi_google_consent", "1");
-            try {
-              const url = await base44.connectors.connectAppUser("6a62074fa8eda00e1c8a0e3a");
-              window.location.href = url;
-            } catch (e) { /* connector unavailable */ }
-          }
+          // Avatar sync is best-effort only. We never auto-redirect users
+          // through an OAuth consent flow on page refresh — that was causing
+          // unwanted redirects and is unsafe. The current session is kept.
         }
       }
     } catch (error) {

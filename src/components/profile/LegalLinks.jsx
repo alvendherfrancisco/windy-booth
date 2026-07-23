@@ -8,54 +8,58 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
-const PRIVACY = `Last updated: July 2026
+const PRIVACY = `Last updated: July 23, 2026
 
-Vendhee's Booth ("we", "us") built this app as a photo booth service. This policy explains what we collect and how we use it.
+Vendi ("we", "us", "our") operates the Vendi photo booth app. This Privacy Policy explains what information we collect and how we use it.
 
-What we collect
-- Account details you provide, such as your name and email address.
-- The photos you take or upload to create strips, and the finished strips you save.
-- Shipping details you enter when placing a print order (full name, phone, address).
-- Payment information is handled by our payment provider (Stripe); we do not store your card details.
+Information we collect
+- Account information you provide, such as your name and email address.
+- Photos you take or upload to create strips, and the finished photo strips you save.
+- Shipping details you enter when placing a print order (full name, phone number, and delivery address).
+- Payment confirmations you submit, such as GCash or bank transfer receipts. We do not store your card or wallet credentials.
 
-How we use it
-- To create and save your photo strips, and to deliver print orders you place.
-- To send you updates about your orders and account, such as storage or usage reminders.
-- To keep the service secure and prevent abuse.
+How we use your information
+- To create, save, and display your photo strips.
+- To process and deliver print orders you place.
+- To verify payments and activate your selected plan or collection.
+- To send you updates about your orders, account, and usage.
 
 Photo strips and storage
-Free accounts keep up to 10 saved strips on a rolling basis. Lifetime Pass accounts have no storage limit. Strips you create are linked to your account until you delete them.
+Free accounts keep up to 10 saved strips on a rolling basis. Lifetime Pass accounts have no storage limit. Strips you create remain linked to your account until you delete them.
 
-Sharing
-We do not sell your data. We share details only with the services needed to run the app (for example, our payment and shipping partners) and when required by law.
+Sharing your information
+We do not sell your data. We share information only with the services needed to run the app (for example, our shipping and payment partners) and when required by law.
 
 Your choices
 You can delete strips at any time from "My Booths". You can request account deletion by contacting us.
 
-Contact
-For privacy questions, reach us at the support contact provided in the app.`;
+Security
+We take reasonable measures to protect your information. However, no method of transmission over the internet is completely secure.
 
-const TERMS = `Last updated: July 2026
+Contact us
+For privacy questions or concerns, contact us at alvendherfrancisco01@gmail.com.`;
 
-By using Vendhee's Booth, you agree to these terms.
+const TERMS = `Last updated: July 23, 2026
+
+By using Vendi, you agree to these Terms & Conditions.
 
 Your account
 You are responsible for keeping your account secure and for the content you create. You must be old enough to use the service under the law of your country, or have a guardian's permission.
 
 Your content
-You own the photos and strips you create. You give us permission to process and display them only as needed to provide the service and deliver your print orders. You agree not to upload content that is unlawful or infringes someone else's rights.
+You own the photos and strips you create. You grant us permission to process and display them only as needed to provide the service and deliver your print orders. You agree not to upload content that is unlawful or infringes someone else's rights.
 
 Plans and purchases
 - Free Plan: up to 10 booth sessions per month and up to 10 saved strips. Sessions reset each month.
 - Single Collection (₱49): one-time payment that unlocks one artist-designed collection for life.
 - Lifetime Pass (₱299): one-time payment that unlocks unlimited sessions, all collections, and unlimited saved strips.
-All purchases are non-recurring. Unless required by law, one-time unlock purchases are non-refundable once access is granted.
+All purchases are non-recurring. Payments are made via GCash or supported local bank QR (BPI, GoTyme, UnionBank) by uploading a proof of payment for verification. Access is granted after your payment is confirmed. Unless required by law, one-time unlock purchases are non-refundable once access is granted.
 
 Print orders
 Print orders are fulfilled through a shipping partner. Delivery times and shipping fees shown at checkout are estimates. We are not liable for delays caused by the carrier.
 
 Acceptable use
-You agree not to misuse the service, disrupt it, or attempt to access data that isn't yours.
+You agree not to misuse the service, disrupt it, or attempt to access data that is not yours.
 
 Changes
 We may update the service and these terms. Continued use after changes means you accept them.
@@ -64,7 +68,10 @@ Liability
 The service is provided "as is". To the extent permitted by law, we are not liable for indirect or accidental losses arising from your use of it.
 
 Governing law
-These terms are governed by the laws of the Republic of the Philippines.`;
+These terms are governed by the laws of the Republic of the Philippines.
+
+Contact us
+For any questions or concerns, contact us at alvendherfrancisco01@gmail.com.`;
 
 export default function LegalLinks() {
   const [open, setOpen] = useState(null);
@@ -95,7 +102,7 @@ export default function LegalLinks() {
         <DialogContent className="max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Privacy Policy</DialogTitle>
-            <DialogDescription>How Vendhee's Booth handles your data.</DialogDescription>
+            <DialogDescription>How Vendi handles your data.</DialogDescription>
           </DialogHeader>
           <div className="whitespace-pre-line text-sm leading-relaxed text-[#2D2D2D]">{PRIVACY}</div>
         </DialogContent>
@@ -105,7 +112,7 @@ export default function LegalLinks() {
         <DialogContent className="max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Terms &amp; Conditions</DialogTitle>
-            <DialogDescription>The rules for using Vendhee's Booth.</DialogDescription>
+            <DialogDescription>The rules for using Vendi.</DialogDescription>
           </DialogHeader>
           <div className="whitespace-pre-line text-sm leading-relaxed text-[#2D2D2D]">{TERMS}</div>
         </DialogContent>
