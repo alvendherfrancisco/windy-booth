@@ -57,7 +57,7 @@ function NotifButton({ open, unread, onClick, size }) {
         
         <ion-icon name={on ? "notifications" : "notifications-outline"} style={{ fontSize: size }} />
         {unread > 0 &&
-        <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#f06595] px-1 text-[9px] font-bold text-white ring-2 ring-[#F5F0EA]">
+        <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#f06595] px-1 text-[9px] font-bold text-white ring-2 ring-[#FFFCF2]">
             {unread}
           </span>
         }
@@ -105,7 +105,7 @@ export default function AppShell() {
   return (
     <div className="min-h-screen text-[#2D2D2D] pb-20 md:pb-0 md:pl-20">
       <BackgroundBlobs />
-      <aside className="hidden md:fixed md:inset-y-0 md:left-0 md:flex md:w-20 md:flex-col md:items-center md:border-r md:border-[#E8E2D8] md:bg-[#F5F0EA] md:py-5 text-[hsl(var(--primary-foreground))]">
+      <aside className="hidden md:fixed md:inset-y-0 md:left-0 md:flex md:w-20 md:flex-col md:items-center md:border-r md:border-[#E8E2D8] md:bg-[#FFFCF2] md:py-5 text-[hsl(var(--primary-foreground))]">
         <Link to="/dashboard" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#f06595] text-white">
           <Flower2 size={22} strokeWidth={1.7} className="shrink-0" />
         </Link>
