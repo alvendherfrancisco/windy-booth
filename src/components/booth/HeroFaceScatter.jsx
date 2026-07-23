@@ -11,12 +11,12 @@ import { FACE_SVG } from "@/assets/faces/faceData";
 // (-15°..15°) per face. Static — no animation. Inlined SVGs recolor via
 // currentColor (no asset/mask to fail). Behind content (card uses `isolate`).
 const SCATTER = [
-  { face: 0, left: "62.26%", top: "22.17%", rotate: -3 },
+  { face: 6, left: "62.26%", top: "22.17%", rotate: -3 },
   { face: 2, left: "79.16%", top: "25.95%", rotate: 5 },
   { face: 8, left: "91.31%", top: "67.67%", rotate: 11 },
-  { face: 3, left: "57.78%", top: "77.09%", rotate: 7 },
+  { face: 3, left: "74.67%", top: "78.48%", rotate: 12 },
   { face: 5, left: "45.29%", top: "33.94%", rotate: 0 },
-  { face: 7, left: "74.67%", top: "78.48%", rotate: 12 },
+  { face: 7, left: "57.78%", top: "77.09%", rotate: 7 },
 ];
 
 export default function HeroFaceScatter() {

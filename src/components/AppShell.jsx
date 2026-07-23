@@ -74,6 +74,7 @@ export default function AppShell() {
   const [notifs, setNotifs] = useState([]);
   const [unread, setUnread] = useState(0);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
 
   const loadNotifs = async () => {
     if (!user) return;
@@ -102,7 +103,7 @@ export default function AppShell() {
   const isActive = (to) => location.pathname === to;
 
   return (
-    <div className="min-h-screen text-[#2D2D2D] pb-20 md:pb-0 md:pl-20">
+    <div className="min-h-screen overflow-x-hidden text-[#2D2D2D] pb-20 md:pb-0 md:pl-20">
       <BackgroundBlobs />
       <aside className="hidden md:fixed md:inset-y-0 md:left-0 md:flex md:w-20 md:flex-col md:items-center md:border-r md:border-[#E8E2D8] md:bg-[#FFFCF2] md:py-5 text-[hsl(var(--primary-foreground))]">
         <Link to="/dashboard" className="flex h-10 w-10 shrink-0 items-center justify-center">
@@ -156,29 +157,41 @@ export default function AppShell() {
             </Link>);
 
         })}
-        <button
-          onClick={() => setNotifOpen(true)}
-          className={`relative flex flex-1 flex-col items-center gap-1 py-1 text-[10px] font-bold ${
-          notifOpen ? "text-[#f06595]" : "text-[#8A8580]"}`
-          }>
-          
-          <ion-icon name={notifOpen ? "notifications" : "notifications-outline"} style={{ fontSize: 22 }} />
-          {unread > 0 &&
-          <span className="absolute right-1 top-0 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-[#f06595] px-1 text-[8px] font-bold text-white">
-              {unread}
-            </span>
-          }
-          Alerts
-        </button>
-        <Link
-          to="/profile"
-          className={`flex w-10 flex-col items-center gap-1 py-1 ${
-          isActive("/profile") ? "text-[#f06595]" : "text-[#8A8580]"}`
-          }>
-          
-          <UserAvatar user={user} size="sm" className="!h-7 !w-7" />
-          <span className="text-[10px] font-bold">You</span>
-        </Link>
+        <div className="relative flex flex-1 flex-col items-center gap-1 py-1">
+          <button
+            onClick={() => setMoreOpen((v) => !v)}
+            className={`flex flex-col items-center gap-1 text-[10px] font-bold ${
+            moreOpen ? "text-[#f06595]" : "text-[#8A8580]"}`}
+          >
+            <ion-icon name={moreOpen ? "ellipsis-horizontal" : "ellipsis-horizontal-outline"} style={{ fontSize: 22 }} />
+            More
+          </button>
+          {moreOpen && (
+            <>
+              <button className="fixed inset-0 z-40" onClick={() => setMoreOpen(false)} aria-label="Close menu" />
+              <div className="absolute bottom-full right-0 z-50 mb-2 w-40 rounded-xl border border-[#E8E2D8] bg-white p-1 shadow-lg">
+                <button
+                  onClick={() => { setMoreOpen(false); setNotifOpen(true); }}
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-[#2D2D2D] hover:bg-[#ffdeeb]"
+                >
+                  <ion-icon name="notifications-outline" style={{ fontSize: 18 }} />
+                  <span className="text-xs font-bold">Alerts</span>
+                  {unread > 0 && (
+                    <span className="ml-auto flex h-4 min-w-4 items-center justify-center rounded-full bg-[#f06595] px-1 text-[9px] font-bold text-white">{unread}</span>
+                  )}
+                </button>
+                <Link
+                  to="/profile"
+                  onClick={() => setMoreOpen(false)}
+                  className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left hover:bg-[#ffdeeb] ${isActive("/profile") ? "text-[#f06595]" : "text-[#2D2D2D]"}`}
+                >
+                  <UserAvatar user={user} size="sm" className="!h-5 !w-5" />
+                  <span className="text-xs font-bold">Profile</span>
+                </Link>
+              </div>
+            </>
+          )}
+        </div>
       </nav>
 
       <NotificationsPopover
