@@ -1,46 +1,50 @@
 // Rainbow polka-dot background for the "This month's sessions" card.
-// Tiny (4–8px) scattered dots in all six brand colors (ramp level 3) at low
-// opacity, placed only in the card's open bands (top/bottom padding and the
-// gaps around the progress bar) so the title, "X / 10" number, "remaining"
-// text, progress bar, and upgrade link stay fully legible.
-//
-// Rendered as a multi-stop background-image so it always sits above the white
-// card background-color and below the card's text — no z-index or stacking
-// context tricks required (which is what caused the dots to be hidden before).
+// Uniform-size solid pastel dots in all six brand colors (ramp level 2–3),
+// scattered irregularly across the whole card on a jittered grid (no obvious
+// grid or repeating sequence) with airy spacing — slightly looser than the
+// reference so it never feels crowded. Rendered as a multi-stop
+// background-image so it always sits above the white card color and below the
+// card's text (no z-index/stacking-context tricks).
 
 const COLORS = [
+  [252, 194, 215], // pink-2
   [250, 162, 193], // pink-3
+  [165, 216, 255], // blue-2
   [116, 192, 252], // blue-3
+  [178, 242, 187], // green-2
   [140, 233, 154], // green-3
+  [255, 236, 153], // yellow-2
   [255, 224, 102], // yellow-3
+  [238, 190, 250], // grape-2
   [229, 153, 247], // grape-3
+  [255, 216, 168], // orange-2
   [255, 192, 120], // orange-3
 ];
 
-const BANDS = [
-  { top: [2, 11], left: [4, 94] },   // top padding
-  { top: [44, 52], left: [4, 94] },  // gap above progress bar
-  { top: [60, 69], left: [4, 94] },  // gap below progress bar
-  { top: [86, 96], left: [4, 94] },  // bottom padding
-];
+const COLS = 8;
+const ROWS = 4;
 
-let seed = 987654321;
+let seed = 42424242;
 const rand = () => {
   seed = (seed * 1103515245 + 12345) & 0x7fffffff;
   return seed / 0x7fffffff;
 };
 
 const dots = [];
-BANDS.forEach((band) => {
-  for (let k = 0; k < 3; k++) {
-    const top = band.top[0] + rand() * (band.top[1] - band.top[0]);
-    const left = band.left[0] + rand() * (band.left[1] - band.left[0]);
-    const r = 2 + rand() * 2; // 2–4px radius → 4–8px diameter
-    const c = COLORS[Math.floor(rand() * COLORS.length)];
+for (let c = 0; c < COLS; c++) {
+  for (let r = 0; r < ROWS; r++) {
+    if (rand() < 0.25) continue; // skip some cells for irregular, airy spacing
+    const cx = (c + 0.5) / COLS * 100;
+    const cy = (r + 0.5) / ROWS * 100;
+    const jx = (rand() - 0.5) * (100 / COLS) * 0.6;
+    const jy = (rand() - 0.5) * (100 / ROWS) * 0.6;
+    const left = Math.max(3, Math.min(97, cx + jx));
+    const top = Math.max(3, Math.min(97, cy + jy));
+    const col = COLORS[Math.floor(rand() * COLORS.length)];
     dots.push(
-      `radial-gradient(circle at ${left.toFixed(1)}% ${top.toFixed(1)}%, rgba(${c[0]},${c[1]},${c[2]},0.22) ${r.toFixed(1)}px, transparent ${(r + 0.5).toFixed(1)}px)`
+      `radial-gradient(circle at ${left.toFixed(1)}% ${top.toFixed(1)}%, rgba(${col[0]},${col[1]},${col[2]},0.78) 3.5px, transparent 4px)`
     );
   }
-});
+}
 
 export const RAINBOW_DOTS_BG = dots.join(", ");
