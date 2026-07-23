@@ -9,7 +9,7 @@ import React from "react";
 // must establish a stacking context (e.g. via the `isolate` class) for the
 // doodles to show above the card background and below the text.
 
-const FACES = [
+export const FACES = [
   // 0 — pigtails + round glasses + subtle smile
   () => (<>
     <circle cx="20" cy="21" r="12" />
