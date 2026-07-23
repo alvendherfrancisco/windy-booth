@@ -7,7 +7,8 @@ import StripPreview from "@/components/booth/StripPreview";
 import PolkaDots from "@/components/PolkaDots";
 import FaceDoodles from "@/components/FaceDoodles";
 import PrintShopInfo from "@/components/printshop/PrintShopInfo";
-import { BUNDLES, formatPrice, computeTotal, FREE_SHIP_THRESHOLD, PHILIPPINE_REGIONS } from "@/lib/printPricing";
+import { BUNDLES, formatPrice, computeTotal, FREE_SHIP_THRESHOLD } from "@/lib/printPricing";
+import LocationSelects from "@/components/printshop/LocationSelects";
 
 export default function PrintShop() {
   const { user } = useAuth();
@@ -17,7 +18,7 @@ export default function PrintShop() {
   const [selected, setSelected] = useState([]);
   const [paper, setPaper] = useState("matte");
   const [quantity, setQuantity] = useState(1);
-  const [ship, setShip] = useState({ full_name: "", phone: "", region: "", province: "", city: "", barangay: "", street: "", postal: "" });
+  const [ship, setShip] = useState({ full_name: "", phone: "", region: "", regionCode: "", province: "", city: "", cityCode: "", barangay: "", barangayCode: "", street: "", postal: "" });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState(null);
@@ -56,15 +57,22 @@ export default function PrintShop() {
   const checkout = async () => {
     setError("");
     if (selected.length === 0) {setError("Select at least one strip to print.");return;}
-    const required = ["full_name", "phone", "region", "province", "city", "barangay", "street"];
-    if (required.some((k) => !ship[k]?.trim())) {setError("Please complete all shipping fields.");return;}
+    if (!ship.full_name.trim() || !ship.phone.trim() || !ship.regionCode || !ship.cityCode || !ship.barangayCode || !ship.street.trim()) {setError("Please complete all shipping fields.");return;}
     if (window.self !== window.top) {alert("Checkout works only from the published app.");return;}
     setBusy(true);
     try {
       const res = await base44.functions.invoke("createPrintCheckout", {
         origin: window.location.origin,
         strip_ids: selected,
-        bundle, paper, quantity, ...ship
+        bundle, paper, quantity,
+        ship_full_name: ship.full_name,
+        ship_phone: ship.phone,
+        ship_region: ship.region,
+        ship_province: ship.province,
+        ship_city: ship.city,
+        ship_barangay: ship.barangay,
+        ship_street: ship.street,
+        ship_postal: ship.postal
       });
       const data = res?.data ?? res;
       if (data?.url) window.location.href = data.url;else
@@ -108,17 +116,28 @@ export default function PrintShop() {
         </div> :
 
       <>
-          <Section title={`1. Choose a bundle`} icon={Package}>
+          <Section title="1. Choose a bundle" icon={Package}>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {BUNDLES.map((b) => {
               const active = bundle === b.id;
               return (
-                <button key={b.id} onClick={() => {setBundle(b.id);setSelected((s) => s.slice(0, b.strips));}} className={`rounded-2xl border p-4 text-left transition ${active ? "border-[#e64980] bg-[#fff0f6]" : "border-[#E8E2D8] bg-white hover:border-[#e64980]"}`}>
+                <div key={b.id} className={`rounded-2xl border p-4 transition ${active ? "border-[#e64980] bg-[#fff0f6]" : "border-[#E8E2D8] bg-white hover:border-[#e64980]"}`}>
+                  <button onClick={() => {setBundle(b.id);setSelected((s) => s.slice(0, b.strips));}} className="block w-full text-left">
                     <p className="font-heading text-base font-extrabold text-[#2D2D2D]">{b.name}</p>
                     <p className="mt-0.5 text-xs text-[#8A8580]">{b.strips} strips + sticker sheet + letter card</p>
                     <p className="mt-2 font-bold text-[#e64980]">{formatPrice(b.price)}</p>
-                    {active && <span className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-[hsl(var(--sidebar-ring))]">Selected</span>}
-                  </button>);
+                  </button>
+                  {active && (
+                    <div className="mt-3 flex items-center justify-between border-t border-[#f3d6e4] pt-3">
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => setQuantity((q) => Math.max(1, q - 1))} className="h-8 w-8 rounded-full border border-[#E8E2D8] bg-white text-lg font-bold text-[#2D2D2D] hover:bg-[#F5F0EA]">−</button>
+                        <span className="w-6 text-center font-bold">{quantity}</span>
+                        <button onClick={() => setQuantity((q) => q + 1)} className="h-8 w-8 rounded-full border border-[#E8E2D8] bg-white text-lg font-bold text-[#2D2D2D] hover:bg-[#F5F0EA]">+</button>
+                      </div>
+                      <span className="text-sm font-extrabold text-[#2D2D2D]">{formatPrice(b.price * quantity)}</span>
+                    </div>
+                  )}
+                </div>);
 
             })}
             </div>
@@ -138,41 +157,23 @@ export default function PrintShop() {
             </div>
           </Section>
 
-          <Section title="3. Paper & copies" icon={Printer}>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#8A8580]">Paper type</p>
-                <div className="flex gap-2">
-                  {["matte", "glossy"].map((p) =>
-                <button key={p} onClick={() => setPaper(p)} className={`rounded-full border px-4 py-2 text-sm font-bold capitalize transition ${paper === p ? "border-[#228be6] bg-[#e7f5ff] text-[#228be6]" : "border-[#E8E2D8] bg-white text-[#5C5953] hover:border-[#228be6]"}`}>{p}</button>
-                )}
-                </div>
-              </div>
-              <div>
-                <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#8A8580]">Copies</p>
-                <div className="flex items-center gap-2">
-                  <button onClick={() => setQuantity((q) => Math.max(1, q - 1))} className="h-9 w-9 rounded-full border border-[#E8E2D8] bg-white text-lg font-bold text-[#2D2D2D] hover:bg-[#F5F0EA]">−</button>
-                  <span className="w-10 text-center font-bold">{quantity}</span>
-                  <button onClick={() => setQuantity((q) => q + 1)} className="h-9 w-9 rounded-full border border-[#E8E2D8] bg-white text-lg font-bold text-[#2D2D2D] hover:bg-[#F5F0EA]">+</button>
-                </div>
-              </div>
+          <Section title="3. Paper type" icon={Printer}>
+            <div className="flex gap-2">
+              {["matte", "glossy"].map((p) =>
+            <button key={p} onClick={() => setPaper(p)} className={`rounded-full border px-4 py-2 text-sm font-bold capitalize transition ${paper === p ? "border-[#228be6] bg-[#e7f5ff] text-[#228be6]" : "border-[#E8E2D8] bg-white text-[#5C5953] hover:border-[#228be6]"}`}>{p}</button>
+            )}
             </div>
           </Section>
 
           <Section title="4. Shipping (J&T Express)" icon={Truck}>
             <div className="grid gap-3 sm:grid-cols-2">
               <ShipField label="Full Name" value={ship.full_name} onChange={(v) => setShip({ ...ship, full_name: v })} placeholder="Juan Dela Cruz" />
-              <ShipField label="Phone Number" value={ship.phone} onChange={(v) => setShip({ ...ship, phone: v })} placeholder="09XX XXX XXXX" />
-              <label className="block">
-                <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-[#8A8580]">Region</span>
-                <select value={ship.region} onChange={(e) => setShip({ ...ship, region: e.target.value })} className="input">
-                  <option value="">Select region…</option>
-                  {PHILIPPINE_REGIONS.map((r) => <option key={r} value={r}>{r}</option>)}
-                </select>
-              </label>
-              <ShipField label="Province" value={ship.province} onChange={(v) => setShip({ ...ship, province: v })} placeholder="Province" />
-              <ShipField label="City / Municipality" value={ship.city} onChange={(v) => setShip({ ...ship, city: v })} placeholder="City / Municipality" />
-              <ShipField label="Barangay" value={ship.barangay} onChange={(v) => setShip({ ...ship, barangay: v })} placeholder="Barangay" />
+              <ShipField label="Phone Number" value={ship.phone} onChange={(v) => setShip({ ...ship, phone: v })} placeholder="09XX XXX XXXX" type="tel" />
+            </div>
+            <div className="mt-3">
+              <LocationSelects value={ship} onChange={setShip} />
+            </div>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-[#8A8580]">Detailed Address</span>
                 <textarea value={ship.street} onChange={(e) => setShip({ ...ship, street: e.target.value })} rows={2} placeholder="House no., street, block, lot" className="input resize-none" />

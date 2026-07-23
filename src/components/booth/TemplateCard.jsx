@@ -16,10 +16,10 @@ export default function TemplateCard({ template, selected, onSelect, locked }) {
         <img
           src={template.thumbnail_url}
           alt={template.name}
-          className="mx-auto max-w-[150px] rounded-md shadow-[0_8px_24px_rgba(40,30,20,.12)]"
+          className="mx-auto max-w-[127px] rounded-md shadow-[0_8px_24px_rgba(40,30,20,.12)]"
         />
       ) : (
-        <StripPreview template={template} className="max-w-[150px]" />
+        <StripPreview template={template} className="max-w-[127px]" />
       )}
       <div className="mt-3 flex items-center justify-between px-1">
         <span>

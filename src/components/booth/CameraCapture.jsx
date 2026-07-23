@@ -138,7 +138,7 @@ const CameraCapture = forwardRef(function CameraCapture(
           </div>
         </div>
         {/* Your Strip card */}
-        <div className="flex flex-col rounded-2xl border border-[#E8E2D8] bg-white p-4">
+        <div className="mx-auto w-full max-w-[180px] flex flex-col rounded-2xl border border-[#E8E2D8] bg-white p-4 lg:max-w-none">
           <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#8A8580]">Your Strip</p>
           <StripPreview template={selected} photos={photos} />
         </div>
