@@ -7,7 +7,7 @@ export default function StripPreview({ template, photos = [], imgFilter = "none"
   const dateStr = date || defaultDate;
   return (
     <div className={`mx-auto w-full rounded-md bg-white p-2 shadow-[0_8px_24px_rgba(40,30,20,.12)] ${className}`}>
-      <p className="text-center font-heading text-[11px] font-bold tracking-wide text-[#DC3522]">
+      <p className="text-center font-heading text-[11px] font-bold tracking-wide text-[#f783ac]">
         {template?.name || "Vendi"}
       </p>
       <div className="mt-1.5 space-y-1.5">
@@ -20,8 +20,8 @@ export default function StripPreview({ template, photos = [], imgFilter = "none"
         ))}
       </div>
       <div className="mt-2 flex flex-col items-center gap-0.5">
-        <Flower2 size={11} strokeWidth={1.8} className="text-[#DC3522]" />
-        <p className="text-center font-heading text-[10px] font-bold text-[#DC3522]">{dateStr}</p>
+        <Flower2 size={11} strokeWidth={1.8} className="text-[#f783ac]" />
+        <p className="text-center font-heading text-[10px] font-bold text-[#f783ac]">{dateStr}</p>
       </div>
     </div>
   );

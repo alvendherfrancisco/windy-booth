@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { Bell, Check, Flower2 } from "lucide-react";
@@ -9,7 +9,7 @@ const SYSTEM_TYPES = ["order_update", "payment", "subscription", "usage_limit", 
 function RowAvatar({ item, user }) {
   if (SYSTEM_TYPES.includes(item.type)) {
     return (
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#DC3522]">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f783ac]">
         <Flower2 size={16} className="text-white" />
       </div>
     );
@@ -19,7 +19,23 @@ function RowAvatar({ item, user }) {
 
 export default function NotificationsPopover({ open, onClose, notifs, onToggleRead, onMarkAll, user }) {
   const navigate = useNavigate();
-  if (!open) return null;
+  const [mounted, setMounted] = useState(open);
+  const [leaving, setLeaving] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setMounted(true);
+      setLeaving(false);
+    } else if (mounted) {
+      setLeaving(true);
+      const t = setTimeout(() => setMounted(false), 200);
+      return () => clearTimeout(t);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  if (!mounted) return null;
+
   const hasUnread = notifs.some((n) => !n.read);
 
   const handleRow = (item) => {
@@ -33,11 +49,15 @@ export default function NotificationsPopover({ open, onClose, notifs, onToggleRe
   return (
     <>
       <div className="fixed inset-0 z-40" onClick={onClose} />
-      <div className="fixed bottom-20 left-2 right-2 z-50 overflow-hidden rounded-2xl bg-white shadow-xl md:bottom-6 md:left-20 md:right-auto md:w-[360px]">
+      <div
+        className={`fixed bottom-20 left-2 right-2 z-50 overflow-hidden rounded-2xl bg-white shadow-xl md:bottom-6 md:left-20 md:right-auto md:w-[360px] ${
+          leaving ? "animate-modal-out" : "animate-modal-in"
+        }`}
+      >
         <div className="flex items-center justify-between px-4 py-3">
           <p className="font-heading text-base font-extrabold text-[#2D2D2D]">Notifications</p>
           {hasUnread && (
-            <button onClick={onMarkAll} className="text-xs font-medium text-[#8B8D93] hover:text-[#4F46E5]">
+            <button onClick={onMarkAll} className="text-xs font-medium text-[#8B8D93] hover:text-[#f783ac]">
               Mark all as read
             </button>
           )}
@@ -60,7 +80,7 @@ export default function NotificationsPopover({ open, onClose, notifs, onToggleRe
                   </div>
                   <div className="absolute right-3.5 top-1/2 h-7 w-7 -translate-y-1/2">
                     {!item.read && (
-                      <span className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#DC3522] transition-opacity group-hover:opacity-0" />
+                      <span className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f783ac] transition-opacity group-hover:opacity-0" />
                     )}
                     <button
                       onClick={(e) => {
@@ -70,9 +90,9 @@ export default function NotificationsPopover({ open, onClose, notifs, onToggleRe
                       className="group/btn absolute inset-0 flex items-center justify-center rounded-lg border border-[#E8E2D8] bg-white opacity-0 transition-opacity duration-150 hover:border-[#D8D9DC] hover:bg-[#F5F0EA] group-hover:opacity-100"
                     >
                       {item.read ? (
-                        <Bell size={14} className="text-[#4F46E5]" />
+                        <Bell size={14} className="text-[#f783ac]" />
                       ) : (
-                        <Check size={14} className="text-[#4F46E5]" />
+                        <Check size={14} className="text-[#f783ac]" />
                       )}
                       <span className="pointer-events-none absolute right-full top-1/2 mr-2 -translate-y-1/2 whitespace-nowrap rounded-md bg-[#1A1A1A] px-2 py-1 text-[13px] font-medium text-white opacity-0 transition-opacity duration-150 group-hover/btn:opacity-100">
                         {item.read ? "Mark as unread" : "Mark as read"}

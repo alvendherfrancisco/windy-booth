@@ -12,8 +12,8 @@ export default function FilterCard({ filter, onFilterChange }) {
             onClick={() => onFilterChange(f.value)}
             className={`shrink-0 rounded-lg border px-3 py-1.5 text-xs font-bold transition ${
               filter === f.value
-                ? "border-[#4F46E5] bg-[#4F46E5] text-white"
-                : "border-[#E8E2D8] bg-white text-[#5C5953] hover:border-[#4F46E5]"
+                ? "border-[#f783ac] bg-[#f783ac] text-white"
+                : "border-[#E8E2D8] bg-white text-[#5C5953] hover:border-[#f783ac]"
             }`}
           >
             {f.label}

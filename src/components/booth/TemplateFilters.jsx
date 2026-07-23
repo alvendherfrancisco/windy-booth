@@ -29,8 +29,8 @@ export default function TemplateFilters({ category, onCategoryChange, query, onQ
             onClick={() => onCategoryChange(value)}
             className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-2 text-xs font-bold transition ${
               category === value
-                ? "border-[#4F46E5] bg-[#EEF2FF] text-[#4F46E5]"
-                : "border-[#E8E2D8] bg-white text-[#5C5953] hover:border-[#4F46E5]"
+                ? "border-[#f783ac] bg-[#ffe3ef] text-[#f783ac]"
+                : "border-[#E8E2D8] bg-white text-[#5C5953] hover:border-[#f783ac]"
             }`}
           >
             <Icon size={13} />

@@ -8,8 +8,8 @@ export default function TemplateCard({ template, selected, onSelect, locked }) {
       onClick={() => onSelect(template)}
       className={`relative rounded-[18px] border p-2 text-left transition ${
         selected
-          ? "border-[#DC3522] bg-[#FDE8E4] ring-1 ring-[#DC3522]"
-          : "border-[#E8E2D8] bg-white hover:-translate-y-0.5"
+          ? "border-[#f783ac] bg-[#ffe3ef] ring-1 ring-[#f783ac]"
+          : "border-[#E8E2D8] bg-white"
       }`}
     >
       <StripPreview template={template} className="max-w-[150px]" />

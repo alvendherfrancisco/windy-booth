@@ -12,8 +12,8 @@
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 339 88% 74%;
+    --primary-foreground: 0 0% 100%;
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 0 0% 9%;
     --muted: 0 0% 96.1%;
@@ -90,6 +90,31 @@
 
   body {
     @apply bg-background text-foreground font-body;
+  }
+
+  a {
+    transition: color 200ms ease-out, background-color 200ms ease-out, opacity 200ms ease-out;
+  }
+
+  button,
+  [role="button"] {
+    transition: background-color 200ms ease-out, border-color 200ms ease-out, color 200ms ease-out, fill 200ms ease-out, opacity 200ms ease-out, box-shadow 200ms ease-out, transform 200ms ease-out;
+  }
+
+  input,
+  select,
+  textarea {
+    transition: background-color 200ms ease-out, border-color 200ms ease-out, color 200ms ease-out, box-shadow 200ms ease-out;
+  }
+
+  button:hover,
+  [role="button"]:hover {
+    transform: scale(1.02);
+  }
+
+  button:active,
+  [role="button"]:active {
+    transform: scale(0.97);
   }
 }
 

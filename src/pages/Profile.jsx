@@ -38,7 +38,7 @@ export default function Profile() {
             <button
               onClick={() => fileRef.current?.click()}
               disabled={uploading}
-              className="inline-flex items-center gap-2 rounded-full border border-[#4F46E5] px-3 py-1.5 text-xs font-bold text-[#4F46E5] transition hover:bg-[#EEF2FF] disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-full border border-[#f783ac] px-3 py-1.5 text-xs font-bold text-[#f783ac] transition hover:bg-[#ffe3ef] disabled:opacity-60"
             >
               <Camera size={13} />
               {uploading ? "Saving…" : "Change photo"}
@@ -47,17 +47,17 @@ export default function Profile() {
           </div>
         </div>
       </section>
-      <section className="mt-4 rounded-[18px] bg-[#15161A] p-6 text-white">
-        <Crown size={22} className="text-[#C7D2FE]" />
-        <p className="mt-6 text-sm text-[#D8D9DC]">Current plan</p>
+      <section className="mt-4 rounded-[18px] bg-[#ffec99] p-6 text-[#2D2D2D]">
+        <Crown size={22} className="text-[#f06595]" />
+        <p className="mt-6 text-sm text-[#5C5953]">Current plan</p>
         <h2 className="font-heading text-2xl font-extrabold capitalize">{plan}</h2>
         {plan === "free" ? (
           <>
-            <p className="mt-2 text-sm text-[#D8D9DC]">Unlimited sessions, every template, one full year of saved strips.</p>
-            <p className="mt-5 text-xs text-[#C7D2FE]">Premium checkout will be available with Stripe.</p>
+            <p className="mt-2 text-sm text-[#5C5953]">Unlimited sessions, every template, one full year of saved strips.</p>
+            <p className="mt-5 text-xs font-bold text-[#f06595]">Premium checkout will be available with Stripe.</p>
           </>
         ) : (
-          <p className="mt-2 text-sm text-[#D8D9DC]">
+          <p className="mt-2 text-sm text-[#5C5953]">
             Your next renewal is{" "}
             {user?.plan_expires_at ? new Date(user.plan_expires_at).toLocaleDateString() : "coming up"}.
           </p>
