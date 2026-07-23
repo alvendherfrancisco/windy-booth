@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
-import { Camera, Crown, LogOut } from "lucide-react";
+import { Camera, Crown, LogOut, Shield } from "lucide-react";
+import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import UserAvatar from "@/components/UserAvatar";
@@ -65,6 +66,11 @@ export default function Profile() {
           </p>
         )}
       </section>
+      {user?.email === "alvendhrfrancisco01@gmail.com" && (
+        <Link to="/admin" className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#e64980] px-4 py-2 text-sm font-bold text-[#e64980] transition hover:bg-[#fff0f6]">
+          <Shield size={15} /> Admin dashboard
+        </Link>
+      )}
       <button onClick={() => base44.auth.logout("/login")} className="mt-7 flex items-center gap-2 text-sm font-bold text-[#55575E]">
         <LogOut size={17} />Log out
       </button>

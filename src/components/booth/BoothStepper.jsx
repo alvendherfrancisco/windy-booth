@@ -18,7 +18,7 @@ export default function BoothStepper({ step }) {
                   active
                     ? "border-[#f06595] bg-[#f06595] text-white"
                     : done
-                    ? "border-[#40c057] bg-[#40c057] text-white"
+                    ? "border-[#f59f00] bg-[#f59f00] text-white"
                     : "border-[#E8E2D8] bg-white text-[#8A8580]"
                 }`}
               >
@@ -26,14 +26,14 @@ export default function BoothStepper({ step }) {
               </div>
               <span
                 className={`hidden text-[10px] font-bold uppercase tracking-wider sm:inline ${
-                  active ? "text-[#f06595]" : done ? "text-[#40c057]" : "text-[#BFB9AE]"
+                  active ? "text-[#f06595]" : done ? "text-[#f59f00]" : "text-[#BFB9AE]"
                 }`}
               >
                 {label}
               </span>
             </div>
             {i < STEPS.length - 1 && (
-              <div className={`mx-2 h-px w-6 sm:w-8 ${num < step ? "bg-[#40c057]" : "bg-[#E8E2D8]"}`} />
+              <div className={`mx-2 h-px w-6 sm:w-8 ${num < step ? "bg-[#f59f00]" : "bg-[#E8E2D8]"}`} />
             )}
           </React.Fragment>
         );
