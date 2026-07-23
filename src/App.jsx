@@ -16,6 +16,7 @@ import PrintShop from '@/pages/PrintShop';
 
 import Profile from '@/pages/Profile';
 import Orders from '@/pages/Orders';
+import Admin from '@/pages/Admin';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
@@ -53,6 +54,7 @@ const AuthenticatedApp = () => {
 
         <Route path="/profile" element={<Profile />} />
       </Route>
+      <Route path="/admin" element={<Admin />} />
     </Route>
     <Route path="*" element={<PageNotFound />} />
   </Routes>;
