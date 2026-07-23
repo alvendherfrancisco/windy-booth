@@ -139,7 +139,9 @@ export default function Booth() {
             <ArrowLeft size={16} />Back
           </button>
         }
-        <BoothStepper step={step} />
+        <div className="flex justify-center">
+          <BoothStepper step={step} />
+        </div>
       </div>
       {/* STEP 1 — Design */}
       {step === 1 &&
