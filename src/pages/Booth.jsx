@@ -45,6 +45,10 @@ export default function Booth() {
     setStep(1);setSelected(null);setMode(null);setPhotos([]);setRawFiles([]);setFilter("none");
   };
 
+  // Returning to the Mode step starts fresh — camera and upload never share photos.
+  const clearCapture = () => { setPhotos([]); setRawFiles([]); setFilter("none"); };
+  const handleBack = () => { if (step === 3) clearCapture(); goBack(); };
+
   const filteredTemplates = templates.filter((t) =>
   (category === "all" || t.category === category) &&
   t.name.toLowerCase().includes(query.toLowerCase())
@@ -133,7 +137,7 @@ export default function Booth() {
     <div className="mx-auto max-w-4xl pb-32 md:pb-28">
       <div className="mb-6">
         {step > 1 &&
-        <button onClick={goBack} className="mb-4 flex items-center gap-1.5 text-sm font-bold text-[#2D2D2D] hover:text-[#228be6]">
+        <button onClick={handleBack} className="mb-4 flex items-center gap-1.5 text-sm font-bold text-[#2D2D2D] hover:text-[#228be6]">
             <ArrowLeft size={16} />Back
           </button>
         }
@@ -179,12 +183,12 @@ export default function Booth() {
       <>
           <h1 className="font-heading text-2xl font-extrabold text-[#2D2D2D]">How would you like to add your photos?</h1>
           <div className="mt-7 grid grid-cols-2 gap-4">
-            <button onClick={() => {setMode("camera");setStep(3);}} className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-[18px] border border-[#E8E2D8] bg-white p-8 text-center transition hover:border-[#228be6] hover:bg-[#e7f5ff]">
+            <button onClick={() => {clearCapture();setMode("camera");setStep(3);}} className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-[18px] border border-[#E8E2D8] bg-white p-8 text-center transition hover:border-[#228be6] hover:bg-[#e7f5ff]">
               <ModeCardDecor variant="camera" />
               <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-[#e7f5ff]"><Camera size={22} className="text-[#228be6]" /></div>
               <div className="relative z-10"><b className="block text-sm text-[#2D2D2D]">Take Photos</b><small className="text-[#8A8580]">Use your camera</small></div>
             </button>
-            <button onClick={() => {setMode("upload");setStep(3);}} className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-[18px] border border-[#E8E2D8] bg-white p-8 text-center transition hover:border-[#228be6] hover:bg-[#e7f5ff]">
+            <button onClick={() => {clearCapture();setMode("upload");setStep(3);}} className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-[18px] border border-[#E8E2D8] bg-white p-8 text-center transition hover:border-[#228be6] hover:bg-[#e7f5ff]">
               <ModeCardDecor variant="upload" />
               <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-[#e7f5ff]"><ImageUp size={22} className="text-[#228be6]" /></div>
               <div className="relative z-10"><b className="block text-sm text-[#2D2D2D]">Upload Photos</b><small className="text-[#8A8580]">Choose from gallery</small></div>
@@ -201,7 +205,7 @@ export default function Booth() {
         <CameraCapture ref={captureRef} selected={selected} photos={photos} onPhotosChange={setPhotos} filter={filter} onFilterChange={setFilter} /> :
 
         <div className="space-y-4">
-              <div className="grid gap-4 lg:grid-cols-[1fr_170px]">
+              <div className="grid gap-4 lg:grid-cols-[1fr_220px]">
                 <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
                   <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#8A8580]">Live Preview</p>
                   <button
@@ -268,7 +272,7 @@ export default function Booth() {
           <div className="animate-pop relative isolate mt-4 overflow-hidden rounded-[22px] border border-[#E8E2D8] bg-[#ebfbee] p-6">
             <PolkaDots />
             <FaceDoodles variant="success" />
-            <div className="mx-auto w-[180px]">
+            <div className="mx-auto w-[240px]">
               <StripPreview template={selected} photos={photos} />
             </div>
             <p className="mt-5 font-heading text-xl font-extrabold text-[#2D2D2D]">Your strip is ready!</p>
