@@ -1,7 +1,7 @@
 import React from "react";
 import { Check } from "lucide-react";
 
-const STEPS = ["Design", "Mode", "Capture", "Download"];
+const STEPS = ["Design", "Mode", "Capture", "Print", "Download"];
 
 export default function BoothStepper({ step }) {
   return (

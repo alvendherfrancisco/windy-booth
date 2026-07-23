@@ -157,3 +157,10 @@
     display: none;
   }
 }
+
+@keyframes motor-buzz { 0%,100%{transform:translateX(0)} 25%{transform:translateX(1px)} 75%{transform:translateX(-1px)} }
+.printer-buzz { animation: motor-buzz 0.05s ease-in-out infinite; }
+@keyframes petal-fall { 0%{opacity:0.9;transform:translateY(0) rotate(0deg)} 100%{opacity:0;transform:translateY(60vh) rotate(360deg)} }
+.petal { position:fixed; width:0.5rem; height:0.75rem; border-radius:50% 50% 50% 50% / 60% 60% 40% 40%; opacity:0; pointer-events:none; z-index:50; animation: petal-fall 1.6s ease-out forwards; }
+@keyframes strip-glow { 0%,100%{box-shadow:2px 6px 18px rgba(58,44,42,.22),0 0 0 3px rgba(255,222,232,.5)} 50%{box-shadow:2px 6px 24px rgba(58,44,42,.28),0 0 0 5px rgba(255,222,232,.8)} }
+.strip-glow { animation: strip-glow 1s ease-in-out infinite; }

@@ -1,13 +1,14 @@
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { filterCss } from "@/components/booth/filterPresets";
+import { STRIP_SLOTS } from "@/components/booth/stripSlots";
 import StripPreview from "@/components/booth/StripPreview";
 import FilterCard from "@/components/booth/FilterCard";
 
 const TIMERS = [3, 5, 10];
 
 const CameraCapture = forwardRef(function CameraCapture(
-  { selected, photos, onPhotosChange, filter, onFilterChange },
+  { selected, photos, onPhotosChange, filter, onFilterChange, onComplete, onCapturingChange },
   ref
 ) {
   const videoRef = useRef(null);
@@ -18,6 +19,21 @@ const CameraCapture = forwardRef(function CameraCapture(
   const [capturing, setCapturing] = useState(false);
   const [uploadingIdx, setUploadingIdx] = useState(null);
   const [camError, setCamError] = useState(null);
+  const [slotAspect, setSlotAspect] = useState(null);
+
+  // Match the live preview to the strip's photo-slot aspect ratio so users
+  // frame exactly what will land in the template.
+  useEffect(() => {
+    const asset = selected?.thumbnail_url || selected?.canvas_asset_url;
+    if (!asset) return;
+    const img = new Image();
+    img.onload = () => {
+      const w = STRIP_SLOTS.width * img.naturalWidth;
+      const h = STRIP_SLOTS.height * img.naturalHeight;
+      if (h > 0) setSlotAspect(w / h);
+    };
+    img.src = asset;
+  }, [selected?.id, selected?.thumbnail_url, selected?.canvas_asset_url]);
 
   useEffect(() => {
     let active = true;
@@ -59,11 +75,14 @@ const CameraCapture = forwardRef(function CameraCapture(
     );
   }, [filter]);
 
-  // Automatic photobooth sequence: countdown -> snap -> brief pause -> repeat until 3 photos.
+  // Automatic photobooth sequence: countdown -> snap -> brief pause -> repeat
+  // until 3 photos, then hand the captured URLs back to the parent to finish.
   const runCapture = useCallback(async () => {
     if (capturing) return;
     setCapturing(true);
+    onCapturingChange?.(true);
     let taken = photos.length;
+    const captured = [...photos];
     while (taken < 3) {
       let t = timerVal;
       setCountdown(t);
@@ -80,6 +99,7 @@ const CameraCapture = forwardRef(function CameraCapture(
       setUploadingIdx(taken);
       const url = await captureFrame();
       if (url) {
+        captured.push(url);
         onPhotosChange(prev => [...prev, url]);
         taken++;
       }
@@ -87,7 +107,9 @@ const CameraCapture = forwardRef(function CameraCapture(
       if (taken < 3) await new Promise(r => setTimeout(r, 1200));
     }
     setCapturing(false);
-  }, [capturing, photos.length, timerVal, captureFrame, onPhotosChange]);
+    onCapturingChange?.(false);
+    onComplete?.(captured);
+  }, [capturing, photos.length, timerVal, captureFrame, onPhotosChange, onComplete, onCapturingChange]);
 
   useImperativeHandle(ref, () => ({ capture: runCapture }), [runCapture]);
 
@@ -102,7 +124,10 @@ const CameraCapture = forwardRef(function CameraCapture(
               {camError}
             </div>
           ) : (
-            <div className="relative flex min-h-[200px] flex-1 overflow-hidden rounded-xl bg-black">
+            <div
+              className="relative w-full overflow-hidden rounded-xl bg-black"
+              style={{ aspectRatio: slotAspect || "4 / 3" }}
+            >
               <video
                 ref={videoRef}
                 autoPlay
@@ -144,18 +169,19 @@ const CameraCapture = forwardRef(function CameraCapture(
         </div>
       </div>
 
-      {/* Filter card (separate) */}
+      {/* Filter card — locked while a capture sequence is running */}
       <FilterCard filter={filter} onFilterChange={onFilterChange} disabled={capturing} />
 
-      {/* Countdown Timer card (separate) */}
+      {/* Countdown Timer card — locked while a capture sequence is running */}
       <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
         <p className="mb-2 text-sm font-bold text-[#2D2D2D]">Countdown Timer</p>
         <div className="flex gap-2">
           {TIMERS.map(t => (
             <button
               key={t}
+              disabled={capturing}
               onClick={() => setTimerVal(t)}
-              className={`rounded-lg border px-4 py-1.5 text-xs font-bold transition ${
+              className={`rounded-lg border px-4 py-1.5 text-xs font-bold transition disabled:cursor-not-allowed disabled:opacity-50 ${
                 timerVal === t
                   ? "border-[#228be6] bg-[#228be6] text-white"
                   : "border-[#E8E2D8] bg-white text-[#5C5953] hover:border-[#228be6]"

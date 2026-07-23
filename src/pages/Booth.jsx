@@ -15,6 +15,7 @@ import CameraCapture from "@/components/booth/CameraCapture";
 import ModeCardDecor from "@/components/booth/ModeCardDecor";
 import { downloadStrip } from "@/components/booth/downloadStrip";
 import { shareToInstagram } from "@/components/booth/shareStrip";
+import PrintSimulation from "@/components/booth/PrintSimulation";
 import PolkaDots from "@/components/PolkaDots";
 import FaceDoodles from "@/components/FaceDoodles";
 import UpgradeModal from "@/components/upgrade/UpgradeModal";
@@ -39,6 +40,7 @@ export default function Booth() {
   const [query, setQuery] = useState("");
   const [saving, setSaving] = useState(false);
   const [sharing, setSharing] = useState(false);
+  const [capturing, setCapturing] = useState(false);
 
   const plan = user?.plan || "free";
   const used = user?.sessions_used_this_month || 0;
@@ -101,12 +103,15 @@ export default function Booth() {
     return r.file_url;
   };
 
-  const finish = async () => {
-    if (photos.length !== 3 || !selected) return;
+  const finish = async (cameraUrls) => {
+    const src = mode === "camera" ? (cameraUrls || photos) : uploadPhotos;
+    if (src.length !== 3 || !selected) return;
     setSaving(true);
     try {
-      let finalUrls = photos;
-      if (mode === "upload") {
+      let finalUrls;
+      if (mode === "camera") {
+        finalUrls = src;
+      } else {
         finalUrls = [];
         for (let i = 0; i < rawFiles.length; i++) finalUrls.push(await bakeFile(rawFiles[i]));
       }
@@ -146,7 +151,7 @@ export default function Booth() {
   return (
     <div className="mx-auto max-w-4xl pb-32 md:pb-28">
       <div className="mb-6">
-        {step > 1 &&
+        {step > 1 && step < 4 &&
         <button onClick={goBack} className="mb-4 flex items-center gap-1.5 text-sm font-bold text-[#2D2D2D] hover:text-[#228be6]">
             <ArrowLeft size={16} />Back
           </button>
@@ -214,7 +219,7 @@ export default function Booth() {
       <>
           <h1 className="mb-5 font-heading text-2xl font-extrabold text-[#2D2D2D]">{mode === "camera" ? "Ready when you are" : "Pick three photos"}</h1>
           {mode === "camera" ?
-        <CameraCapture ref={captureRef} selected={selected} photos={cameraPhotos} onPhotosChange={setCameraPhotos} filter={filter} onFilterChange={setFilter} /> :
+        <CameraCapture ref={captureRef} selected={selected} photos={cameraPhotos} onPhotosChange={setCameraPhotos} filter={filter} onFilterChange={setFilter} onComplete={finish} onCapturingChange={setCapturing} /> :
 
         <div className="space-y-4">
               <div className="grid gap-4 lg:grid-cols-[1fr_220px]">
@@ -256,19 +261,13 @@ export default function Booth() {
             <div className="flex items-center justify-between gap-3">
               <span className="text-xs text-[#5C5953]">
                 {mode === "camera" ?
-              photos.length < 3 ? <>Ready to start — take <span className="font-bold text-[#228be6]">3 photos</span></> : "All 3 photos captured!" :
-              photos.length < 3 ? <>Upload <span className="font-bold text-[#228be6]">3 photos</span> from your device</> : "All 3 photos ready!"}
+              (capturing ? "Capturing your photos…" : (saving || photos.length >= 3) ? "Developing your strip…" : <>Ready to start — take <span className="font-bold text-[#228be6]">3 photos</span></>) :
+              (photos.length < 3 ? <>Upload <span className="font-bold text-[#228be6]">3 photos</span> from your device</> : "All 3 photos ready!")}
               </span>
               {mode === "camera" ?
-            photos.length < 3 ?
-            <button disabled={saving} onClick={() => captureRef.current?.capture()} className="flex items-center gap-2 rounded-full bg-[#f06595] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#e64980] disabled:bg-[#E8E2D8] disabled:text-[#8A8580]">
-                    <Camera size={16} />Start
+            <button disabled={capturing || saving || photos.length >= 3} onClick={() => captureRef.current?.capture()} className="flex items-center gap-2 rounded-full bg-[#f06595] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#e64980] disabled:bg-[#E8E2D8] disabled:text-[#8A8580]">
+                    <Camera size={16} />{capturing ? "Capturing…" : (saving || photos.length >= 3) ? "Developing…" : "Start"}
                   </button> :
-
-            <button onClick={finish} disabled={saving} className="rounded-full bg-[#f06595] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#e64980] disabled:bg-[#E8E2D8]">
-                    {saving ? "Making your strip…" : "Reveal my strip →"}
-                  </button> :
-
 
             <button disabled={photos.length !== 3 || saving} onClick={finish} className="rounded-full bg-[#f06595] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#e64980] disabled:bg-[#E8E2D8] disabled:text-[#8A8580]">
                   {saving ? "Making your strip…" : "Continue"}
@@ -278,8 +277,13 @@ export default function Booth() {
         </>
       }
 
-      {/* STEP 4 — Download */}
+      {/* STEP 4 — Print Simulation */}
       {step === 4 &&
+        <PrintSimulation template={selected} photos={finalPhotos} onDone={() => setStep(5)} />
+      }
+
+      {/* STEP 5 — Download */}
+      {step === 5 &&
       <div className="mx-auto max-w-sm text-center">
           <div className="animate-pop relative isolate mt-4 overflow-hidden rounded-[22px] border border-[#E8E2D8] bg-[#ebfbee] p-6">
             <PolkaDots />
