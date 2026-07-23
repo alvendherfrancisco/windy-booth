@@ -13,6 +13,7 @@ import FilterCard from "@/components/booth/FilterCard";
 import BoothStepper from "@/components/booth/BoothStepper";
 import CameraCapture from "@/components/booth/CameraCapture";
 import PolkaDots from "@/components/PolkaDots";
+import FaceDoodles from "@/components/FaceDoodles";
 
 export default function Booth() {
   const { user } = useAuth();
@@ -262,8 +263,9 @@ export default function Booth() {
       {/* STEP 4 — Download */}
       {step === 4 &&
       <div className="mx-auto max-w-sm text-center">
-          <div className="animate-pop relative mt-4 overflow-hidden rounded-[22px] border border-[#E8E2D8] bg-[#ebfbee] p-6">
+          <div className="animate-pop relative isolate mt-4 overflow-hidden rounded-[22px] border border-[#E8E2D8] bg-[#ebfbee] p-6">
             <PolkaDots />
+            <FaceDoodles variant="success" />
             <StripPreview template={selected} photos={photos} className="mx-auto max-w-[180px]" />
             <p className="mt-5 font-heading text-xl font-extrabold text-[#2D2D2D]">Your strip is ready!</p>
             {plan === "free" && used >= 10 &&
