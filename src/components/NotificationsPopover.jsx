@@ -1,8 +1,23 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, Check } from "lucide-react";
+import { format } from "date-fns";
+import { Bell, Check, Flower2 } from "lucide-react";
+import UserAvatar from "@/components/UserAvatar";
 
-export default function NotificationsPopover({ open, onClose, notifs, onToggleRead, onMarkAll }) {
+const SYSTEM_TYPES = ["order_update", "payment", "subscription", "usage_limit", "storage_expiry", "storage_eviction"];
+
+function RowAvatar({ item, user }) {
+  if (SYSTEM_TYPES.includes(item.type)) {
+    return (
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#DC3522]">
+        <Flower2 size={16} className="text-white" />
+      </div>
+    );
+  }
+  return <UserAvatar user={user} size="sm" />;
+}
+
+export default function NotificationsPopover({ open, onClose, notifs, onToggleRead, onMarkAll, user }) {
   const navigate = useNavigate();
   if (!open) return null;
   const hasUnread = notifs.some((n) => !n.read);
@@ -18,46 +33,57 @@ export default function NotificationsPopover({ open, onClose, notifs, onToggleRe
   return (
     <>
       <div className="fixed inset-0 z-40" onClick={onClose} />
-      <div className="fixed bottom-20 left-2 right-2 z-50 overflow-hidden rounded-2xl border border-[#E8E2D8] bg-white shadow-2xl md:bottom-6 md:left-20 md:right-auto md:w-[360px]">
-        <div className="flex items-center justify-between border-b border-[#EEEBE4] px-4 py-3">
+      <div className="fixed bottom-20 left-2 right-2 z-50 overflow-hidden rounded-2xl bg-white shadow-xl md:bottom-6 md:left-20 md:right-auto md:w-[360px]">
+        <div className="flex items-center justify-between px-4 py-3">
           <p className="font-heading text-base font-extrabold text-[#2D2D2D]">Notifications</p>
           {hasUnread && (
-            <button onClick={onMarkAll} className="text-xs font-bold text-[#4F46E5] hover:underline">
+            <button onClick={onMarkAll} className="text-xs font-medium text-[#8B8D93] hover:text-[#4F46E5]">
               Mark all as read
             </button>
           )}
         </div>
-        <div className="max-h-[60vh] overflow-y-auto p-2">
+        <div className="border-b border-[#EEEBE4]" />
+        <div className="notifications-scroll max-h-[60vh] overflow-y-auto">
           {notifs.length ? (
-            notifs.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => handleRow(item)}
-                className={`group relative flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition ${
-                  item.read
-                    ? "border-transparent hover:bg-[#F5F0EA]"
-                    : "border-[#C7D2FE] bg-[#EEF2FF] hover:bg-[#E0E7FF]"
-                }`}
-              >
-                <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${item.read ? "bg-transparent" : "bg-[#DC3522]"}`} />
-                <div className="min-w-0 flex-1 pr-7">
-                  <p className="text-sm font-bold leading-snug text-[#2D2D2D]">{item.message}</p>
-                  <p className="mt-1 text-xs text-[#8B8D93]">{new Date(item.created_at).toLocaleString()}</p>
-                </div>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onToggleRead(item);
-                  }}
-                  title={item.read ? "Mark as unread" : "Mark as read"}
-                  className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white text-[#4F46E5] opacity-0 shadow-sm transition hover:bg-[#EEF2FF] group-hover:opacity-100"
+            notifs.map((item, i) => (
+              <div key={item.id} className={i < notifs.length - 1 ? "border-b border-[#F2EFE9]" : ""}>
+                <div
+                  onClick={() => handleRow(item)}
+                  className="group relative flex cursor-pointer items-start gap-3 px-4 py-4 transition hover:bg-[#FAF7F2]"
                 >
-                  {item.read ? <Bell size={14} /> : <Check size={14} />}
-                </button>
+                  <RowAvatar item={item} user={user} />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium leading-snug text-[#2D2D2D]">{item.message}</p>
+                    <p className="mt-1 text-xs text-[#9AA0A6]">
+                      {format(new Date(item.created_at), "h:mm a, MMM d, yyyy")}
+                    </p>
+                  </div>
+                  <div className="absolute right-3.5 top-1/2 h-7 w-7 -translate-y-1/2">
+                    {!item.read && (
+                      <span className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#DC3522] transition-opacity group-hover:opacity-0" />
+                    )}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onToggleRead(item);
+                      }}
+                      className="group/btn absolute inset-0 flex items-center justify-center rounded-lg border border-[#E8E2D8] bg-white opacity-0 transition-opacity duration-150 hover:border-[#D8D9DC] hover:bg-[#F5F0EA] group-hover:opacity-100"
+                    >
+                      {item.read ? (
+                        <Bell size={14} className="text-[#4F46E5]" />
+                      ) : (
+                        <Check size={14} className="text-[#4F46E5]" />
+                      )}
+                      <span className="pointer-events-none absolute right-full top-1/2 mr-2 -translate-y-1/2 whitespace-nowrap rounded-md bg-[#1A1A1A] px-2 py-1 text-[13px] font-medium text-white opacity-0 transition-opacity duration-150 group-hover/btn:opacity-100">
+                        {item.read ? "Mark as unread" : "Mark as read"}
+                      </span>
+                    </button>
+                  </div>
+                </div>
               </div>
             ))
           ) : (
-            <div className="px-4 py-12 text-center text-sm text-[#8B8D93]">You're all caught up.</div>
+            <div className="px-4 py-12 text-center text-sm text-[#9AA0A6]">You're all caught up.</div>
           )}
         </div>
       </div>

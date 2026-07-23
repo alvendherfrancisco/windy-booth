@@ -1,17 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { Bell, Camera, Flower2, Home, Images, Printer } from "lucide-react";
+import { Flower2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import UserAvatar from "@/components/UserAvatar";
 import NotificationsPopover from "@/components/NotificationsPopover";
 
 const items = [
-  { to: "/dashboard", label: "Home", icon: Home },
-  { to: "/booth", label: "Capture", icon: Camera },
-  { to: "/my-booths", label: "Strips", icon: Images },
-  { to: "/print-shop", label: "Print", icon: Printer },
+  { to: "/dashboard", label: "Home", outline: "home-outline", fill: "home" },
+  { to: "/booth", label: "Capture", outline: "camera-outline", fill: "camera" },
+  { to: "/my-booths", label: "Strips", outline: "albums-outline", fill: "albums" },
+  { to: "/print-shop", label: "Print", outline: "print-outline", fill: "print" },
 ];
+
+function NavIcon({ outline, fill, active, size }) {
+  if (active) return <ion-icon name={fill} style={{ fontSize: size }} />;
+  return (
+    <>
+      <ion-icon name={outline} className="block group-hover:hidden" style={{ fontSize: size }} />
+      <ion-icon name={fill} className="hidden group-hover:block" style={{ fontSize: size }} />
+    </>
+  );
+}
 
 export default function AppShell() {
   const { user } = useAuth();
@@ -62,16 +72,12 @@ export default function AppShell() {
           <Flower2 size={20} strokeWidth={1.7} />
         </Link>
         <nav className="mt-9 flex flex-1 flex-col items-center gap-1">
-          {items.map(({ to, label, icon: Icon }) => {
+          {items.map(({ to, label, outline, fill }) => {
             const active = isActive(to);
             return (
               <Link key={to} to={to} className={navItemCls(active)}>
                 <span className={iconWrapCls(active)}>
-                  <Icon
-                    size={20}
-                    strokeWidth={active ? 2.2 : 1.8}
-                    className={active ? "fill-current" : "fill-none group-hover:fill-current"}
-                  />
+                  <NavIcon outline={outline} fill={fill} active={active} size={20} />
                 </span>
                 {label}
               </Link>
@@ -88,11 +94,7 @@ export default function AppShell() {
                 notifOpen ? "bg-[#FDE8E4]" : "group-hover:bg-[#EEF2FF]"
               }`}
             >
-              <Bell
-                size={20}
-                strokeWidth={notifOpen ? 2.2 : 1.8}
-                className={notifOpen ? "fill-current" : "fill-none group-hover:fill-current"}
-              />
+              <NavIcon outline="notifications-outline" fill="notifications" active={notifOpen} size={20} />
               {unread > 0 && (
                 <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#DC3522] px-1 text-[9px] font-bold text-white ring-2 ring-[#F5F0EA]">
                   {unread}
@@ -120,7 +122,7 @@ export default function AppShell() {
       </main>
 
       <nav className="fixed inset-x-0 bottom-0 z-30 flex items-stretch border-t border-[#E8E2D8] bg-white px-1 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 md:hidden">
-        {items.map(({ to, label, icon: Icon }) => {
+        {items.map(({ to, label, outline, fill }) => {
           const active = isActive(to);
           return (
             <Link
@@ -130,7 +132,7 @@ export default function AppShell() {
                 active ? "text-[#DC3522]" : "text-[#8A8580]"
               }`}
             >
-              <Icon size={18} className={active ? "fill-current" : "fill-none"} />
+              <NavIcon outline={outline} fill={fill} active={active} size={18} />
               {label}
             </Link>
           );
@@ -141,7 +143,7 @@ export default function AppShell() {
             notifOpen ? "text-[#DC3522]" : "text-[#8A8580]"
           }`}
         >
-          <Bell size={18} className={notifOpen ? "fill-current" : "fill-none"} />
+          <NavIcon outline="notifications-outline" fill="notifications" active={notifOpen} size={18} />
           {unread > 0 && (
             <span className="absolute right-1 top-0 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-[#DC3522] px-1 text-[8px] font-bold text-white">
               {unread}
@@ -166,6 +168,7 @@ export default function AppShell() {
         notifs={notifs}
         onToggleRead={toggleRead}
         onMarkAll={markAllRead}
+        user={user}
       />
     </div>
   );

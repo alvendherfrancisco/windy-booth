@@ -92,3 +92,13 @@
     @apply bg-background text-foreground font-body;
   }
 }
+
+@layer utilities {
+  .notifications-scroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .notifications-scroll::-webkit-scrollbar {
+    display: none;
+  }
+}
