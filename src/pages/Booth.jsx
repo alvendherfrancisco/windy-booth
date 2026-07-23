@@ -132,18 +132,18 @@ export default function Booth() {
   return (
     <div className="mx-auto max-w-4xl pb-32 md:pb-28">
       <div className="mb-6">
-        {step > 1 && (
-          <button onClick={goBack} className="mb-4 flex items-center gap-1.5 text-sm font-bold text-[#2D2D2D] hover:text-[#4F46E5]">
+        {step > 1 &&
+        <button onClick={goBack} className="mb-4 flex items-center gap-1.5 text-sm font-bold text-[#2D2D2D] hover:text-[#4F46E5]">
             <ArrowLeft size={16} />Back
           </button>
-        )}
+        }
         <BoothStepper step={step} />
       </div>
       {/* STEP 1 — Design */}
       {step === 1 &&
       <>
           <h1 className="font-heading text-3xl font-extrabold text-[#2D2D2D]">Choose your design</h1>
-          <p className="mt-1 text-sm text-[#8A8580]">Every booth starts with a good frame.</p>
+          <p className="mt-1 text-sm text-[#8A8580] hidden">Every booth starts with a good frame.</p>
           {plan === "free" && used >= 10 ?
         <div className="mt-7 rounded-[18px] bg-[#FDE8E4] p-5">
               <b className="text-[#2D2D2D]">Your 10 sessions are used.</b>
@@ -200,10 +200,10 @@ export default function Booth() {
                 <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
                   <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#8A8580]">Live Preview</p>
                   <button
-                    type="button"
-                    onClick={() => { if (photos.length < 3) fileInput.current.click(); }}
-                    className="flex w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#C7D2FE] bg-[#EEF2FF] py-12 text-center transition hover:border-[#4F46E5]"
-                  >
+                type="button"
+                onClick={() => {if (photos.length < 3) fileInput.current.click();}}
+                className="flex w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#C7D2FE] bg-[#EEF2FF] py-12 text-center transition hover:border-[#4F46E5]">
+                
                     <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#4F46E5]"><ImageUp size={24} /></span>
                     <span className="mt-4 block font-bold text-[#2D2D2D]">Tap to choose a photo</span>
                     <span className="mt-1 block text-sm text-[#8A8580]">or drag and drop here</span>
@@ -235,18 +235,18 @@ export default function Booth() {
             <div className="flex items-center justify-between gap-3">
               <span className="text-xs text-[#5C5953]">
                 {mode === "camera" ?
-              (photos.length < 3 ? <>Ready to start — take <span className="font-bold text-[#4F46E5]">3 photos</span></> : "All 3 photos captured!") :
-              (photos.length < 3 ? <>Upload <span className="font-bold text-[#4F46E5]">3 photos</span> from your device</> : "All 3 photos ready!")}
+              photos.length < 3 ? <>Ready to start — take <span className="font-bold text-[#4F46E5]">3 photos</span></> : "All 3 photos captured!" :
+              photos.length < 3 ? <>Upload <span className="font-bold text-[#4F46E5]">3 photos</span> from your device</> : "All 3 photos ready!"}
               </span>
               {mode === "camera" ?
-            (photos.length < 3 ?
+            photos.length < 3 ?
             <button disabled={saving} onClick={() => captureRef.current?.capture()} className="flex items-center gap-2 rounded-full bg-[#DC3522] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#B82E1F] disabled:bg-[#E8E2D8] disabled:text-[#8A8580]">
                     <Camera size={16} />Start
                   </button> :
 
             <button onClick={finish} disabled={saving} className="rounded-full bg-[#DC3522] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#B82E1F] disabled:bg-[#E8E2D8]">
                     {saving ? "Making your strip…" : "Reveal my strip →"}
-                  </button>) :
+                  </button> :
 
 
             <button disabled={photos.length !== 3 || saving} onClick={finish} className="rounded-full bg-[#DC3522] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#B82E1F] disabled:bg-[#E8E2D8] disabled:text-[#8A8580]">
