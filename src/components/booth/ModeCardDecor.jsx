@@ -22,7 +22,7 @@ const VARIANTS = {
 export default function ModeCardDecor({ variant }) {
   const items = VARIANTS[variant] || [];
   return (
-    <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+    <div className="pointer-events-none absolute inset-0" aria-hidden="true" style={{ backgroundImage: "radial-gradient(circle, rgba(230,73,128,0.13) 1.4px, transparent 1.4px)", backgroundSize: "15px 15px" }}>
       {items.map((d, i) => (
         <img
           key={i}
