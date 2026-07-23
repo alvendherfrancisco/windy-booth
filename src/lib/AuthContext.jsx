@@ -102,22 +102,24 @@ export const AuthProvider = ({ children }) => {
       // automatically pull their Google profile picture once, on first account
       // creation. A custom upload sets avatar_url, so this never overwrites a
       // user-chosen photo.
-      if (currentUser && !currentUser.avatar_url && currentUser.full_name) {
-        const created = currentUser.created_date ? new Date(currentUser.created_date).getTime() : 0;
-        const isFresh = created && Date.now() - created < 10 * 60 * 1000;
-        if (isFresh) {
-          try {
-            await base44.functions.invoke("syncGoogleAvatar", {});
+      // Google users (full_name is populated by Google): automatically pull
+      // their Google profile picture if they don't have a custom photo — for
+      // existing accounts and new sign-ups alike. A custom upload marks
+      // avatar_source "custom", so the Google photo never overwrites it.
+      if (currentUser && currentUser.full_name && currentUser.avatar_source !== "custom" && (!currentUser.avatar_url || currentUser.avatar_source === "google")) {
+        try {
+          const res = await base44.functions.invoke("syncGoogleAvatar", {});
+          if (res?.avatar_url) {
+            updateUser({ avatar_url: res.avatar_url, avatar_source: "google" });
             sessionStorage.removeItem("vendi_google_consent");
-            window.location.reload();
-          } catch {
-            if (!sessionStorage.getItem("vendi_google_consent")) {
-              sessionStorage.setItem("vendi_google_consent", "1");
-              try {
-                const url = await base44.connectors.connectAppUser("6a62074fa8eda00e1c8a0e3a");
-                window.location.href = url;
-              } catch (e) { /* connector unavailable */ }
-            }
+          }
+        } catch {
+          if (!sessionStorage.getItem("vendi_google_consent")) {
+            sessionStorage.setItem("vendi_google_consent", "1");
+            try {
+              const url = await base44.connectors.connectAppUser("6a62074fa8eda00e1c8a0e3a");
+              window.location.href = url;
+            } catch (e) { /* connector unavailable */ }
           }
         }
       }

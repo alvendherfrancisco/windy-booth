@@ -17,7 +17,7 @@ export default function Profile() {
     setUploading(true);
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      await base44.auth.updateMe({ avatar_url: file_url });
+      await base44.auth.updateMe({ avatar_url: file_url, avatar_source: "custom" });
       window.location.reload();
     } catch (err) {
       setUploading(false);
