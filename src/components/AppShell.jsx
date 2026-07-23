@@ -27,8 +27,8 @@ function SideNavItem({ to, label, outline, fill, active, size, labelClass }) {
       }>
       
       <span
-        className={`flex h-10 w-10 items-center justify-center rounded-xl transition bg-[#ffe0e0] ${
-        active ? "" : hover ? "" : ""}`
+        className={`flex h-10 w-10 items-center justify-center rounded-xl transition ${
+        active ? "bg-[#ffdeeb]" : hover ? "bg-[#ffdeeb]" : ""}`
         }>
         
         <ion-icon name={on ? fill : outline} style={{ fontSize: size }} />
