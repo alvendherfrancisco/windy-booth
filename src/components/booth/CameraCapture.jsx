@@ -52,7 +52,7 @@ const CameraCapture = forwardRef(function CameraCapture(
         const file = new File([blob], `vendi-${Date.now()}.jpg`, { type: "image/jpeg" });
         const result = await base44.integrations.Core.UploadFile({ file });
         resolve(result.file_url);
-      }, "image/jpeg", 0.92)
+      }, "image/jpeg", 0.95)
     );
   }, [filter]);
 

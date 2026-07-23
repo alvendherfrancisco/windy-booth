@@ -22,7 +22,6 @@ export default function Booth() {
   const { step, setStep, goBack } = useBoothWizard();
   const fileInput = useRef();
   const captureRef = useRef();
-  const previewRef = useRef();
 
   const [templates, setTemplates] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -84,7 +83,7 @@ export default function Booth() {
     const ctx = canvas.getContext("2d");
     ctx.filter = css;
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    const blob = await new Promise((res) => canvas.toBlob(res, "image/jpeg", 0.92));
+    const blob = await new Promise((res) => canvas.toBlob(res, "image/jpeg", 0.95));
     const baked = new File([blob], `vendi-${Date.now()}.jpg`, { type: "image/jpeg" });
     const r = await base44.integrations.Core.UploadFile({ file: baked });
     return r.file_url;
@@ -124,9 +123,7 @@ export default function Booth() {
     }
   };
 
-  const download = () => {
-    if (previewRef.current) downloadStrip(previewRef.current, "vendi-strip.png", photos[0]);
-  };
+  const download = () => downloadStrip(selected, photos, "vendi-strip.png");
 
   // In upload mode the stored photos are raw, so the filter is applied via CSS for the live preview.
   const uploadFilterCss = mode === "upload" ? filterCss(filter) : "none";
@@ -268,7 +265,7 @@ export default function Booth() {
           <div className="animate-pop relative isolate mt-4 overflow-hidden rounded-[22px] border border-[#E8E2D8] bg-[#ebfbee] p-6">
             <PolkaDots />
             <FaceDoodles variant="success" />
-            <div ref={previewRef} className="mx-auto w-[180px]">
+            <div className="mx-auto w-[180px]">
               <StripPreview template={selected} photos={photos} />
             </div>
             <p className="mt-5 font-heading text-xl font-extrabold text-[#2D2D2D]">Your strip is ready!</p>

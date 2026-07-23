@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Download, Printer, Trash2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
@@ -14,7 +14,6 @@ export default function MyBooths() {
   const { user } = useAuth();
   const [strips, setStrips] = useState([]);
   const [templates, setTemplates] = useState({});
-  const previewRefs = useRef({});
   const plan = user?.plan || "free";
 
   const load = async () => {
@@ -39,9 +38,8 @@ export default function MyBooths() {
     try { await base44.entities.Strip.delete(id); } catch (e) {}
     load();
   };
-  const download = async (strip) => {
-    const el = previewRefs.current[strip.id];
-    if (el) await downloadStrip(el, `vendi-strip-${strip.id}.png`, strip.photo_urls[0]);
+  const download = (strip) => {
+    downloadStrip(templates[strip.template_id], strip.photo_urls, `vendi-strip-${strip.id}.png`);
   };
 
   return (
@@ -52,24 +50,19 @@ export default function MyBooths() {
         {plan === "free" && <Link to="/profile" className="mt-4 inline-block rounded-full bg-[#fff3bf] px-4 py-2 text-sm font-bold text-[#e67700]">Go Premium for more room</Link>}
       </header>
       {strips.length ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {strips.map((strip) => {
-            const tpl = templates[strip.template_id] || { name: "Studio Mono" };
-            return (
-              <article key={strip.id} className="rounded-[18px] border border-[#D8D9DC] bg-white p-4">
-                <p className="mb-2 text-center text-xs text-[#8B8D93]">{dotted(strip.created_at)}</p>
-                <div ref={(el) => { previewRefs.current[strip.id] = el; }} className="mx-auto w-[110px]">
-                  <StripPreview template={tpl} photos={strip.photo_urls} />
-                </div>
-                <div className="mt-3 flex justify-center gap-3">
-                  <button onClick={() => download(strip)} aria-label="Download strip" className="text-[#228be6]"><Download size={17} /></button>
-                  <Link to="/print-shop" aria-label="Order prints" className="text-[#228be6]"><Printer size={17} /></Link>
-                  <button onClick={() => remove(strip.id)} aria-label="Delete strip" className="text-[#DC2626]"><Trash2 size={17} /></button>
-                </div>
-                {strip.expires_at && <p className="mt-2 text-center text-xs text-[#8B8D93]">Expires {dotted(strip.expires_at)}</p>}
-              </article>
-            );
-          })}
+        <div className="flex flex-wrap justify-center gap-4">
+          {strips.map((strip) => (
+            <article key={strip.id} className="w-[150px] rounded-[14px] border border-[#D8D9DC] bg-white p-3">
+              <p className="mb-2 text-center text-xs text-[#8B8D93]">{dotted(strip.created_at)}</p>
+              <StripPreview template={templates[strip.template_id]} photos={strip.photo_urls} className="mx-auto w-[124px]" />
+              <div className="mt-3 flex justify-center gap-3">
+                <button onClick={() => download(strip)} aria-label="Download strip" className="text-[#228be6]"><Download size={17} /></button>
+                <Link to="/print-shop" aria-label="Order prints" className="text-[#228be6]"><Printer size={17} /></Link>
+                <button onClick={() => remove(strip.id)} aria-label="Delete strip" className="text-[#DC2626]"><Trash2 size={17} /></button>
+              </div>
+              {strip.expires_at && <p className="mt-2 text-center text-xs text-[#8B8D93]">Expires {dotted(strip.expires_at)}</p>}
+            </article>
+          ))}
         </div>
       ) : (
         <div className="relative isolate overflow-hidden rounded-[18px] border border-dashed border-[#AEB0B5] bg-[#fff0f6] px-6 py-16 text-center">

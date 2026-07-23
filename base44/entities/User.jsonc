@@ -34,6 +34,13 @@
     },
     "avatar_url": {
       "type": "string"
+    },
+    "avatar_source": {
+      "type": "string",
+      "enum": [
+        "custom",
+        "google"
+      ]
     }
   }
 }
