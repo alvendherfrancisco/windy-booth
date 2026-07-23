@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Check, Loader2, Sparkles, X } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { LIFETIME_PRICE, COLLECTION_PRICE } from "@/lib/plans";
+import VendiLogo from "@/components/VendiLogo";
 
 const INCLUDED = [
 "Unlimited booth sessions",
@@ -61,7 +62,7 @@ export default function UpgradeModal({ open, onClose, variant = "lifetime", coll
           </> :
 
         <>
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#fff0f6]"><Sparkles size={22} className="text-[#e64980]" /></div>
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#fff0f6]"><VendiLogo size={28} color="#e64980" /></div>
             <h2 className="mt-3 font-heading text-2xl font-extrabold text-[#2D2D2D]">Unlock Everything</h2>
             <p className="mt-1.5 text-sm text-[#5C5953]">Create without limits and access every artist-designed collection.</p>
             <ul className="mt-4 space-y-2 text-left">

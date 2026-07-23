@@ -7,6 +7,7 @@ import UserAvatar from "@/components/UserAvatar";
 import PolkaDots from "@/components/PolkaDots";
 import UpgradeModal from "@/components/upgrade/UpgradeModal";
 import { isLifetime, LIFETIME_PRICE, planLabel } from "@/lib/plans";
+import LegalLinks from "@/components/profile/LegalLinks";
 
 export default function Profile() {
   const { user } = useAuth();
@@ -67,6 +68,7 @@ export default function Profile() {
           </>
         }
       </section>
+      <LegalLinks />
       {user?.email === "alvendherfrancisco01@gmail.com" &&
       <Link to="/admin" className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#e64980] px-4 py-2 text-sm font-bold text-[#e64980] transition hover:bg-[#fff0f6]">
           <Shield size={15} /> Admin dashboard
