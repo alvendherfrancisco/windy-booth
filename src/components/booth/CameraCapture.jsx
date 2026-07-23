@@ -46,6 +46,9 @@ const CameraCapture = forwardRef(function CameraCapture(
     canvas.height = video.videoHeight || 480;
     const ctx = canvas.getContext("2d");
     ctx.filter = filterCss(filter);
+    // Mirror the frame so the saved strip matches the live (selfie) preview.
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     return new Promise(resolve =>
       canvas.toBlob(async blob => {

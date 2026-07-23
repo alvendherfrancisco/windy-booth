@@ -19,11 +19,21 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'google_userinfo_failed', status: res.status, details }, { status: 502 });
     }
     const info = await res.json();
-    const picture = info.picture;
-    if (!picture) return Response.json({ error: 'no_picture' }, { status: 404 });
 
-    await base44.asServiceRole.entities.User.update(user.id, { avatar_url: picture, avatar_source: "google" });
-    return Response.json({ avatar_url: picture, avatar_source: "google" });
+    // Sync profile photo + account details (full name) from Google on first login.
+    // Never overwrite a user-chosen custom photo/name (avatar_source === "custom").
+    const updates = {};
+    if (info.picture && user.avatar_source !== "custom") {
+      updates.avatar_url = info.picture;
+      updates.avatar_source = "google";
+    }
+    if (info.name && !user.full_name) {
+      updates.full_name = info.name;
+    }
+    if (Object.keys(updates).length) {
+      await base44.asServiceRole.entities.User.update(user.id, updates);
+    }
+    return Response.json(updates);
   } catch (error) {
     console.error('syncGoogleAvatar error', error.message);
     return Response.json({ error: error.message }, { status: 500 });

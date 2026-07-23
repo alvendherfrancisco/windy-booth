@@ -153,8 +153,7 @@ export default function AdminTemplates({ templates, onChanged }) {
                 <input value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value })} className="input" placeholder="sunset-bloom" />
               </Field>
               <Field label="Category">
-                <input list="tpl-cats" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="input" placeholder="Vendi" />
-                <datalist id="tpl-cats">{DEFAULT_CATEGORIES.map((c) => <option key={c} value={c} />)}</datalist>
+                <CategoryPicker value={form.category} onChange={(v) => setForm({ ...form, category: v })} options={cats.filter((c) => c !== "all")} />
               </Field>
               <Field label="Tier">
                 <select value={form.tier} onChange={(e) => setForm({ ...form, tier: e.target.value })} className="input">
@@ -198,6 +197,37 @@ function Field({ label, children }) {
       <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-[#8A8580]">{label}</span>
       {children}
     </label>
+  );
+}
+
+function CategoryPicker({ value, onChange, options }) {
+  const [adding, setAdding] = useState(false);
+  const [draft, setDraft] = useState("");
+  const opts = Array.from(new Set([...options, ...DEFAULT_CATEGORIES]));
+  const custom = value && !opts.includes(value);
+  return (
+    <div>
+      <div className="flex flex-wrap gap-1.5">
+        {opts.map((c) => (
+          <button type="button" key={c} onClick={() => onChange(c)} className={`rounded-full border px-3 py-1.5 text-xs font-bold capitalize transition ${value === c ? "border-[#e64980] bg-[#fff0f6] text-[#e64980]" : "border-[#E8E2D8] bg-white text-[#5C5953] hover:border-[#e64980]"}`}>
+            {c}
+          </button>
+        ))}
+        {!adding && (
+          <button type="button" onClick={() => { setAdding(true); setDraft(""); }} className="rounded-full border border-dashed border-[#228be6] px-3 py-1.5 text-xs font-bold text-[#228be6] hover:bg-[#e7f5ff]">+ New</button>
+        )}
+      </div>
+      {adding && (
+        <div className="mt-2 flex items-center gap-2">
+          <input autoFocus value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Type a new category" className="input" />
+          <button type="button" onClick={() => { if (draft.trim()) { onChange(draft.trim()); setAdding(false); } }} className="rounded-full bg-[#228be6] px-3 py-1.5 text-xs font-bold text-white">Add</button>
+          <button type="button" onClick={() => setAdding(false)} className="rounded-full border border-[#E8E2D8] px-3 py-1.5 text-xs font-bold text-[#5C5953]">Cancel</button>
+        </div>
+      )}
+      {custom && !adding && (
+        <p className="mt-1.5 text-xs text-[#8A8580]">Selected: <b className="capitalize text-[#2D2D2D]">{value}</b></p>
+      )}
+    </div>
   );
 }
 

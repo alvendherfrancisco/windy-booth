@@ -1,13 +1,12 @@
 import React from "react";
-import { RAINBOW_DOTS_BG } from "@/lib/rainbowDotsBg";
 
-// Decorative accents for the Booth "mode" cards. The background mimics the
-// home "sessions" card (scattered rainbow polka dots), and the Take Photos card
-// scatters all uploaded deco SVGs around the edges so the center icon/label
-// stays clear. The Upload card uses a smaller corner set.
+// Decorative accents for the Booth "mode" cards.
+// Default state: scattered deco SVGs around the edges (center stays clear).
+// Hover state: rainbow polka dots slide in from the left, right, top, and
+// bottom edges (driven by the parent button's `group` + `group-hover:`).
 const BASE = "https://media.base44.com/images/public/6a60bb3456cf14775962b360/";
 
-const VARIANTS = {
+const SCATTER = {
   camera: [
     { src: BASE + "8965b2c54_deco-01-smiling-star.svg", top: "8%", left: "7%", size: 32, rotate: -12, opacity: 0.45 },
     { src: BASE + "204b9d46d_deco-06-sparkle-burst.svg", top: "6%", left: "80%", size: 28, rotate: 10, opacity: 0.42 },
@@ -23,13 +22,23 @@ const VARIANTS = {
     { src: BASE + "c7738c10f_deco-02-sparkle-diamond.svg", top: "10%", left: "78%", size: 40, rotate: 12, opacity: 0.42 },
     { src: BASE + "1ab14d2e6_deco-07-smiling-star-sparkle.svg", top: "76%", left: "8%", size: 42, rotate: -10, opacity: 0.42 },
     { src: BASE + "3e20cb0da_deco-09-heart-cluster.svg", top: "12%", left: "8%", size: 30, rotate: -8, opacity: 0.4 },
+    { src: BASE + "a6acf1697_deco-04-heart-swirl.svg", top: "70%", left: "80%", size: 30, rotate: 10, opacity: 0.4 },
   ],
 };
 
+const COLORS = ["#e599f7", "#cc5de8", "#ffc078", "#ffa94d", "#fcc2d7", "#74c0fc", "#8ce99a", "#ffe066"];
+const VDOTS = Array.from({ length: 6 }, (_, i) => ({ color: COLORS[(i * 3) % COLORS.length], size: 8 + (i % 3) * 3 }));
+const HDOTS = Array.from({ length: 7 }, (_, i) => ({ color: COLORS[(i * 2) % COLORS.length], size: 8 + (i % 3) * 3 }));
+
+const dot = (d, i) => (
+  <span key={i} className="rounded-full" style={{ width: d.size, height: d.size, background: d.color, opacity: 0.78 }} />
+);
+
 export default function ModeCardDecor({ variant }) {
-  const items = VARIANTS[variant] || [];
+  const items = SCATTER[variant] || [];
   return (
-    <div className="pointer-events-none absolute inset-0" aria-hidden="true" style={{ backgroundImage: RAINBOW_DOTS_BG, backgroundRepeat: "no-repeat" }}>
+    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+      {/* Default: scattered deco SVGs */}
       {items.map((d, i) => (
         <img
           key={i}
@@ -39,6 +48,20 @@ export default function ModeCardDecor({ variant }) {
           style={{ top: d.top, left: d.left, width: d.size, height: d.size, transform: `rotate(${d.rotate}deg)`, opacity: d.opacity }}
         />
       ))}
+
+      {/* Hover: polka dots slide in from all four sides */}
+      <div className="absolute left-0 top-0 flex h-full w-12 -translate-x-full flex-col items-center justify-around transition-transform duration-700 ease-out group-hover:translate-x-0">
+        {VDOTS.map(dot)}
+      </div>
+      <div className="absolute right-0 top-0 flex h-full w-12 translate-x-full flex-col items-center justify-around transition-transform duration-700 ease-out group-hover:translate-x-0">
+        {VDOTS.map(dot)}
+      </div>
+      <div className="absolute left-0 top-0 flex h-12 w-full -translate-y-full flex-row items-center justify-around transition-transform duration-700 ease-out group-hover:translate-y-0">
+        {HDOTS.map(dot)}
+      </div>
+      <div className="absolute bottom-0 left-0 flex h-12 w-full translate-y-full flex-row items-center justify-around transition-transform duration-700 ease-out group-hover:translate-y-0">
+        {HDOTS.map(dot)}
+      </div>
     </div>
   );
 }

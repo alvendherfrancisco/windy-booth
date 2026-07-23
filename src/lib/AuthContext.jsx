@@ -109,8 +109,11 @@ export const AuthProvider = ({ children }) => {
       if (currentUser && currentUser.full_name && currentUser.avatar_source !== "custom" && (!currentUser.avatar_url || currentUser.avatar_source === "google")) {
         try {
           const res = await base44.functions.invoke("syncGoogleAvatar", {});
-          if (res?.avatar_url) {
-            updateUser({ avatar_url: res.avatar_url, avatar_source: "google" });
+          if (res && (res.avatar_url || res.full_name)) {
+            const patch = {};
+            if (res.avatar_url) { patch.avatar_url = res.avatar_url; patch.avatar_source = "google"; }
+            if (res.full_name) patch.full_name = res.full_name;
+            updateUser(patch);
             sessionStorage.removeItem("vendi_google_consent");
           }
         } catch {

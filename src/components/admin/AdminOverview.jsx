@@ -1,6 +1,8 @@
 import React, { useMemo } from "react";
 import { Users, UserPlus, Image as ImageIcon, Activity, Crown, Sparkles, ShoppingBag, Wallet, LayoutTemplate } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+import PolkaDots from "@/components/PolkaDots";
+import FaceDoodles from "@/components/FaceDoodles";
 
 const DAY = 86400000;
 const fmt = (n) => n.toLocaleString();
@@ -65,6 +67,14 @@ export default function AdminOverview({ users, strips, orders, billing, template
 
   return (
     <div className="space-y-6">
+      <div className="relative isolate overflow-hidden rounded-[22px] border border-[#E8E2D8] bg-[#fff0f6] p-6">
+        <PolkaDots count={16} />
+        <FaceDoodles variant="empty" />
+        <p className="relative text-xs font-bold uppercase tracking-wider text-[#e64980]">Admin dashboard</p>
+        <h2 className="relative mt-1 font-heading text-2xl font-extrabold text-[#2D2D2D]">Welcome back 👋</h2>
+        <p className="relative mt-1 text-sm text-[#5C5953]">Here's what's happening across Vendi right now.</p>
+      </div>
+
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {cards.map((c) => {
           const Icon = c.icon;

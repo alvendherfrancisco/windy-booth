@@ -179,12 +179,12 @@ export default function Booth() {
       <>
           <h1 className="font-heading text-2xl font-extrabold text-[#2D2D2D]">How would you like to add your photos?</h1>
           <div className="mt-7 grid grid-cols-2 gap-4">
-            <button onClick={() => {setMode("camera");setStep(3);}} className="relative flex flex-col items-center gap-3 overflow-hidden rounded-[18px] border border-[#E8E2D8] bg-white p-8 text-center transition hover:border-[#228be6] hover:bg-[#e7f5ff]">
+            <button onClick={() => {setMode("camera");setStep(3);}} className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-[18px] border border-[#E8E2D8] bg-white p-8 text-center transition hover:border-[#228be6] hover:bg-[#e7f5ff]">
               <ModeCardDecor variant="camera" />
               <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-[#e7f5ff]"><Camera size={22} className="text-[#228be6]" /></div>
               <div className="relative z-10"><b className="block text-sm text-[#2D2D2D]">Take Photos</b><small className="text-[#8A8580]">Use your camera</small></div>
             </button>
-            <button onClick={() => {setMode("upload");setStep(3);}} className="relative flex flex-col items-center gap-3 overflow-hidden rounded-[18px] border border-[#E8E2D8] bg-white p-8 text-center transition hover:border-[#228be6] hover:bg-[#e7f5ff]">
+            <button onClick={() => {setMode("upload");setStep(3);}} className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-[18px] border border-[#E8E2D8] bg-white p-8 text-center transition hover:border-[#228be6] hover:bg-[#e7f5ff]">
               <ModeCardDecor variant="upload" />
               <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-[#e7f5ff]"><ImageUp size={22} className="text-[#228be6]" /></div>
               <div className="relative z-10"><b className="block text-sm text-[#2D2D2D]">Upload Photos</b><small className="text-[#8A8580]">Choose from gallery</small></div>
