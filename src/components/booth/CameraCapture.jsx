@@ -93,7 +93,7 @@ const CameraCapture = forwardRef(function CameraCapture(
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 lg:grid-cols-[1fr_170px]">
+      <div className="grid gap-4 lg:grid-cols-[1fr_260px]">
         {/* Live Preview card */}
         <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
           <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#8A8580]">Live Preview</p>

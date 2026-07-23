@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Printer, Truck, Check, Loader2, Package } from "lucide-react";
+import { Check, Loader2, Package, Printer, Truck } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import StripPreview from "@/components/booth/StripPreview";
 import PolkaDots from "@/components/PolkaDots";
 import FaceDoodles from "@/components/FaceDoodles";
-import { BUNDLES, SHIPPING, formatPrice, computeTotal } from "@/lib/printPricing";
+import PrintShopInfo from "@/components/printshop/PrintShopInfo";
+import { BUNDLES, formatPrice, computeTotal, FREE_SHIP_THRESHOLD } from "@/lib/printPricing";
 
 export default function PrintShop() {
   const { user } = useAuth();
   const [strips, setStrips] = useState([]);
   const [templates, setTemplates] = useState({});
-  const [bundle, setBundle] = useState("trio");
+  const [bundle, setBundle] = useState("classic");
   const [selected, setSelected] = useState([]);
   const [paper, setPaper] = useState("matte");
   const [quantity, setQuantity] = useState(1);
-  const [shipMethod, setShipMethod] = useState("jt_live");
   const [address, setAddress] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -43,12 +43,12 @@ export default function PrintShop() {
   }, [user?.id]);
 
   const bundleDef = BUNDLES.find((b) => b.id === bundle);
-  const pricing = computeTotal(bundle, quantity, shipMethod);
+  const pricing = computeTotal(bundle, quantity);
 
   const toggleStrip = (id) => {
     setSelected((prev) => {
       if (prev.includes(id)) return prev.filter((x) => x !== id);
-      if (prev.length >= bundleDef.maxStrips) return prev;
+      if (prev.length >= bundleDef.strips) return prev;
       return [...prev, id];
     });
   };
@@ -63,7 +63,7 @@ export default function PrintShop() {
       const res = await base44.functions.invoke("createPrintCheckout", {
         origin: window.location.origin,
         strip_ids: selected,
-        bundle, paper, quantity, address: address.trim(), shipping_method: shipMethod,
+        bundle, paper, quantity, address: address.trim(),
       });
       const data = res?.data ?? res;
       if (data?.url) window.location.href = data.url;
@@ -81,26 +81,9 @@ export default function PrintShop() {
           <FaceDoodles variant="success" />
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white text-[#37b24d]"><Check size={28} /></div>
           <h1 className="font-heading text-2xl font-extrabold text-[#2D2D2D]">Order confirmed!</h1>
-          <p className="mt-2 text-sm text-[#5C5953]">Your print bundle is being prepared. We'll update you when it ships.</p>
+          <p className="mt-2 text-sm text-[#5C5953]">Your Print Club bundle is being prepared. We'll update you when it ships.</p>
           <Link to="/orders" className="mt-6 inline-block rounded-full bg-[#f06595] px-6 py-3 text-sm font-bold text-white hover:bg-[#e64980]">View my orders</Link>
-          <button onClick={() => setDone(null)} className="mt-3 block w-full text-sm font-bold text-[#228be6]">Print another bundle</button>
-        </div>
-      </div>
-    );
-  }
-
-  if (strips.length === 0) {
-    return (
-      <div>
-        <h1 className="font-heading text-3xl font-extrabold">Print Shop</h1>
-        <p className="mt-1 text-sm text-[#8B8D93]">Turn your strips into printed keepsakes.</p>
-        <div className="relative isolate mt-7 overflow-hidden rounded-[18px] border border-dashed border-[#AEB0B5] bg-[#fff0f6] px-6 py-16 text-center">
-          <PolkaDots />
-          <FaceDoodles variant="empty" />
-          <Package className="relative mx-auto text-[#e64980]" />
-          <p className="relative mt-3 font-heading text-xl font-bold">No strips to print yet</p>
-          <p className="relative mt-1 text-sm text-[#8B8D93]">Create a few strips first, then come back to order prints.</p>
-          <Link to="/booth" className="relative mt-5 inline-block rounded-full bg-[#f06595] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#e64980]">Start a booth</Link>
+          <button onClick={() => setDone(null)} className="mt-3 block w-full text-sm font-bold text-[#228be6]">Order another bundle</button>
         </div>
       </div>
     );
@@ -109,89 +92,91 @@ export default function PrintShop() {
   return (
     <div className="mx-auto max-w-3xl">
       <h1 className="font-heading text-3xl font-extrabold">Print Shop</h1>
-      <p className="mt-1 text-sm text-[#8B8D93]">Pick a bundle, choose your strips, and we'll print & ship them to you.</p>
+      <p className="mt-1 text-sm text-[#8B8D93]">Turn your strips into printed keepsakes with Print Club.</p>
 
-      {/* Bundle */}
-      <Section title="1. Choose a bundle" icon={Package}>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          {BUNDLES.map((b) => {
-            const active = bundle === b.id;
-            return (
-              <button key={b.id} onClick={() => { setBundle(b.id); setSelected((s) => s.slice(0, b.maxStrips)); }} className={`rounded-2xl border p-4 text-left transition ${active ? "border-[#e64980] bg-[#fff0f6]" : "border-[#E8E2D8] bg-white hover:border-[#e64980]"}`}>
-                <p className="font-heading text-base font-extrabold text-[#2D2D2D]">{b.name}</p>
-                <p className="mt-0.5 text-xs text-[#8A8580]">Up to {b.maxStrips} strip{b.maxStrips > 1 ? "s" : ""}</p>
-                <p className="mt-2 font-bold text-[#e64980]">{formatPrice(b.price)}</p>
-                {active && <span className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-[#37b24d]"><Check size={13} /> Selected</span>}
-              </button>
-            );
-          })}
+      <div className="mt-6"><PrintShopInfo /></div>
+
+      {strips.length === 0 ? (
+        <div className="relative isolate mt-6 overflow-hidden rounded-[18px] border border-dashed border-[#AEB0B5] bg-[#fff0f6] px-6 py-14 text-center">
+          <PolkaDots />
+          <FaceDoodles variant="empty" />
+          <Package className="relative mx-auto text-[#e64980]" />
+          <p className="relative mt-3 font-heading text-xl font-bold">No strips to print yet</p>
+          <p className="relative mt-1 text-sm text-[#8B8D93]">Create a few strips first, then come back to order prints.</p>
+          <Link to="/booth" className="relative mt-5 inline-block rounded-full bg-[#f06595] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#e64980]">Start a booth</Link>
         </div>
-      </Section>
-
-      {/* Strips */}
-      <Section title={`2. Select your strips (${selected.length}/${bundleDef.maxStrips})`} icon={Printer}>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-          {strips.map((s) => {
-            const on = selected.includes(s.id);
-            return (
-              <button key={s.id} onClick={() => toggleStrip(s.id)} className={`relative rounded-xl border p-2 transition ${on ? "border-[#e64980] bg-[#fff0f6]" : "border-[#E8E2D8] bg-white hover:border-[#e64980]"}`}>
-                <StripPreview template={templates[s.template_id]} photos={s.photo_urls} className="mx-auto w-full max-w-[100px]" />
-                {on && <span className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#e64980] text-white"><Check size={12} /></span>}
-              </button>
-            );
-          })}
-        </div>
-      </Section>
-
-      {/* Options */}
-      <Section title="3. Paper & quantity" icon={Printer}>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#8A8580]">Paper type</p>
-            <div className="flex gap-2">
-              {["matte", "glossy"].map((p) => (
-                <button key={p} onClick={() => setPaper(p)} className={`rounded-full border px-4 py-2 text-sm font-bold capitalize transition ${paper === p ? "border-[#228be6] bg-[#e7f5ff] text-[#228be6]" : "border-[#E8E2D8] bg-white text-[#5C5953] hover:border-[#228be6]"}`}>{p}</button>
-              ))}
+      ) : (
+        <>
+          <Section title={`1. Choose a bundle`} icon={Package}>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {BUNDLES.map((b) => {
+                const active = bundle === b.id;
+                return (
+                  <button key={b.id} onClick={() => { setBundle(b.id); setSelected((s) => s.slice(0, b.strips)); }} className={`rounded-2xl border p-4 text-left transition ${active ? "border-[#e64980] bg-[#fff0f6]" : "border-[#E8E2D8] bg-white hover:border-[#e64980]"}`}>
+                    <p className="font-heading text-base font-extrabold text-[#2D2D2D]">{b.name}</p>
+                    <p className="mt-0.5 text-xs text-[#8A8580]">{b.strips} strips + sticker sheet + letter card</p>
+                    <p className="mt-2 font-bold text-[#e64980]">{formatPrice(b.price)}</p>
+                    {active && <span className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-[#37b24d]"><Check size={13} /> Selected</span>}
+                  </button>
+                );
+              })}
             </div>
-          </div>
-          <div>
-            <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#8A8580]">Copies</p>
-            <div className="flex items-center gap-2">
-              <button onClick={() => setQuantity((q) => Math.max(1, q - 1))} className="h-9 w-9 rounded-full border border-[#E8E2D8] bg-white text-lg font-bold text-[#2D2D2D] hover:bg-[#F5F0EA]">−</button>
-              <span className="w-10 text-center font-bold">{quantity}</span>
-              <button onClick={() => setQuantity((q) => q + 1)} className="h-9 w-9 rounded-full border border-[#E8E2D8] bg-white text-lg font-bold text-[#2D2D2D] hover:bg-[#F5F0EA]">+</button>
+          </Section>
+
+          <Section title={`2. Select your strips (${selected.length}/${bundleDef.strips})`} icon={Printer}>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+              {strips.map((s) => {
+                const on = selected.includes(s.id);
+                return (
+                  <button key={s.id} onClick={() => toggleStrip(s.id)} className={`relative rounded-xl border p-2 transition ${on ? "border-[#e64980] bg-[#fff0f6]" : "border-[#E8E2D8] bg-white hover:border-[#e64980]"}`}>
+                    <StripPreview template={templates[s.template_id]} photos={s.photo_urls} className="mx-auto w-full max-w-[100px]" />
+                    {on && <span className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#e64980] text-white"><Check size={12} /></span>}
+                  </button>
+                );
+              })}
             </div>
-          </div>
-        </div>
-      </Section>
+          </Section>
 
-      {/* Shipping */}
-      <Section title="4. Shipping" icon={Truck}>
-        <div className="space-y-3">
-          <div className="flex flex-wrap gap-2">
-            {Object.entries(SHIPPING).map(([key, val]) => (
-              <button key={key} onClick={() => setShipMethod(key)} className={`rounded-full border px-4 py-2 text-sm font-bold transition ${shipMethod === key ? "border-[#228be6] bg-[#e7f5ff] text-[#228be6]" : "border-[#E8E2D8] bg-white text-[#5C5953] hover:border-[#228be6]"}`}>
-                {val.label} · {formatPrice(val.price)}
-              </button>
-            ))}
-          </div>
-          <textarea value={address} onChange={(e) => setAddress(e.target.value)} rows={3} placeholder="Full name, phone, street, city, province, postal code" className="input resize-none" />
-        </div>
-      </Section>
+          <Section title="3. Paper & copies" icon={Printer}>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#8A8580]">Paper type</p>
+                <div className="flex gap-2">
+                  {["matte", "glossy"].map((p) => (
+                    <button key={p} onClick={() => setPaper(p)} className={`rounded-full border px-4 py-2 text-sm font-bold capitalize transition ${paper === p ? "border-[#228be6] bg-[#e7f5ff] text-[#228be6]" : "border-[#E8E2D8] bg-white text-[#5C5953] hover:border-[#228be6]"}`}>{p}</button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#8A8580]">Copies</p>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => setQuantity((q) => Math.max(1, q - 1))} className="h-9 w-9 rounded-full border border-[#E8E2D8] bg-white text-lg font-bold text-[#2D2D2D] hover:bg-[#F5F0EA]">−</button>
+                  <span className="w-10 text-center font-bold">{quantity}</span>
+                  <button onClick={() => setQuantity((q) => q + 1)} className="h-9 w-9 rounded-full border border-[#E8E2D8] bg-white text-lg font-bold text-[#2D2D2D] hover:bg-[#F5F0EA]">+</button>
+                </div>
+              </div>
+            </div>
+          </Section>
 
-      {/* Summary */}
-      <div className="sticky bottom-3 z-10 mt-6 rounded-2xl border border-[#E8E2D8] bg-white p-4 shadow-sm">
-        <div className="space-y-1 text-sm">
-          <Row label={`Bundle × ${quantity}`} value={formatPrice(pricing.subtotal)} />
-          <Row label="Shipping" value={formatPrice(pricing.shipping)} />
-          <div className="my-1 border-t border-[#F0EBE2]" />
-          <Row label="Total" value={formatPrice(pricing.total)} bold />
-        </div>
-        {error && <p className="mt-2 text-sm font-bold text-[#DC2626]">{error}</p>}
-        <button onClick={checkout} disabled={busy} className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-[#f06595] px-5 py-4 text-sm font-bold text-white transition hover:bg-[#e64980] disabled:bg-[#E8E2D8]">
-          {busy ? <><Loader2 size={16} className="animate-spin" /> Preparing checkout…</> : <><Printer size={16} /> Checkout · {formatPrice(pricing.total)}</>}
-        </button>
-      </div>
+          <Section title="4. Shipping" icon={Truck}>
+            <textarea value={address} onChange={(e) => setAddress(e.target.value)} rows={3} placeholder="Full name, phone, street, city, province, postal code" className="input resize-none" />
+            <p className="mt-2 text-xs text-[#8A8580]">Shipping calculated at checkout · Free on orders {formatPrice(FREE_SHIP_THRESHOLD)}+</p>
+          </Section>
+
+          <div className="sticky bottom-3 z-10 mt-6 rounded-2xl border border-[#E8E2D8] bg-white p-4 shadow-sm">
+            <div className="space-y-1 text-sm">
+              <Row label={`Bundle × ${quantity}`} value={formatPrice(pricing.subtotal)} />
+              <Row label="Shipping" value={pricing.shipping === 0 ? "FREE" : formatPrice(pricing.shipping)} />
+              <div className="my-1 border-t border-[#F0EBE2]" />
+              <Row label="Total" value={formatPrice(pricing.total)} bold />
+            </div>
+            {error && <p className="mt-2 text-sm font-bold text-[#DC2626]">{error}</p>}
+            <button onClick={checkout} disabled={busy} className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-[#f06595] px-5 py-4 text-sm font-bold text-white transition hover:bg-[#e64980] disabled:bg-[#E8E2D8]">
+              {busy ? <><Loader2 size={16} className="animate-spin" /> Preparing checkout…</> : <><Printer size={16} /> Checkout · {formatPrice(pricing.total)}</>}
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

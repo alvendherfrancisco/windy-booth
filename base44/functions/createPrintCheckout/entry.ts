@@ -2,12 +2,15 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import Stripe from 'npm:stripe@14.25.0';
 
 const BUNDLES = {
-  mini: { name: "Mini Pack", maxStrips: 1, price: 12 },
-  trio: { name: "Trio Pack", maxStrips: 3, price: 30 },
-  set: { name: "Collector Set", maxStrips: 6, price: 54 },
+  mini: { name: "Mini Bundle", strips: 4, price: 149 },
+  classic: { name: "Classic Bundle", strips: 8, price: 249 },
+  memory: { name: "Memory Bundle", strips: 12, price: 329 },
+  keepsake: { name: "Keepsake Bundle", strips: 20, price: 499 },
+  collector: { name: "Collector Bundle", strips: 30, price: 699 },
 };
-const SHIPPING = { jt_live: 6, zone_fallback: 9 };
-const CURRENCY = "usd";
+const FREE_SHIP_THRESHOLD = 999;
+const SHIP_FLAT = 80;
+const CURRENCY = "php";
 
 Deno.serve(async (req) => {
   try {
@@ -16,16 +19,16 @@ Deno.serve(async (req) => {
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
     const body = await req.json();
-    const { origin, strip_ids, bundle, paper, quantity, address, shipping_method } = body;
+    const { origin, strip_ids, bundle, paper, quantity, address } = body;
     const b = BUNDLES[bundle];
     if (!b) return Response.json({ error: "Invalid bundle" }, { status: 400 });
     if (!Array.isArray(strip_ids) || strip_ids.length === 0) return Response.json({ error: "Select at least one strip" }, { status: 400 });
-    if (strip_ids.length > b.maxStrips) return Response.json({ error: "Too many strips for this bundle" }, { status: 400 });
+    if (strip_ids.length > b.strips) return Response.json({ error: "Too many strips for this bundle" }, { status: 400 });
     if (!address || !String(address).trim()) return Response.json({ error: "Shipping address required" }, { status: 400 });
 
     const qty = Math.max(1, Math.floor(Number(quantity) || 1));
-    const shipCost = SHIPPING[shipping_method] ?? 0;
     const subtotal = b.price * qty;
+    const shipCost = subtotal >= FREE_SHIP_THRESHOLD ? 0 : SHIP_FLAT;
     const total = subtotal + shipCost;
 
     const order = await base44.entities.Order.create({
@@ -33,11 +36,11 @@ Deno.serve(async (req) => {
       strip_ids,
       bundle_type: bundle,
       paper_type: ["matte", "glossy"].includes(paper) ? paper : "matte",
-      quantity_required: qty,
-      quantity_selected: qty,
+      quantity_required: b.strips * qty,
+      quantity_selected: strip_ids.length,
       shipping_address: String(address).trim(),
       shipping_cost: shipCost,
-      shipping_method: SHIPPING[shipping_method] !== undefined ? shipping_method : "jt_live",
+      shipping_method: "jt_live",
       subtotal,
       total,
       payment_status: "pending",
@@ -52,7 +55,7 @@ Deno.serve(async (req) => {
         price_data: {
           currency: CURRENCY,
           unit_amount: Math.round(total * 100),
-          product_data: { name: `${b.name} — Print Bundle` },
+          product_data: { name: `${b.name} — Print Club` },
         },
       }],
       success_url: `${origin}/print-shop?success=1&session={CHECKOUT_SESSION_ID}`,

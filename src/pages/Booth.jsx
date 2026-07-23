@@ -27,8 +27,10 @@ export default function Booth() {
   const [templates, setTemplates] = useState([]);
   const [selected, setSelected] = useState(null);
   const [mode, setMode] = useState(null);
-  const [photos, setPhotos] = useState([]);
+  const [cameraPhotos, setCameraPhotos] = useState([]);
+  const [uploadPhotos, setUploadPhotos] = useState([]);
   const [rawFiles, setRawFiles] = useState([]);
+  const [finalPhotos, setFinalPhotos] = useState([]);
   const [filter, setFilter] = useState("none");
   const [category, setCategory] = useState("all");
   const [query, setQuery] = useState("");
@@ -36,13 +38,14 @@ export default function Booth() {
 
   const plan = user?.plan || "free";
   const used = user?.sessions_used_this_month || 0;
+  const photos = mode === "camera" ? cameraPhotos : uploadPhotos;
 
   useEffect(() => {base44.entities.Template.filter({ active: true }).then(setTemplates);}, []);
   // Fresh entry always starts the wizard at Design.
   useEffect(() => {setStep(1); /* eslint-disable-next-line */}, []);
 
   const resetAll = () => {
-    setStep(1);setSelected(null);setMode(null);setPhotos([]);setRawFiles([]);setFilter("none");
+    setStep(1);setSelected(null);setMode(null);setCameraPhotos([]);setUploadPhotos([]);setRawFiles([]);setFinalPhotos([]);setFilter("none");
   };
 
   const filteredTemplates = templates.filter((t) =>
@@ -57,15 +60,15 @@ export default function Booth() {
 
   // Upload mode: keep local object URLs for live display + raw Files to bake the filter at finish.
   const addFiles = (files) => {
-    const remaining = 3 - photos.length;
+    const remaining = 3 - uploadPhotos.length;
     const picked = Array.from(files).slice(0, remaining);
     const urls = picked.map((f) => URL.createObjectURL(f));
-    setPhotos((p) => [...p, ...urls]);
+    setUploadPhotos((p) => [...p, ...urls]);
     setRawFiles((r) => [...r, ...picked]);
   };
 
   const removePhoto = (i) => {
-    setPhotos((p) => p.filter((_, idx) => idx !== i));
+    setUploadPhotos((p) => p.filter((_, idx) => idx !== i));
     setRawFiles((r) => r.filter((_, idx) => idx !== i));
   };
 
@@ -117,14 +120,14 @@ export default function Booth() {
       if (plan === "free" && (nextUsed === 8 || nextUsed === 10)) {
         await base44.entities.Notification.create({ user_id: user.id, type: "usage_limit", message: `You've used ${nextUsed} of 10 sessions this month.`, link: "/profile", read: false, created_at: now.toISOString() });
       }
-      setPhotos(finalUrls);
+      setFinalPhotos(finalUrls);
       setStep(4);
     } finally {
       setSaving(false);
     }
   };
 
-  const download = () => downloadStrip(selected, photos, "vendi-strip.png");
+  const download = () => downloadStrip(selected, finalPhotos, "vendi-strip.png");
 
   // In upload mode the stored photos are raw, so the filter is applied via CSS for the live preview.
   const uploadFilterCss = mode === "upload" ? filterCss(filter) : "none";
@@ -198,27 +201,27 @@ export default function Booth() {
       <>
           <h1 className="mb-5 font-heading text-2xl font-extrabold text-[#2D2D2D]">{mode === "camera" ? "Ready when you are" : "Pick three photos"}</h1>
           {mode === "camera" ?
-        <CameraCapture ref={captureRef} selected={selected} photos={photos} onPhotosChange={setPhotos} filter={filter} onFilterChange={setFilter} /> :
+        <CameraCapture ref={captureRef} selected={selected} photos={cameraPhotos} onPhotosChange={setCameraPhotos} filter={filter} onFilterChange={setFilter} /> :
 
         <div className="space-y-4">
-              <div className="grid gap-4 lg:grid-cols-[1fr_170px]">
+              <div className="grid gap-4 lg:grid-cols-[1fr_260px]">
                 <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
                   <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#8A8580]">Live Preview</p>
                   <button
                 type="button"
-                onClick={() => {if (photos.length < 3) fileInput.current.click();}}
+                onClick={() => {if (uploadPhotos.length < 3) fileInput.current.click();}}
                 className="flex w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#228be6] bg-[#e7f5ff] py-12 text-center transition hover:border-[#228be6]">
                 
                     <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#228be6]"><ImageUp size={24} /></span>
                     <span className="mt-4 block font-bold text-[#2D2D2D]">Tap to choose a photo</span>
                     <span className="mt-1 block text-sm text-[#8A8580]">or drag and drop here</span>
-                    <span className="mt-3 block text-xs font-bold text-[#228be6]">{photos.length} / 3 uploaded</span>
+                    <span className="mt-3 block text-xs font-bold text-[#228be6]">{uploadPhotos.length} / 3 uploaded</span>
                   </button>
                   <input ref={fileInput} className="hidden" type="file" accept="image/*" multiple onChange={(e) => addFiles(e.target.files)} />
                   <div className="mt-4 flex gap-2">
                     {[0, 1, 2].map((i) =>
-                <div key={i} className={`relative h-16 w-16 overflow-hidden rounded-lg border-2 ${i < photos.length ? "border-[#228be6]" : "border-dashed border-[#E8E2D8]"} bg-[#F5F0EA]`}>
-                        {photos[i] &&
+                <div key={i} className={`relative h-16 w-16 overflow-hidden rounded-lg border-2 ${i < uploadPhotos.length ? "border-[#228be6]" : "border-dashed border-[#E8E2D8]"} bg-[#F5F0EA]`}>
+                    {uploadPhotos[i] &&
                   <>
                             <img src={photos[i]} alt="" className="h-full w-full object-cover" style={{ filter: uploadFilterCss }} />
                             <button onClick={() => removePhoto(i)} className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold text-white bg-[hsl(var(--sidebar-ring))]">×</button>
@@ -230,7 +233,7 @@ export default function Booth() {
                 </div>
                 <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
                   <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#8A8580]">Your Strip</p>
-                  <StripPreview template={selected} photos={photos} imgFilter={uploadFilterCss} />
+                  <StripPreview template={selected} photos={uploadPhotos} imgFilter={uploadFilterCss} />
                 </div>
               </div>
               <FilterCard filter={filter} onFilterChange={setFilter} />
@@ -269,7 +272,7 @@ export default function Booth() {
             <PolkaDots />
             <FaceDoodles variant="success" />
             <div className="mx-auto w-[180px]">
-              <StripPreview template={selected} photos={photos} />
+              <StripPreview template={selected} photos={finalPhotos} />
             </div>
             <p className="mt-5 font-heading text-xl font-extrabold text-[#2D2D2D]">Your strip is ready!</p>
             {plan === "free" && used >= 10 &&
@@ -279,7 +282,7 @@ export default function Booth() {
               <button onClick={download} className="flex w-full items-center justify-center gap-2 rounded-full bg-[#f06595] px-5 py-4 text-sm font-bold text-white transition hover:bg-[#e64980]">
                 <Download size={16} />Download Strip
               </button>
-              <button onClick={() => {setPhotos([]);setRawFiles([]);setStep(3);}} className="flex w-full items-center justify-center gap-2 rounded-full border border-[#228be6] px-5 py-3 text-sm font-bold text-[#228be6] transition hover:bg-[#e7f5ff]">
+              <button onClick={() => {if (mode === "camera") setCameraPhotos([]); else {setUploadPhotos([]);setRawFiles([]);} setFinalPhotos([]);setStep(3);}} className="flex w-full items-center justify-center gap-2 rounded-full border border-[#228be6] px-5 py-3 text-sm font-bold text-[#228be6] transition hover:bg-[#e7f5ff]">
                 <RotateCcw size={14} />Retake Photos
               </button>
               <button onClick={resetAll} className="block w-full text-sm font-bold text-[#228be6]">Start over with a new design →</button>
