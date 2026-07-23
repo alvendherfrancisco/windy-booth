@@ -12,15 +12,17 @@ import StickyAction from "@/components/booth/StickyAction";
 import FilterCard from "@/components/booth/FilterCard";
 import BoothStepper from "@/components/booth/BoothStepper";
 import CameraCapture from "@/components/booth/CameraCapture";
+import { downloadStrip } from "@/components/booth/downloadStrip";
 import PolkaDots from "@/components/PolkaDots";
 import FaceDoodles from "@/components/FaceDoodles";
 
 export default function Booth() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const nav = useNavigate();
   const { step, setStep, goBack } = useBoothWizard();
   const fileInput = useRef();
   const captureRef = useRef();
+  const previewRef = useRef();
 
   const [templates, setTemplates] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -110,6 +112,7 @@ export default function Booth() {
       }
       const nextUsed = used + 1;
       await base44.auth.updateMe({ sessions_used_this_month: nextUsed });
+      updateUser({ sessions_used_this_month: nextUsed });
       await base44.entities.Notification.create({ user_id: user.id, type: "booth_activity", message: "Your strip is ready!", link: "/my-booths", read: false, created_at: now.toISOString() });
       if (plan === "free" && (nextUsed === 8 || nextUsed === 10)) {
         await base44.entities.Notification.create({ user_id: user.id, type: "usage_limit", message: `You've used ${nextUsed} of 10 sessions this month.`, link: "/profile", read: false, created_at: now.toISOString() });
@@ -122,10 +125,7 @@ export default function Booth() {
   };
 
   const download = () => {
-    const a = document.createElement("a");
-    a.href = photos[0];
-    a.download = "vendi-strip";
-    a.click();
+    if (previewRef.current) downloadStrip(previewRef.current, "vendi-strip.png", photos[0]);
   };
 
   // In upload mode the stored photos are raw, so the filter is applied via CSS for the live preview.
@@ -268,7 +268,9 @@ export default function Booth() {
           <div className="animate-pop relative isolate mt-4 overflow-hidden rounded-[22px] border border-[#E8E2D8] bg-[#ebfbee] p-6">
             <PolkaDots />
             <FaceDoodles variant="success" />
-            <StripPreview template={selected} photos={photos} className="mx-auto max-w-[180px]" />
+            <div ref={previewRef} className="mx-auto w-[180px]">
+              <StripPreview template={selected} photos={photos} />
+            </div>
             <p className="mt-5 font-heading text-xl font-extrabold text-[#2D2D2D]">Your strip is ready!</p>
             {plan === "free" && used >= 10 &&
           <p className="mt-2 text-sm text-[#8A8580]">Your oldest strip was replaced — download it to keep it.</p>

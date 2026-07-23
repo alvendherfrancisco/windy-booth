@@ -22,7 +22,7 @@ Deno.serve(async (req) => {
     const picture = info.picture;
     if (!picture) return Response.json({ error: 'no_picture' }, { status: 404 });
 
-    await base44.auth.updateMe({ avatar_url: picture });
+    await base44.asServiceRole.entities.User.update(user.id, { avatar_url: picture });
     return Response.json({ avatar_url: picture });
   } catch (error) {
     console.error('syncGoogleAvatar error', error.message);

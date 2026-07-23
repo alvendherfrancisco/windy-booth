@@ -150,6 +150,8 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateUser = (patch) => setUser((u) => (u ? { ...u, ...patch } : u));
+
   const navigateToLogin = () => {
     // Use the SDK's redirectToLogin method
     base44.auth.redirectToLogin(window.location.href);
@@ -167,7 +169,8 @@ export const AuthProvider = ({ children }) => {
       logout,
       navigateToLogin,
       checkUserAuth,
-      checkAppState
+      checkAppState,
+      updateUser
     }}>
       {children}
     </AuthContext.Provider>
