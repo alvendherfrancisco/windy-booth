@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Camera, Crown, LogOut } from "lucide-react";
+import { Camera, Crown, LogOut, RefreshCw } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import UserAvatar from "@/components/UserAvatar";
@@ -10,6 +10,38 @@ export default function Profile() {
   const plan = user?.plan || "free";
   const fileRef = useRef();
   const [uploading, setUploading] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+
+  const runSync = async () => {
+    const res = await base44.functions.invoke("syncGoogleAvatar", {});
+    return res.data;
+  };
+
+  const syncGooglePhoto = async () => {
+    setSyncing(true);
+    try {
+      const data = await runSync();
+      if (data?.avatar_url) { window.location.reload(); return; }
+      setSyncing(false);
+    } catch {
+      try {
+        const url = await base44.connectors.connectAppUser("6a62074fa8eda00e1c8a0e3a");
+        const popup = window.open(url, "_blank");
+        const timer = setInterval(async () => {
+          if (!popup || popup.closed) {
+            clearInterval(timer);
+            try {
+              const data = await runSync();
+              if (data?.avatar_url) window.location.reload();
+            } catch (e) {}
+            setSyncing(false);
+          }
+        }, 600);
+      } catch (e) {
+        setSyncing(false);
+      }
+    }
+  };
 
   const pickAvatar = async (e) => {
     const file = e.target.files?.[0];
@@ -43,6 +75,14 @@ export default function Profile() {
             >
               <Camera size={13} />
               {uploading ? "Saving…" : "Change photo"}
+            </button>
+            <button
+              onClick={syncGooglePhoto}
+              disabled={syncing}
+              className="inline-flex items-center gap-2 rounded-full border border-[#228be6] px-3 py-1.5 text-xs font-bold text-[#228be6] transition hover:bg-[#e7f5ff] disabled:opacity-60"
+            >
+              <RefreshCw size={13} className={syncing ? "animate-spin" : ""} />
+              {syncing ? "Connecting…" : "Use Google photo"}
             </button>
             <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={pickAvatar} />
           </div>
