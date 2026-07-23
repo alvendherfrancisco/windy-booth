@@ -1,35 +1,42 @@
 import React from "react";
+import { RAINBOW_DOTS_BG } from "@/lib/rainbowDotsBg";
 
-// Decorative sticker accents for the Booth "mode" cards, drawn from the
-// custom deco SVG set. Low opacity + small scale, pinned to corners so they
-// never cover the center icon/label. Cards rotate through the set so the two
-// cards don't look identical.
+// Decorative accents for the Booth "mode" cards. The background mimics the
+// home "sessions" card (scattered rainbow polka dots), and the Take Photos card
+// scatters all uploaded deco SVGs around the edges so the center icon/label
+// stays clear. The Upload card uses a smaller corner set.
 const BASE = "https://media.base44.com/images/public/6a60bb3456cf14775962b360/";
 
 const VARIANTS = {
   camera: [
-    { src: BASE + "8965b2c54_deco-01-smiling-star.svg", pos: "top-2.5 left-3", size: 42, rotate: -12, opacity: 0.42 },
-    { src: BASE + "204b9d46d_deco-06-sparkle-burst.svg", pos: "top-4 right-3", size: 30, rotate: 8, opacity: 0.4 },
-    { src: BASE + "a6acf1697_deco-04-heart-swirl.svg", pos: "bottom-3 right-4", size: 38, rotate: 10, opacity: 0.42 },
+    { src: BASE + "8965b2c54_deco-01-smiling-star.svg", top: "8%", left: "7%", size: 32, rotate: -12, opacity: 0.45 },
+    { src: BASE + "204b9d46d_deco-06-sparkle-burst.svg", top: "6%", left: "80%", size: 28, rotate: 10, opacity: 0.42 },
+    { src: BASE + "a6acf1697_deco-04-heart-swirl.svg", top: "30%", left: "3%", size: 28, rotate: -8, opacity: 0.4 },
+    { src: BASE + "b95379ae3_deco-05-cloud-star.svg", top: "33%", left: "88%", size: 26, rotate: 12, opacity: 0.4 },
+    { src: BASE + "c7738c10f_deco-02-sparkle-diamond.svg", top: "78%", left: "6%", size: 34, rotate: -10, opacity: 0.45 },
+    { src: BASE + "1ab14d2e6_deco-07-smiling-star-sparkle.svg", top: "82%", left: "40%", size: 30, rotate: 8, opacity: 0.42 },
+    { src: BASE + "3e20cb0da_deco-09-heart-cluster.svg", top: "76%", left: "78%", size: 32, rotate: 12, opacity: 0.45 },
+    { src: BASE + "7de8dc9af_deco-03-star-cluster.svg", top: "60%", left: "13%", size: 26, rotate: -6, opacity: 0.4 },
+    { src: BASE + "40114e597_deco-08-firework.svg", top: "62%", left: "83%", size: 28, rotate: 10, opacity: 0.42 },
   ],
   upload: [
-    { src: BASE + "c7738c10f_deco-02-sparkle-diamond.svg", pos: "top-3 right-3", size: 40, rotate: 12, opacity: 0.42 },
-    { src: BASE + "1ab14d2e6_deco-07-smiling-star-sparkle.svg", pos: "bottom-3 left-3", size: 42, rotate: -10, opacity: 0.42 },
-    { src: BASE + "3e20cb0da_deco-09-heart-cluster.svg", pos: "top-4 left-4", size: 30, rotate: -8, opacity: 0.4 },
+    { src: BASE + "c7738c10f_deco-02-sparkle-diamond.svg", top: "10%", left: "78%", size: 40, rotate: 12, opacity: 0.42 },
+    { src: BASE + "1ab14d2e6_deco-07-smiling-star-sparkle.svg", top: "76%", left: "8%", size: 42, rotate: -10, opacity: 0.42 },
+    { src: BASE + "3e20cb0da_deco-09-heart-cluster.svg", top: "12%", left: "8%", size: 30, rotate: -8, opacity: 0.4 },
   ],
 };
 
 export default function ModeCardDecor({ variant }) {
   const items = VARIANTS[variant] || [];
   return (
-    <div className="pointer-events-none absolute inset-0" aria-hidden="true" style={{ backgroundImage: "radial-gradient(circle, rgba(230,73,128,0.13) 1.4px, transparent 1.4px)", backgroundSize: "15px 15px" }}>
+    <div className="pointer-events-none absolute inset-0" aria-hidden="true" style={{ backgroundImage: RAINBOW_DOTS_BG, backgroundRepeat: "no-repeat" }}>
       {items.map((d, i) => (
         <img
           key={i}
           src={d.src}
           alt=""
-          className={`absolute ${d.pos}`}
-          style={{ width: d.size, height: d.size, transform: `rotate(${d.rotate}deg)`, opacity: d.opacity }}
+          className="absolute"
+          style={{ top: d.top, left: d.left, width: d.size, height: d.size, transform: `rotate(${d.rotate}deg)`, opacity: d.opacity }}
         />
       ))}
     </div>

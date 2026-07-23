@@ -8,7 +8,7 @@ import AdminUsers from "@/components/admin/AdminUsers";
 import AdminStrips from "@/components/admin/AdminStrips";
 
 // Hard-gated by exact email — no role flag, no link in the main nav.
-const ADMIN_EMAIL = "alvendhrfrancisco01@gmail.com";
+const ADMIN_EMAIL = "alvendherfrancisco01@gmail.com";
 
 const NAV = [
   { key: "overview", label: "Overview", icon: LayoutDashboard },

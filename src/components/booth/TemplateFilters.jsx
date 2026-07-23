@@ -1,13 +1,13 @@
 import React from "react";
-import { Clapperboard, Flower2, Heart, Leaf, Search, Sparkles, Waves } from "lucide-react";
+import { Search } from "lucide-react";
 
 const filters = [
-  { label: "All", value: "all", icon: Sparkles },
-  { label: "Vendi", value: "Vendi", icon: Heart },
-  { label: "Flowers", value: "Seasonal", icon: Flower2 },
-  { label: "Kawaii", value: "Kawaii", icon: Waves },
-  { label: "Minimal", value: "Minimal", icon: Leaf },
-  { label: "Retro", value: "Retro", icon: Clapperboard },
+  { label: "All", value: "all" },
+  { label: "Vendi", value: "Vendi" },
+  { label: "Flowers", value: "Seasonal" },
+  { label: "Kawaii", value: "Kawaii" },
+  { label: "Minimal", value: "Minimal" },
+  { label: "Retro", value: "Retro" },
 ];
 
 export default function TemplateFilters({ category, onCategoryChange, query, onQueryChange }) {
@@ -23,17 +23,16 @@ export default function TemplateFilters({ category, onCategoryChange, query, onQ
         />
       </label>
       <div className="flex gap-2 overflow-x-auto pb-1">
-        {filters.map(({ label, value, icon: Icon }) => (
+        {filters.map(({ label, value }) => (
           <button
             key={value}
             onClick={() => onCategoryChange(value)}
-            className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-2 text-xs font-bold transition ${
+            className={`flex shrink-0 items-center rounded-full border px-3 py-2 text-xs font-bold transition ${
               category === value
                 ? "border-[#228be6] bg-[#e7f5ff] text-[#228be6]"
                 : "border-[#E8E2D8] bg-white text-[#5C5953] hover:border-[#228be6]"
             }`}
           >
-            <Icon size={13} />
             {label}
           </button>
         ))}

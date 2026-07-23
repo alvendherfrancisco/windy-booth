@@ -66,7 +66,7 @@ export default function Profile() {
           </p>
         )}
       </section>
-      {user?.email === "alvendhrfrancisco01@gmail.com" && (
+      {user?.email === "alvendherfrancisco01@gmail.com" && (
         <Link to="/admin" className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#e64980] px-4 py-2 text-sm font-bold text-[#e64980] transition hover:bg-[#fff0f6]">
           <Shield size={15} /> Admin dashboard
         </Link>
