@@ -1,11 +1,12 @@
 import React, { useMemo } from "react";
-import { Users, UserPlus, Image as ImageIcon, Activity, Crown, Sparkles } from "lucide-react";
+import { Users, UserPlus, Image as ImageIcon, Activity, Crown, Sparkles, ShoppingBag, Wallet, LayoutTemplate } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 
 const DAY = 86400000;
 const fmt = (n) => n.toLocaleString();
+const PESO = (n) => `₱${(n || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-export default function AdminOverview({ users, strips }) {
+export default function AdminOverview({ users, strips, orders, billing, templates }) {
   const stats = useMemo(() => {
     const now = Date.now();
     const startToday = new Date();
@@ -32,8 +33,12 @@ export default function AdminOverview({ users, strips }) {
       active30: activeIds(m),
       free: users.filter((u) => (u.plan || "free") === "free").length,
       premium: users.filter((u) => u.plan === "premium").length,
+      orders: orders.length,
+      revenue: billing.filter((b) => b.status === "paid").reduce((s, b) => s + (b.amount || 0), 0),
+      templateCount: Object.keys(templates).length,
+      pendingFulfillment: orders.filter((o) => o.fulfillment_status !== "delivered").length,
     };
-  }, [users, strips]);
+  }, [users, strips, orders, billing, templates]);
 
   const chartData = useMemo(() => {
     const now = Date.now();
@@ -72,6 +77,33 @@ export default function AdminOverview({ users, strips }) {
             </div>
           );
         })}
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
+          <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-[#fff0f6] text-[#e64980]"><ShoppingBag size={18} /></div>
+          <p className="font-heading text-2xl font-extrabold">{fmt(stats.orders)}</p>
+          <p className="text-xs font-bold text-[#5C5953]">Orders</p>
+          <p className="mt-1 text-xs text-[#8A8580]">{stats.pendingFulfillment} pending</p>
+        </div>
+        <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
+          <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-[#ebfbee] text-[#37b24d]"><Wallet size={18} /></div>
+          <p className="font-heading text-2xl font-extrabold">{PESO(stats.revenue)}</p>
+          <p className="text-xs font-bold text-[#5C5953]">Revenue</p>
+          <p className="mt-1 text-xs text-[#8A8580]">Paid billing total</p>
+        </div>
+        <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
+          <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-[#e7f5ff] text-[#228be6]"><LayoutTemplate size={18} /></div>
+          <p className="font-heading text-2xl font-extrabold">{fmt(stats.templateCount)}</p>
+          <p className="text-xs font-bold text-[#5C5953]">Templates</p>
+          <p className="mt-1 text-xs text-[#8A8580]">Available designs</p>
+        </div>
+        <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
+          <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-[#e7f5ff] text-[#228be6]"><Activity size={18} /></div>
+          <p className="font-heading text-2xl font-extrabold">{fmt(stats.active7)}</p>
+          <p className="text-xs font-bold text-[#5C5953]">Active (7d)</p>
+          <p className="mt-1 text-xs text-[#8A8580]">{stats.active30} in 30 days</p>
+        </div>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">

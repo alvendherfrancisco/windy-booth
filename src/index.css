@@ -118,6 +118,22 @@
   }
 }
 
+@layer components {
+  .input {
+    width: 100%;
+    border-radius: 0.5rem;
+    border: 1px solid #E8E2D8;
+    background: #fff;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    color: #2D2D2D;
+    outline: none;
+  }
+  .input:focus {
+    border-color: #228be6;
+  }
+}
+
 @layer utilities {
   .notifications-scroll {
     scrollbar-width: none;
