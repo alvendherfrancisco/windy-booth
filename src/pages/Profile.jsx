@@ -44,8 +44,8 @@ export default function Profile() {
             <button
               onClick={() => fileRef.current?.click()}
               disabled={uploading}
-              className="inline-flex items-center gap-2 rounded-full border border-[#228be6] px-3 py-1.5 text-xs font-bold text-[#228be6] transition hover:bg-[#e7f5ff] disabled:opacity-60"
-            >
+              className="inline-flex items-center gap-2 rounded-full border border-[#228be6] px-3 py-1.5 text-xs font-bold text-[#228be6] transition hover:bg-[#e7f5ff] disabled:opacity-60">
+              
               <Camera size={13} />
               {uploading ? "Saving…" : "Change photo"}
             </button>
@@ -58,24 +58,24 @@ export default function Profile() {
         {lifetime ? <Sparkles size={22} className="text-[#e64980]" /> : <Crown size={22} className="text-[#f59f00]" />}
         <p className="mt-6 text-sm text-[#5C5953]">Status</p>
         <h2 className="font-heading text-2xl font-extrabold">{lifetime ? "Lifetime Pass Owner ✨" : planLabel(user)}</h2>
-        {lifetime ? (
-          <p className="mt-2 text-sm text-[#5C5953]">Unlimited booth sessions, every artist-designed collection, and unlimited saved strips — for life.</p>
-        ) : (
-          <>
+        {lifetime ?
+        <p className="mt-2 text-sm text-[#5C5953]">Unlimited booth sessions, every artist-designed collection, and unlimited saved strips — for life.</p> :
+
+        <>
             <p className="mt-2 text-sm text-[#5C5953]">10 booth sessions per month and up to 10 saved strips. Upgrade anytime.</p>
-            <button onClick={() => setUpgradeOpen(true)} className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#f06595] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#e64980]"><Sparkles size={15} /> Get Lifetime Pass · ₱{LIFETIME_PRICE}</button>
+            <button onClick={() => setUpgradeOpen(true)} className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#f06595] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#e64980]"><Sparkles size={15} className="hidden" /> Get Lifetime Pass · ₱{LIFETIME_PRICE}</button>
           </>
-        )}
+        }
       </section>
-      {user?.email === "alvendherfrancisco01@gmail.com" && (
-        <Link to="/admin" className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#e64980] px-4 py-2 text-sm font-bold text-[#e64980] transition hover:bg-[#fff0f6]">
+      {user?.email === "alvendherfrancisco01@gmail.com" &&
+      <Link to="/admin" className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#e64980] px-4 py-2 text-sm font-bold text-[#e64980] transition hover:bg-[#fff0f6]">
           <Shield size={15} /> Admin dashboard
         </Link>
-      )}
+      }
       <button onClick={() => base44.auth.logout("/login")} className="mt-7 flex items-center gap-2 text-sm font-bold text-[#55575E]">
         <LogOut size={17} />Log out
       </button>
       <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
-    </div>
-  );
+    </div>);
+
 }
