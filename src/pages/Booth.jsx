@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Camera, Download, ImageUp, RotateCcw } from "lucide-react";
+import { ArrowLeft, Camera, Download, ImageUp, Instagram, RotateCcw } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { useBoothWizard } from "@/components/booth/BoothWizardContext";
@@ -14,6 +14,7 @@ import BoothStepper from "@/components/booth/BoothStepper";
 import CameraCapture from "@/components/booth/CameraCapture";
 import ModeCardDecor from "@/components/booth/ModeCardDecor";
 import { downloadStrip } from "@/components/booth/downloadStrip";
+import { shareToInstagram } from "@/components/booth/shareStrip";
 import PolkaDots from "@/components/PolkaDots";
 import FaceDoodles from "@/components/FaceDoodles";
 import UpgradeModal from "@/components/upgrade/UpgradeModal";
@@ -37,6 +38,7 @@ export default function Booth() {
   const [category, setCategory] = useState("all");
   const [query, setQuery] = useState("");
   const [saving, setSaving] = useState(false);
+  const [sharing, setSharing] = useState(false);
 
   const plan = user?.plan || "free";
   const used = user?.sessions_used_this_month || 0;
@@ -292,6 +294,9 @@ export default function Booth() {
             <div className="mt-6 space-y-3">
               <button onClick={download} className="flex w-full items-center justify-center gap-2 rounded-full bg-[#f06595] px-5 py-4 text-sm font-bold text-white transition hover:bg-[#e64980]">
                 <Download size={16} />Download Strip
+              </button>
+              <button onClick={async () => { try { setSharing(true); await shareToInstagram(selected, finalPhotos); } finally { setSharing(false); } }} disabled={sharing} className="flex w-full items-center justify-center gap-2 rounded-full border border-[#e64980] px-5 py-3 text-sm font-bold text-[#e64980] transition hover:bg-[#fff0f6] disabled:opacity-60">
+                <Instagram size={16} />{sharing ? "Opening share…" : "Share to Instagram"}
               </button>
               <button onClick={() => {if (mode === "camera") setCameraPhotos([]); else {setUploadPhotos([]);setRawFiles([]);} setFinalPhotos([]);setStep(3);}} className="flex w-full items-center justify-center gap-2 rounded-full border border-[#228be6] px-5 py-3 text-sm font-bold text-[#228be6] transition hover:bg-[#e7f5ff]">
                 <RotateCcw size={14} />Retake Photos
