@@ -11,7 +11,7 @@ import { downloadStrip } from "@/components/booth/downloadStrip";
 const dotted = (v) => { const d = new Date(v); return `${d.getMonth() + 1}.${d.getDate()}.${d.getFullYear()}`; };
 
 export default function MyBooths() {
-  const { user } = useAuth();
+  const { user, printShopEnabled } = useAuth();
   const [strips, setStrips] = useState([]);
   const [templates, setTemplates] = useState({});
   const plan = user?.plan || "free";
@@ -57,7 +57,7 @@ export default function MyBooths() {
               <StripPreview template={templates[strip.template_id]} photos={strip.photo_urls} className="mx-auto w-[124px]" />
               <div className="mt-3 flex justify-center gap-3">
                 <button onClick={() => download(strip)} aria-label="Download strip" className="text-[#228be6]"><Download size={17} /></button>
-                <Link to="/print-shop" aria-label="Order prints" className="text-[#228be6]"><Printer size={17} /></Link>
+                {printShopEnabled && <Link to="/print-shop" aria-label="Order prints" className="text-[#228be6]"><Printer size={17} /></Link>}
                 <button onClick={() => remove(strip.id)} aria-label="Delete strip" className="text-[#DC2626]"><Trash2 size={17} /></button>
               </div>
               {strip.expires_at && <p className="mt-2 text-center text-xs text-[#8B8D93]">Expires {dotted(strip.expires_at)}</p>}

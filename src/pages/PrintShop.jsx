@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { Check, Loader2, Minus, Package, Printer, Truck } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
@@ -11,7 +11,7 @@ import { BUNDLES, formatPrice, computeTotal, FREE_SHIP_THRESHOLD } from "@/lib/p
 import LocationSelects from "@/components/printshop/LocationSelects";
 
 export default function PrintShop() {
-  const { user } = useAuth();
+  const { user, printShopEnabled } = useAuth();
   const [strips, setStrips] = useState([]);
   const [templates, setTemplates] = useState({});
   const [bundle, setBundle] = useState("classic");
@@ -42,6 +42,8 @@ export default function PrintShop() {
     base44.entities.Strip.filter({ user_id: user.id, saved: true }, "-created_at").then(setStrips);
     base44.entities.Template.list().then((t) => {const m = {};t.forEach((x) => m[x.id] = x);setTemplates(m);});
   }, [user?.id]);
+
+  if (!printShopEnabled) return <Navigate to="/dashboard" replace />;
 
   const bundleDef = BUNDLES.find((b) => b.id === bundle);
   const pricing = computeTotal(bundle, quantity, ship.regionCode);

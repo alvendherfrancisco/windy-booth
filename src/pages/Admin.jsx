@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, Link } from "react-router-dom";
-import { LayoutDashboard, Users as UsersIcon, Images, LayoutTemplate, ShoppingBag, Receipt, Megaphone, ArrowLeft, LogOut, RefreshCw } from "lucide-react";
+import { LayoutDashboard, Users as UsersIcon, Images, LayoutTemplate, ShoppingBag, Receipt, Megaphone, ArrowLeft, LogOut, RefreshCw, Printer } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import AdminOverview from "@/components/admin/AdminOverview";
@@ -25,7 +25,7 @@ const NAV = [
 
 
 export default function Admin() {
-  const { user } = useAuth();
+  const { user, refreshSettings } = useAuth();
   const [section, setSection] = useState("overview");
   const [users, setUsers] = useState([]);
   const [strips, setStrips] = useState([]);
@@ -34,16 +34,18 @@ export default function Admin() {
   const [billing, setBilling] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [printSetting, setPrintSetting] = useState(null);
 
   const refresh = async () => {
     setLoading(true);
     try {
-      const [u, s, t, o, b] = await Promise.all([
+      const [u, s, t, o, b, ps] = await Promise.all([
       base44.entities.User.list("-created_date", 1000),
       base44.entities.Strip.list("-created_at", 1000),
       base44.entities.Template.list(),
       base44.entities.Order.list("-created_date", 1000),
-      base44.entities.BillingRecord.list("-created_at", 1000)]
+      base44.entities.BillingRecord.list("-created_at", 1000),
+      base44.entities.AppSetting.filter({ key: "print_shop_enabled" })]
       );
       setUsers(u);
       setStrips(s);
@@ -52,11 +54,24 @@ export default function Admin() {
       setTemplates(tm);
       setOrders(o);
       setBilling(b);
+      setPrintSetting(ps[0] || null);
       setError("");
     } catch (e) {
       setError("Unable to load admin data. Your account needs admin access to read users.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const togglePrint = async () => {
+    const newVal = !(printSetting ? printSetting.value !== false : true);
+    try {
+      if (printSetting) await base44.entities.AppSetting.update(printSetting.id, { value: newVal });
+      else await base44.entities.AppSetting.create({ key: "print_shop_enabled", value: newVal });
+      await refresh();
+      refreshSettings();
+    } catch (e) {
+      setError(e?.message || "Could not update print setting");
     }
   };
 
@@ -74,6 +89,7 @@ export default function Admin() {
 
   }
   if (user.email !== ADMIN_EMAIL) return <Navigate to="/dashboard" replace />;
+  const printOn = printSetting ? printSetting.value !== false : true;
 
   return (
     <div className="min-h-screen bg-[#F7F5F1] text-[#2D2D2D]">
@@ -83,6 +99,9 @@ export default function Admin() {
           
         </div>
         <div className="flex items-center gap-2">
+          <button onClick={togglePrint} className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ${printOn ? "bg-[#37b24d] text-white" : "border border-[#E8E2D8] bg-white text-[#2D2D2D] hover:bg-[#F5F0EA]"}`}>
+            <Printer size={14} /> Print &amp; Orders: {printOn ? "On" : "Off"}
+          </button>
           <button onClick={refresh} className="inline-flex items-center gap-1.5 rounded-full border border-[#E8E2D8] px-3 py-1.5 text-xs font-bold text-[#2D2D2D] hover:bg-[#F5F0EA]">
             <RefreshCw size={14} /> Refresh
           </button>

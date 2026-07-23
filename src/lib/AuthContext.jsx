@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }) => {
   const [authError, setAuthError] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
   const [appPublicSettings, setAppPublicSettings] = useState(null); // Contains only { id, public_settings }
+  const [printShopEnabled, setPrintShopEnabled] = useState(true);
 
   useEffect(() => {
     checkAppState();
@@ -157,6 +158,21 @@ export const AuthProvider = ({ children }) => {
 
   const updateUser = (patch) => setUser((u) => (u ? { ...u, ...patch } : u));
 
+  const loadPrintSetting = async () => {
+    try {
+      const list = await base44.entities.AppSetting.filter({ key: "print_shop_enabled" });
+      setPrintShopEnabled(list[0] ? list[0].value !== false : true);
+    } catch {
+      setPrintShopEnabled(true);
+    }
+  };
+
+  useEffect(() => {
+    loadPrintSetting();
+    const off = base44.entities.AppSetting.subscribe(loadPrintSetting);
+    return off;
+  }, []);
+
   const navigateToLogin = () => {
     // Use the SDK's redirectToLogin method
     base44.auth.redirectToLogin(window.location.href);
@@ -171,6 +187,8 @@ export const AuthProvider = ({ children }) => {
       authError,
       appPublicSettings,
       authChecked,
+      printShopEnabled,
+      refreshSettings: loadPrintSetting,
       logout,
       navigateToLogin,
       checkUserAuth,

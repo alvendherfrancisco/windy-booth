@@ -69,7 +69,7 @@ function NotifButton({ open, unread, onClick, size }) {
 }
 
 export default function AppShell() {
-  const { user } = useAuth();
+  const { user, printShopEnabled } = useAuth();
   const location = useLocation();
   const [notifs, setNotifs] = useState([]);
   const [unread, setUnread] = useState(0);
@@ -101,6 +101,7 @@ export default function AppShell() {
   };
 
   const isActive = (to) => location.pathname === to;
+  const navItems = printShopEnabled ? items : items.filter((i) => i.to !== "/print-shop");
 
   return (
     <div className="min-h-screen overflow-x-hidden text-[#2D2D2D] pb-20 md:pb-0 md:pl-20">
@@ -110,7 +111,7 @@ export default function AppShell() {
           <ion-icon name="flower-outline" style={{ fontSize: 30, color: "#f06595" }} />
         </Link>
         <nav className="notifications-scroll mt-8 flex min-h-0 flex-1 flex-col items-center gap-1.5 overflow-y-auto">
-          {items.map(({ to, label, outline, fill }) =>
+          {navItems.map(({ to, label, outline, fill }) =>
           <SideNavItem
             key={to}
             to={to}
@@ -142,7 +143,7 @@ export default function AppShell() {
       </main>
 
       <nav className="fixed inset-x-0 bottom-0 z-30 flex items-stretch border-t border-[#E8E2D8] bg-white px-1 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 md:hidden">
-        {items.map(({ to, label, outline, fill }) => {
+        {navItems.map(({ to, label, outline, fill }) => {
           const active = isActive(to);
           return (
             <Link
