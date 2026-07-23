@@ -126,4 +126,17 @@
   .notifications-scroll::-webkit-scrollbar {
     display: none;
   }
+  .doodle-marquee {
+    animation: doodle-marquee 26s linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .doodle-marquee {
+      animation: none;
+    }
+  }
+}
+
+@keyframes doodle-marquee {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
 }
