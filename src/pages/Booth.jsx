@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Camera, Download, ImageUp, RotateCcw } from "lucide-react";
+import { ArrowLeft, Camera, Download, ImageUp, RotateCcw } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { useBoothWizard } from "@/components/booth/BoothWizardContext";
@@ -16,7 +16,7 @@ import CameraCapture from "@/components/booth/CameraCapture";
 export default function Booth() {
   const { user } = useAuth();
   const nav = useNavigate();
-  const { step, setStep } = useBoothWizard();
+  const { step, setStep, goBack } = useBoothWizard();
   const fileInput = useRef();
   const captureRef = useRef();
 
@@ -131,7 +131,14 @@ export default function Booth() {
 
   return (
     <div className="mx-auto max-w-4xl pb-32 md:pb-28">
-      <div className="mb-6"><BoothStepper step={step} /></div>
+      <div className="mb-6">
+        {step > 1 && (
+          <button onClick={goBack} className="mb-4 flex items-center gap-1.5 text-sm font-bold text-[#2D2D2D] hover:text-[#4F46E5]">
+            <ArrowLeft size={16} />Back
+          </button>
+        )}
+        <BoothStepper step={step} />
+      </div>
       {/* STEP 1 — Design */}
       {step === 1 &&
       <>
