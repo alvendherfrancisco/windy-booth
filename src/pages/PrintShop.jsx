@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Check, Loader2, Package, Printer, Truck } from "lucide-react";
+import { Check, Loader2, Minus, Package, Printer, Truck } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import StripPreview from "@/components/booth/StripPreview";
@@ -15,7 +15,7 @@ export default function PrintShop() {
   const [strips, setStrips] = useState([]);
   const [templates, setTemplates] = useState({});
   const [bundle, setBundle] = useState("classic");
-  const [selected, setSelected] = useState([]);
+  const [selected, setSelected] = useState({});
   const [paper, setPaper] = useState("matte");
   const [quantity, setQuantity] = useState(1);
   const [ship, setShip] = useState({ full_name: "", phone: "", region: "", regionCode: "", province: "", city: "", cityCode: "", barangay: "", barangayCode: "", street: "", postal: "" });
@@ -46,24 +46,25 @@ export default function PrintShop() {
   const bundleDef = BUNDLES.find((b) => b.id === bundle);
   const pricing = computeTotal(bundle, quantity, ship.region);
 
-  const toggleStrip = (id) => {
-    setSelected((prev) => {
-      if (prev.includes(id)) return prev.filter((x) => x !== id);
-      if (prev.length >= bundleDef.strips) return prev;
-      return [...prev, id];
-    });
+  const totalSelected = Object.values(selected).reduce((a, b) => a + b, 0);
+  const addStrip = (id) => {
+    if (selected[id] || totalSelected < bundleDef.strips) setSelected((prev) => ({ ...prev, [id]: (prev[id] || 0) + 1 }));
   };
+  const decStrip = (id) => {
+    setSelected((prev) => { const n = (prev[id] || 0) - 1; const next = { ...prev }; if (n <= 0) delete next[id]; else next[id] = n; return next; });
+  };
+  const stripIds = Object.entries(selected).flatMap(([id, q]) => Array(q).fill(id));
 
   const checkout = async () => {
     setError("");
-    if (selected.length === 0) {setError("Select at least one strip to print.");return;}
+    if (totalSelected !== bundleDef.strips) {setError(`Select exactly ${bundleDef.strips} strip${bundleDef.strips > 1 ? "s" : ""} for the ${bundleDef.name} (you have ${totalSelected}/${bundleDef.strips}).`);return;}
     if (!ship.full_name.trim() || !ship.phone.trim() || !ship.regionCode || !ship.cityCode || !ship.barangayCode || !ship.street.trim()) {setError("Please complete all shipping fields.");return;}
     if (window.self !== window.top) {alert("Checkout works only from the published app.");return;}
     setBusy(true);
     try {
       const res = await base44.functions.invoke("createPrintCheckout", {
         origin: window.location.origin,
-        strip_ids: selected,
+        strip_ids: stripIds,
         bundle, paper, quantity,
         ship_full_name: ship.full_name,
         ship_phone: ship.phone,
@@ -122,9 +123,9 @@ export default function PrintShop() {
               const active = bundle === b.id;
               return (
                 <div key={b.id} className={`rounded-2xl border p-4 transition ${active ? "border-[#e64980] bg-[#fff0f6]" : "border-[#E8E2D8] bg-white hover:border-[#e64980]"}`}>
-                  <button onClick={() => {setBundle(b.id);setSelected((s) => s.slice(0, b.strips));}} className="block w-full text-left">
+                  <button onClick={() => {setBundle(b.id);setSelected({});}} className="block w-full text-left">
                     <p className="font-heading text-base font-extrabold text-[#2D2D2D]">{b.name}</p>
-                    <p className="mt-0.5 text-xs text-[#8A8580]">{b.strips} strips + sticker sheet + letter card</p>
+                    <p className="mt-0.5 text-xs text-[#8A8580]">{b.strips} strip{b.strips > 1 ? "s" : ""}</p>
                     <p className="mt-2 font-bold text-[#e64980]">{formatPrice(b.price)}</p>
                   </button>
                   {active && (
@@ -141,16 +142,22 @@ export default function PrintShop() {
 
             })}
             </div>
+            <p className="mt-3 text-xs text-[#8A8580]">Every bundle includes a sticker sheet and a handwritten letter card.</p>
           </Section>
 
-          <Section title={`2. Select your strips (${selected.length}/${bundleDef.strips})`} icon={Printer}>
+          <Section title={`2. Select your strips (${totalSelected}/${bundleDef.strips})`} icon={Printer}>
+            <p className="mb-3 text-xs text-[#8A8580]">Tap a strip to add it — tap again for more copies. Use − to remove a copy.</p>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
               {strips.map((s) => {
-              const on = selected.includes(s.id);
+              const qty = selected[s.id] || 0;
+              const disabled = !qty && totalSelected >= bundleDef.strips;
               return (
-                <button key={s.id} onClick={() => toggleStrip(s.id)} className={`relative rounded-xl border p-2 transition ${on ? "border-[#e64980] bg-[#fff0f6]" : "border-[#E8E2D8] bg-white hover:border-[#e64980]"}`}>
+                <button key={s.id} onClick={() => addStrip(s.id)} disabled={disabled} className={`relative rounded-xl border p-2 transition ${qty ? "border-[#e64980] bg-[#fff0f6]" : "border-[#E8E2D8] bg-white hover:border-[#e64980]"} disabled:cursor-not-allowed disabled:opacity-50`}>
                     <StripPreview template={templates[s.template_id]} photos={s.photo_urls} className="mx-auto w-full max-w-[100px]" />
-                    {on && <span className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#e64980] text-white"><Check size={12} /></span>}
+                    {qty > 0 && <>
+                      <span onClick={(e) => {e.stopPropagation();decStrip(s.id);}} className="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full border border-[#e64980] bg-white text-[#e64980] hover:bg-[#fff0f6]"><Minus size={12} /></span>
+                      <span className="absolute right-1 top-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-[#e64980] px-1 text-xs font-bold text-white">×{qty}</span>
+                    </>}
                   </button>);
 
             })}

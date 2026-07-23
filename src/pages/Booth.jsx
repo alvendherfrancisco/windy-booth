@@ -150,10 +150,12 @@ export default function Booth() {
           <h1 className="font-heading text-3xl font-extrabold text-[#2D2D2D]">Choose your design</h1>
           
           {plan === "free" && used >= 10 ?
-        <div className="relative mt-7 overflow-hidden rounded-[18px] bg-[#fff3bf] p-5">
+        <div className="relative isolate mt-7 overflow-hidden rounded-[18px] border border-dashed border-[#AEB0B5] bg-[#fff0f6] px-6 py-14 text-center">
               <PolkaDots />
-              <b className="text-[#2D2D2D]">Your 10 sessions are used.</b>
-              <Link to="/profile" className="mt-2 block text-sm font-bold text-[#228be6]">Upgrade to keep making memories →</Link>
+              <FaceDoodles variant="empty" />
+              <p className="relative font-heading text-xl font-bold">Your 10 sessions are used</p>
+              <p className="relative mt-1 text-sm text-[#8B8D93]">Upgrade to keep making memories.</p>
+              <Link to="/profile" className="relative mt-5 inline-block rounded-full bg-[#f06595] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#e64980]">Upgrade to Premium</Link>
             </div> :
 
         <>

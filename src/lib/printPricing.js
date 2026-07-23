@@ -1,4 +1,5 @@
 export const BUNDLES = [
+  { id: "single", name: "Single Strip", strips: 1, price: 49 },
   { id: "mini", name: "Mini Bundle", strips: 4, price: 149 },
   { id: "classic", name: "Classic Bundle", strips: 8, price: 249 },
   { id: "memory", name: "Memory Bundle", strips: 12, price: 329 },
