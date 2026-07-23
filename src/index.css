@@ -127,7 +127,9 @@
     display: none;
   }
   .doodle-marquee {
-    animation: doodle-marquee 26s linear infinite;
+    background-repeat: repeat;
+    background-size: 240px 240px;
+    animation: doodle-marquee 28s linear infinite;
   }
   @media (prefers-reduced-motion: reduce) {
     .doodle-marquee {
@@ -137,6 +139,6 @@
 }
 
 @keyframes doodle-marquee {
-  from { transform: translateY(0); }
-  to { transform: translateY(-50%); }
+  from { background-position-y: 0; }
+  to { background-position-y: -240px; }
 }
