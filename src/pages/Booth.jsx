@@ -221,7 +221,7 @@ export default function Booth() {
                         {photos[i] &&
                   <>
                             <img src={photos[i]} alt="" className="h-full w-full object-cover" style={{ filter: uploadFilterCss }} />
-                            <button onClick={() => removePhoto(i)} className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#DC2626] text-[10px] font-bold text-white">×</button>
+                            <button onClick={() => removePhoto(i)} className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold text-white bg-[hsl(var(--chart-1))]">×</button>
                           </>
                   }
                       </div>
