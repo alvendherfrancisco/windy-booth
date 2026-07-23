@@ -5,6 +5,7 @@ import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import UserAvatar from "@/components/UserAvatar";
 import NotificationsPopover from "@/components/NotificationsPopover";
+import BackgroundBlobs from "@/components/BackgroundBlobs";
 
 const items = [
   { to: "/dashboard", label: "Home", outline: "home-outline", fill: "home" },
@@ -102,7 +103,8 @@ export default function AppShell() {
   const isActive = (to) => location.pathname === to;
 
   return (
-    <div className="min-h-screen bg-[#FFFBF3] text-[#2D2D2D] pb-20 md:pb-0 md:pl-20">
+    <div className="min-h-screen text-[#2D2D2D] pb-20 md:pb-0 md:pl-20">
+      <BackgroundBlobs />
       <aside className="hidden md:fixed md:inset-y-0 md:left-0 md:flex md:w-20 md:flex-col md:items-center md:border-r md:border-[#E8E2D8] md:bg-[#F5F0EA] md:py-5">
         <Link to="/dashboard" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#f06595] text-white">
           <Flower2 size={22} strokeWidth={1.7} className="shrink-0" />
