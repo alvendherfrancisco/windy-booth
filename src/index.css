@@ -127,3 +127,19 @@
     display: none;
   }
 }
+
+/* Gentle left-right sway for scattered face doodles. */
+@keyframes face-sway {
+  0%, 100% { transform: translateX(-4px); }
+  50% { transform: translateX(4px); }
+}
+.face-sway {
+  animation-name: face-sway;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .face-sway {
+    animation: none !important;
+  }
+}
