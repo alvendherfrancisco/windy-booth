@@ -143,7 +143,7 @@ export default function Booth() {
       {step === 1 &&
       <>
           <h1 className="font-heading text-3xl font-extrabold text-[#2D2D2D]">Choose your design</h1>
-          <p className="mt-1 text-sm text-[#8A8580] hidden">Every booth starts with a good frame.</p>
+          
           {plan === "free" && used >= 10 ?
         <div className="mt-7 rounded-[18px] bg-[#FDE8E4] p-5">
               <b className="text-[#2D2D2D]">Your 10 sessions are used.</b>
