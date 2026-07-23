@@ -8,7 +8,7 @@ export default function TemplateCard({ template, selected, onSelect, locked }) {
       onClick={() => onSelect(template)}
       className={`relative rounded-[18px] border p-2 text-left transition ${
         selected
-          ? "border-[#f783ac] bg-[#ffe3ef] ring-1 ring-[#f783ac]"
+          ? "border-[#f06595] bg-[#ffdeeb] ring-1 ring-[#f06595]"
           : "border-[#E8E2D8] bg-white"
       }`}
     >

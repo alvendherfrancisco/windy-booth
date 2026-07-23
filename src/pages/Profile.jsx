@@ -3,6 +3,7 @@ import { Camera, Crown, LogOut } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import UserAvatar from "@/components/UserAvatar";
+import PolkaDots from "@/components/PolkaDots";
 
 export default function Profile() {
   const { user } = useAuth();
@@ -38,7 +39,7 @@ export default function Profile() {
             <button
               onClick={() => fileRef.current?.click()}
               disabled={uploading}
-              className="inline-flex items-center gap-2 rounded-full border border-[#f783ac] px-3 py-1.5 text-xs font-bold text-[#f783ac] transition hover:bg-[#ffe3ef] disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-full border border-[#228be6] px-3 py-1.5 text-xs font-bold text-[#228be6] transition hover:bg-[#e7f5ff] disabled:opacity-60"
             >
               <Camera size={13} />
               {uploading ? "Saving…" : "Change photo"}
@@ -47,14 +48,15 @@ export default function Profile() {
           </div>
         </div>
       </section>
-      <section className="mt-4 rounded-[18px] bg-[#ffec99] p-6 text-[#2D2D2D]">
-        <Crown size={22} className="text-[#f06595]" />
+      <section className="relative mt-4 overflow-hidden rounded-[18px] bg-[#fff3bf] p-6 text-[#2D2D2D]">
+        <PolkaDots />
+        <Crown size={22} className="text-[#f59f00]" />
         <p className="mt-6 text-sm text-[#5C5953]">Current plan</p>
         <h2 className="font-heading text-2xl font-extrabold capitalize">{plan}</h2>
         {plan === "free" ? (
           <>
             <p className="mt-2 text-sm text-[#5C5953]">Unlimited sessions, every template, one full year of saved strips.</p>
-            <p className="mt-5 text-xs font-bold text-[#f06595]">Premium checkout will be available with Stripe.</p>
+            <p className="mt-5 text-xs font-bold text-[#e67700]">Premium checkout will be available with Stripe.</p>
           </>
         ) : (
           <p className="mt-2 text-sm text-[#5C5953]">

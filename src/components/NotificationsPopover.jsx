@@ -9,7 +9,7 @@ const SYSTEM_TYPES = ["order_update", "payment", "subscription", "usage_limit", 
 function RowAvatar({ item, user }) {
   if (SYSTEM_TYPES.includes(item.type)) {
     return (
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f783ac]">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f06595]">
         <Flower2 size={16} className="text-white" />
       </div>
     );
@@ -57,7 +57,7 @@ export default function NotificationsPopover({ open, onClose, notifs, onToggleRe
         <div className="flex items-center justify-between px-4 py-3">
           <p className="font-heading text-base font-extrabold text-[#2D2D2D]">Notifications</p>
           {hasUnread && (
-            <button onClick={onMarkAll} className="text-xs font-medium text-[#8B8D93] hover:text-[#f783ac]">
+            <button onClick={onMarkAll} className="text-xs font-medium text-[#8B8D93] hover:text-[#228be6]">
               Mark all as read
             </button>
           )}
@@ -80,7 +80,7 @@ export default function NotificationsPopover({ open, onClose, notifs, onToggleRe
                   </div>
                   <div className="absolute right-3.5 top-1/2 h-7 w-7 -translate-y-1/2">
                     {!item.read && (
-                      <span className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f783ac] transition-opacity group-hover:opacity-0" />
+                      <span className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f06595] transition-opacity group-hover:opacity-0" />
                     )}
                     <button
                       onClick={(e) => {
@@ -90,9 +90,9 @@ export default function NotificationsPopover({ open, onClose, notifs, onToggleRe
                       className="group/btn absolute inset-0 flex items-center justify-center rounded-lg border border-[#E8E2D8] bg-white opacity-0 transition-opacity duration-150 hover:border-[#D8D9DC] hover:bg-[#F5F0EA] group-hover:opacity-100"
                     >
                       {item.read ? (
-                        <Bell size={14} className="text-[#f783ac]" />
+                        <Bell size={14} className="text-[#228be6]" />
                       ) : (
-                        <Check size={14} className="text-[#f783ac]" />
+                        <Check size={14} className="text-[#228be6]" />
                       )}
                       <span className="pointer-events-none absolute right-full top-1/2 mr-2 -translate-y-1/2 whitespace-nowrap rounded-md bg-[#1A1A1A] px-2 py-1 text-[13px] font-medium text-white opacity-0 transition-opacity duration-150 group-hover/btn:opacity-100">
                         {item.read ? "Mark as unread" : "Mark as read"}
