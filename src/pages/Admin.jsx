@@ -79,7 +79,7 @@ export default function Admin() {
     <div className="min-h-screen bg-[#F7F5F1] text-[#2D2D2D]">
       <header className="sticky top-0 z-20 flex items-center justify-between border-b border-[#E8E2D8] bg-white px-4 py-3">
         <div className="flex items-center gap-2">
-          <span className="font-heading text-lg font-extrabold text-[#e64980]">Vendi Admin</span>
+          <span className="font-heading text-lg font-extrabold text-[#e64980]">Admin</span>
           
         </div>
         <div className="flex items-center gap-2">
