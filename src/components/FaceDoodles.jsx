@@ -9,7 +9,7 @@ import React from "react";
 // must establish a stacking context (e.g. via the `isolate` class) for the
 // doodles to show above the card background and below the text.
 
-export const FACES = [
+const FACES = [
   // 0 — pigtails + round glasses + subtle smile
   () => (<>
     <circle cx="20" cy="21" r="12" />
@@ -112,24 +112,6 @@ export const FACES = [
   </>),
 ];
 
-export function FaceDoodle({ face = 0, className, style }) {
-  const Face = FACES[face] || FACES[0];
-  return (
-    <svg
-      viewBox="0 0 40 40"
-      className={className}
-      style={style}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <Face />
-    </svg>
-  );
-}
-
 const VARIANTS = {
   hero: {
     tone: "text-white opacity-35",
@@ -167,16 +149,19 @@ export default function FaceDoodles({ variant = "hero" }) {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" style={{ zIndex: -1 }} aria-hidden="true">
       {v.faces.map((p, i) => (
-        <FaceDoodle
+        <svg
           key={i}
-          face={p.face}
+          viewBox="0 0 40 40"
           className={`absolute ${v.tone}`}
           style={{
             top: p.top, left: p.left, right: p.right, bottom: p.bottom,
             width: p.size, height: p.size,
             transform: `rotate(${p.rotate || 0}deg)`,
           }}
-        />
+          fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
+        >
+          {FACES[p.face]()}
+        </svg>
       ))}
     </div>
   );
