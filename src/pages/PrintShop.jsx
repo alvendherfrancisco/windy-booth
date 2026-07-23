@@ -25,10 +25,9 @@ export default function PrintShop() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const sid = params.get("session");
-    if (params.get("success") === "1" && sid) {
-      base44.functions.invoke("confirmPrintOrder", { session_id: sid }).
-      then((r) => {const d = r?.data ?? r;setDone({ order_id: d?.order_id });}).
+    if (params.get("success") === "1") {
+      base44.functions.invoke("confirmPrintOrder", {}).
+      then((r) => {const d = r?.data ?? r; if (d?.ok === false) { setError("Payment not yet confirmed. Please try again in a moment."); return; } setDone({ order_id: d?.order_id });}).
       catch((e) => setError(e?.message || "Could not confirm payment"));
       window.history.replaceState({}, "", "/print-shop");
     } else if (params.get("canceled") === "1") {

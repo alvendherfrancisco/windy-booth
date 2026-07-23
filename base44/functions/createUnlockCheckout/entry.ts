@@ -1,10 +1,10 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
-import Stripe from 'npm:stripe@14.25.0';
+import { createCheckoutSession } from '../../shared/paymongo.ts';
 
 // One-time unlock purchases: Lifetime Pass (₱299) or a single collection (₱49).
 const LIFETIME_PRICE = 29900;  // centavos
 const COLLECTION_PRICE = 4900; // centavos
-const CURRENCY = "php";
+const PMT = ["card", "gcash", "paymaya"];
 
 Deno.serve(async (req) => {
   try {
@@ -29,19 +29,17 @@ Deno.serve(async (req) => {
       return Response.json({ already: true });
     }
 
-    const unit_amount = isLifetime ? LIFETIME_PRICE : COLLECTION_PRICE;
-    const name = isLifetime ? "Lifetime Pass — Vendhee" : `${category} Collection — Vendhee`;
-    const categoryParam = category ? `&category=${encodeURIComponent(category)}` : "";
+    const amount = isLifetime ? LIFETIME_PRICE : COLLECTION_PRICE;
+    const name = isLifetime ? "Vendi Lifetime Pass" : `${category} Collection — Vendi`;
+    const secretKey = Deno.env.get("PAYMONGO_SECRET_KEY");
 
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY"));
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      line_items: [{
-        quantity: 1,
-        price_data: { currency: CURRENCY, unit_amount, product_data: { name } },
-      }],
-      success_url: `${origin}/dashboard?unlock=success&session={CHECKOUT_SESSION_ID}&type=${type}${categoryParam}`,
-      cancel_url: `${origin}/dashboard?unlock=canceled`,
+    const session = await createCheckoutSession({
+      secretKey,
+      lineItems: [{ name, amount, currency: "PHP", quantity: 1 }],
+      paymentMethodTypes: PMT,
+      successUrl: `${origin}/dashboard?unlock=success`,
+      cancelUrl: `${origin}/dashboard?unlock=canceled`,
+      description: name,
       metadata: {
         unlock_type: type,
         category: category || "",
@@ -50,7 +48,15 @@ Deno.serve(async (req) => {
       },
     });
 
-    return Response.json({ url: session.url });
+    // Remember the pending checkout on the user so confirmUnlock can verify it
+    // after PayMongo redirects back (PayMongo does not append the session id).
+    await base44.auth.updateMe({
+      pending_checkout_id: session.id,
+      pending_unlock_type: type,
+      pending_unlock_category: category || "",
+    });
+
+    return Response.json({ url: session.attributes.checkout_url });
   } catch (error) {
     console.error("createUnlockCheckout error", error.message);
     return Response.json({ error: error.message }, { status: 500 });

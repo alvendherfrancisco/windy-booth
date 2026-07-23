@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
-import Stripe from 'npm:stripe@14.25.0';
+import { createCheckoutSession } from '../../shared/paymongo.ts';
 
 const BUNDLES = {
   single: { name: "Single Strip", strips: 1, price: 49 },
@@ -25,8 +25,7 @@ const computeShipping = (regionCode, subtotal) => {
   if (subtotal >= FREE_SHIP_THRESHOLD) return 0;
   return JT_ZONE_RATES[zoneForRegion(regionCode)];
 };
-
-const CURRENCY = "php";
+const PMT = ["card", "gcash", "paymaya"];
 
 Deno.serve(async (req) => {
   try {
@@ -80,26 +79,24 @@ Deno.serve(async (req) => {
       fulfillment_status: "processing",
     });
 
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY"));
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      line_items: [{
-        quantity: 1,
-        price_data: {
-          currency: CURRENCY,
-          unit_amount: Math.round(total * 100),
-          product_data: { name: `${b.name} — Print Club` },
-        },
-      }],
-      success_url: `${origin}/print-shop?success=1&session={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/print-shop?canceled=1`,
+    const secretKey = Deno.env.get("PAYMONGO_SECRET_KEY");
+    const session = await createCheckoutSession({
+      secretKey,
+      lineItems: [{ name: `${b.name} — Print Club`, amount: Math.round(total * 100), currency: "PHP", quantity: 1 }],
+      paymentMethodTypes: PMT,
+      successUrl: `${origin}/print-shop?success=1`,
+      cancelUrl: `${origin}/print-shop?canceled=1`,
+      description: `${b.name} — Print Club`,
       metadata: {
         order_id: order.id,
+        user_id: user.id,
         base44_app_id: Deno.env.get("BASE44_APP_ID"),
       },
     });
 
-    return Response.json({ url: session.url, order_id: order.id });
+    await base44.entities.Order.update(order.id, { paymongo_payment_id: session.id });
+
+    return Response.json({ url: session.attributes.checkout_url, order_id: order.id });
   } catch (error) {
     console.error("createPrintCheckout error", error.message);
     return Response.json({ error: error.message }, { status: 500 });

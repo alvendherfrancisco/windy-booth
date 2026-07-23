@@ -21,10 +21,10 @@ export default function Dashboard() {
   const [unlockResult, setUnlockResult] = useState(null);
   useEffect(() => {
     const p = new URLSearchParams(window.location.search);
-    const sid = p.get("session");
-    if (p.get("unlock") === "success" && sid) {
-      base44.functions.invoke("confirmUnlock", { session_id: sid }).then((r) => {
+    if (p.get("unlock") === "success") {
+      base44.functions.invoke("confirmUnlock", {}).then((r) => {
         const d = r?.data ?? r;
+        if (!d?.ok) return;
         if (d?.type === "lifetime") updateUser({ plan: "lifetime" });else
         if (d?.type === "collection" && d.category) updateUser({ owned_collections: [...(user?.owned_collections || []), d.category] });
         setUnlockResult({ type: d?.type, category: d?.category });

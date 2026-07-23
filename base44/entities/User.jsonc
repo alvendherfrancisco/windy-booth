@@ -42,6 +42,15 @@
     "paymongo_payment_method_id": {
       "type": "string"
     },
+    "pending_checkout_id": {
+      "type": "string"
+    },
+    "pending_unlock_type": {
+      "type": "string"
+    },
+    "pending_unlock_category": {
+      "type": "string"
+    },
     "avatar_url": {
       "type": "string"
     },
