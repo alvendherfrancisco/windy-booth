@@ -13,7 +13,7 @@ import Dashboard from '@/pages/Dashboard';
 import Booth from '@/pages/Booth';
 import MyBooths from '@/pages/MyBooths';
 import PrintShop from '@/pages/PrintShop';
-import Notifications from '@/pages/Notifications';
+
 import Profile from '@/pages/Profile';
 import Orders from '@/pages/Orders';
 import PageNotFound from './lib/PageNotFound';
@@ -50,7 +50,7 @@ const AuthenticatedApp = () => {
         <Route path="/my-booths" element={<MyBooths />} />
         <Route path="/print-shop" element={<PrintShop />} />
         <Route path="/orders" element={<Orders />} />
-        <Route path="/notifications" element={<Notifications />} />
+
         <Route path="/profile" element={<Profile />} />
       </Route>
     </Route>
