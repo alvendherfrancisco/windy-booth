@@ -1,12 +1,12 @@
 import React from "react";
-import { FACE_RAW, faceSvgHtml } from "@/assets/faces";
+import { FACE_URL } from "@/assets/faces";
 
 // Decorative scattered face doodles, reusing the same cleaned SVG set used on
 // the hero card for a consistent brand texture. Rendered as a negative-z
 // layer behind the host's content, so the host must establish a stacking
-// context (e.g. via `isolate`) for the doodles to show above its background
-// and below its text. Faces inherit color via currentColor (white on the pink
-// hero, pink on light empty/success surfaces).
+// context (e.g. via `isolate`). Faces are painted via CSS mask (SVG alpha =
+// shape) with backgroundColor = currentColor, so they inherit the tone class
+// (white on the pink hero, pink on light empty/success surfaces).
 
 const VARIANTS = {
   hero: {
@@ -47,22 +47,27 @@ export default function FaceDoodles({ variant = "hero" }) {
   const v = VARIANTS[variant] || VARIANTS.hero;
   return (
     <div className={`pointer-events-none absolute inset-0 overflow-hidden ${v.tone}`} style={{ zIndex: -1, opacity: v.opacity }} aria-hidden="true">
-      {v.faces.map((p, i) => (
-        <span
-          key={i}
-          className="absolute"
-          style={{
-            top: p.top,
-            left: p.left,
-            right: p.right,
-            bottom: p.bottom,
-            width: p.size,
-            height: p.size,
-            transform: `rotate(${p.rotate || 0}deg)`,
-          }}
-          dangerouslySetInnerHTML={{ __html: faceSvgHtml(FACE_RAW[p.face]) }}
-        />
-      ))}
+      {v.faces.map((p, i) => {
+        const url = FACE_URL[p.face];
+        return (
+          <span
+            key={i}
+            className="absolute"
+            style={{
+              top: p.top,
+              left: p.left,
+              right: p.right,
+              bottom: p.bottom,
+              width: p.size,
+              height: p.size,
+              transform: `rotate(${p.rotate || 0}deg)`,
+              backgroundColor: "currentColor",
+              mask: `url(${url}) center / contain no-repeat`,
+              WebkitMask: `url(${url}) center / contain no-repeat`,
+            }}
+          />
+        );
+      })}
     </div>
   );
 }

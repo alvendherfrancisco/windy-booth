@@ -1,5 +1,5 @@
 import React from "react";
-import { FACE_RAW, faceSvgHtml } from "@/assets/faces";
+import { FACE_URL } from "@/assets/faces";
 
 // Small, organically-scattered cleaned face doodles floating on the pink hero
 // card as a soft background texture. Sized 29-44px, slight rotation, white at
@@ -21,21 +21,26 @@ const SCATTER = [
 export default function HeroFaceScatter() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden text-white" style={{ zIndex: -1 }} aria-hidden="true">
-      {SCATTER.map((p, i) => (
-        <span
-          key={i}
-          className="absolute"
-          style={{
-            left: p.left,
-            top: p.top,
-            width: p.size,
-            height: p.size,
-            opacity: p.op,
-            transform: `translate(-50%, -50%) rotate(${p.rotate}deg)`,
-          }}
-          dangerouslySetInnerHTML={{ __html: faceSvgHtml(FACE_RAW[p.face]) }}
-        />
-      ))}
+      {SCATTER.map((p, i) => {
+        const url = FACE_URL[p.face];
+        return (
+          <span
+            key={i}
+            className="absolute"
+            style={{
+              left: p.left,
+              top: p.top,
+              width: p.size,
+              height: p.size,
+              opacity: p.op,
+              transform: `translate(-50%, -50%) rotate(${p.rotate}deg)`,
+              backgroundColor: "currentColor",
+              mask: `url(${url}) center / contain no-repeat`,
+              WebkitMask: `url(${url}) center / contain no-repeat`,
+            }}
+          />
+        );
+      })}
     </div>
   );
 }

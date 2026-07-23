@@ -1,20 +1,14 @@
-// Cleaned, recolorable face doodle SVGs (tightened viewBox, fill="currentColor").
-// Imported as raw strings so they inline into the DOM and inherit CSS `color`
-// via currentColor — letting the same set render white on the pink hero and
-// pink on light empty/success states for a consistent brand texture.
-import pigtails from "./pigtails.svg?raw";
-import wavy from "./wavy.svg?raw";
-import spiky from "./spiky.svg?raw";
-import afro from "./afro.svg?raw";
-import short from "./short.svg?raw";
-import buns from "./buns.svg?raw";
-import bangs from "./bangs.svg?raw";
-import messy from "./messy.svg?raw";
-import pony from "./pony.svg?raw";
+// Cleaned, recolorable face doodle SVGs. Imported as asset URLs and rendered
+// via CSS mask (SVG alpha = shape, backgroundColor = currentColor), so the same
+// set renders white on the pink hero and pink on light empty/success states.
+import pigtails from "./pigtails.svg";
+import wavy from "./wavy.svg";
+import spiky from "./spiky.svg";
+import afro from "./afro.svg";
+import short from "./short.svg";
+import buns from "./buns.svg";
+import bangs from "./bangs.svg";
+import messy from "./messy.svg";
+import pony from "./pony.svg";
 
-export const FACE_RAW = [pigtails, wavy, spiky, afro, short, buns, bangs, messy, pony];
-
-// Inject sizing so an inlined <svg> fills its positioned box.
-export function faceSvgHtml(raw) {
-  return raw.replace("<svg ", '<svg width="100%" height="100%" style="display:block" ');
-}
+export const FACE_URL = [pigtails, wavy, spiky, afro, short, buns, bangs, messy, pony];
