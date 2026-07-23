@@ -104,9 +104,9 @@ export default function AppShell() {
   return (
     <div className="min-h-screen bg-[#FFFBF3] text-[#2D2D2D] pb-20 md:pb-0 md:pl-20">
       <aside className="hidden md:fixed md:inset-y-0 md:left-0 md:flex md:w-20 md:flex-col md:items-center md:border-r md:border-[#E8E2D8] md:bg-[#F5F0EA] md:py-5">
-        <Link to="/dashboard" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#f06595] text-white hidden">
-          <Flower2 size={22} strokeWidth={1.7} className="shrink-0" />
-        </Link>
+        
+
+        
         <nav className="notifications-scroll mt-8 flex min-h-0 flex-1 flex-col items-center gap-1.5 overflow-y-auto">
           {items.map(({ to, label, outline, fill }) =>
           <SideNavItem
