@@ -4,11 +4,12 @@ import { ArrowLeft, Bell, Camera, Flower2, Home, Images, Printer, UserRound } fr
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { useBoothWizard } from "@/components/booth/BoothWizardContext";
+import UserAvatar from "@/components/UserAvatar";
 
 const items = [
   { to: "/dashboard", label: "Home", icon: Home },
-  { to: "/booth", label: "New Booth", icon: Camera },
-  { to: "/my-booths", label: "My Booths", icon: Images },
+  { to: "/booth", label: "Capture", icon: Camera },
+  { to: "/my-booths", label: "Strips", icon: Images },
   { to: "/print-shop", label: "Print", icon: Printer },
   { to: "/profile", label: "Profile", icon: UserRound },
 ];
@@ -30,28 +31,43 @@ export default function AppShell() {
   }, [user?.id]);
 
   return (
-    <div className="min-h-screen bg-[#F9F7F2] text-[#2D2D2D] pb-20 md:pb-0 md:pl-60">
-      <aside className="hidden md:fixed md:inset-y-0 md:left-0 md:flex md:w-60 md:flex-col md:border-r md:border-[#E8E2D8] md:bg-white md:p-6">
-        <Link to="/dashboard" className="flex items-center gap-2 font-heading text-2xl font-extrabold tracking-tight">
-          <Flower2 size={23} strokeWidth={1.7} className="text-[#DC3522]" />Vendi
+    <div className="min-h-screen bg-[#F9F7F2] text-[#2D2D2D] pb-20 md:pb-0 md:pl-20">
+      <aside className="hidden md:fixed md:inset-y-0 md:left-0 md:flex md:w-20 md:flex-col md:items-center md:border-r md:border-[#E8E2D8] md:bg-white md:py-5">
+        <Link to="/dashboard" className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#DC3522] text-white">
+          <Flower2 size={20} strokeWidth={1.7} />
         </Link>
-        <nav className="mt-12 space-y-1">
-          {items.map(({ to, label, icon: Icon }) => (
-            <Link
-              key={to}
-              to={to}
-              className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold ${
-                location.pathname === to ? "bg-[#FDE8E4] text-[#DC3522]" : "text-[#5C5953] hover:bg-[#EEF2FF]"
-              }`}
-            >
-              <Icon size={19} />
-              {label}
-            </Link>
-          ))}
+        <nav className="mt-9 flex flex-1 flex-col items-center gap-1">
+          {items.map(({ to, label, icon: Icon }) => {
+            const active = location.pathname === to;
+            return (
+              <Link
+                key={to}
+                to={to}
+                className={`flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 text-[10px] font-bold transition ${
+                  active ? "text-[#DC3522]" : "text-[#5C5953] hover:text-[#4F46E5]"
+                }`}
+              >
+                <span
+                  className={`flex h-9 w-9 items-center justify-center rounded-xl transition ${
+                    active ? "bg-[#FDE8E4]" : "hover:bg-[#EEF2FF]"
+                  }`}
+                >
+                  <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
+                </span>
+                {label}
+              </Link>
+            );
+          })}
         </nav>
+        <div className="mt-2 flex w-full flex-col items-center gap-1 px-1">
+          <UserAvatar user={user} size="sm" />
+          <p className="max-w-[72px] truncate text-center text-[10px] font-bold text-[#2D2D2D]">
+            {user?.full_name || user?.email || "You"}
+          </p>
+        </div>
       </aside>
 
-      <header className="sticky top-0 z-20 flex h-16 items-center border-b border-[#E8E2D8] bg-[#F9F7F2] px-4 md:px-10">
+      <header className="sticky top-0 z-20 flex h-16 items-center border-b border-[#E8E2D8] bg-[#F9F7F2] px-4 md:px-8">
         {isBooth ? (
           step > 1 && (
             <button onClick={goBack} className="flex items-center gap-1.5 text-sm font-bold text-[#2D2D2D] hover:text-[#4F46E5]">
@@ -70,7 +86,7 @@ export default function AppShell() {
         )}
       </header>
 
-      <main className="mx-auto max-w-5xl px-4 py-6 md:px-10 md:py-10">
+      <main className="mx-auto max-w-5xl px-4 py-6 md:px-8 md:py-10">
         <Outlet />
       </main>
 

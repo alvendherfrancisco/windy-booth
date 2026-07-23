@@ -31,6 +31,9 @@
     },
     "paymongo_payment_method_id": {
       "type": "string"
+    },
+    "avatar_url": {
+      "type": "string"
     }
   }
 }
