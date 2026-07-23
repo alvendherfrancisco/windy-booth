@@ -161,36 +161,36 @@ export default function AppShell() {
           <button
             onClick={() => setMoreOpen((v) => !v)}
             className={`flex flex-col items-center gap-1 text-[10px] font-bold ${
-            moreOpen ? "text-[#f06595]" : "text-[#8A8580]"}`}
-          >
+            moreOpen ? "text-[#f06595]" : "text-[#8A8580]"}`}>
+            
             <ion-icon name={moreOpen ? "ellipsis-horizontal" : "ellipsis-horizontal-outline"} style={{ fontSize: 22 }} />
             More
           </button>
-          {moreOpen && (
-            <>
+          {moreOpen &&
+          <>
               <button className="fixed inset-0 z-40" onClick={() => setMoreOpen(false)} aria-label="Close menu" />
               <div className="absolute bottom-full right-0 z-50 mb-2 w-40 rounded-xl border border-[#E8E2D8] bg-white p-1 shadow-lg">
                 <button
-                  onClick={() => { setMoreOpen(false); setNotifOpen(true); }}
-                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-[#2D2D2D] hover:bg-[#ffdeeb]"
-                >
+                onClick={() => {setMoreOpen(false);setNotifOpen(true);}}
+                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-[#2D2D2D] hover:bg-[#ffdeeb]">
+                
                   <ion-icon name="notifications-outline" style={{ fontSize: 18 }} />
-                  <span className="text-xs font-bold">Alerts</span>
-                  {unread > 0 && (
-                    <span className="ml-auto flex h-4 min-w-4 items-center justify-center rounded-full bg-[#f06595] px-1 text-[9px] font-bold text-white">{unread}</span>
-                  )}
+                  <span className="text-xs font-bold">Notifications</span>
+                  {unread > 0 &&
+                <span className="ml-auto flex h-4 min-w-4 items-center justify-center rounded-full bg-[#f06595] px-1 text-[9px] font-bold text-white">{unread}</span>
+                }
                 </button>
                 <Link
-                  to="/profile"
-                  onClick={() => setMoreOpen(false)}
-                  className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left hover:bg-[#ffdeeb] ${isActive("/profile") ? "text-[#f06595]" : "text-[#2D2D2D]"}`}
-                >
+                to="/profile"
+                onClick={() => setMoreOpen(false)}
+                className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left hover:bg-[#ffdeeb] ${isActive("/profile") ? "text-[#f06595]" : "text-[#2D2D2D]"}`}>
+                
                   <UserAvatar user={user} size="sm" className="!h-5 !w-5" />
                   <span className="text-xs font-bold">Profile</span>
                 </Link>
               </div>
             </>
-          )}
+          }
         </div>
       </nav>
 
