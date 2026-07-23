@@ -98,6 +98,29 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true);
       setIsLoadingAuth(false);
       setAuthChecked(true);
+      // Google users (full_name is populated by Google) with no profile photo:
+      // automatically pull their Google profile picture once, on first account
+      // creation. A custom upload sets avatar_url, so this never overwrites a
+      // user-chosen photo.
+      if (currentUser && !currentUser.avatar_url && currentUser.full_name) {
+        const created = currentUser.created_date ? new Date(currentUser.created_date).getTime() : 0;
+        const isFresh = created && Date.now() - created < 10 * 60 * 1000;
+        if (isFresh) {
+          try {
+            await base44.functions.invoke("syncGoogleAvatar", {});
+            sessionStorage.removeItem("vendi_google_consent");
+            window.location.reload();
+          } catch {
+            if (!sessionStorage.getItem("vendi_google_consent")) {
+              sessionStorage.setItem("vendi_google_consent", "1");
+              try {
+                const url = await base44.connectors.connectAppUser("6a62074fa8eda00e1c8a0e3a");
+                window.location.href = url;
+              } catch (e) { /* connector unavailable */ }
+            }
+          }
+        }
+      }
     } catch (error) {
       console.error('User auth check failed:', error);
       setIsLoadingAuth(false);
