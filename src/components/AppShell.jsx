@@ -13,13 +13,58 @@ const items = [
   { to: "/print-shop", label: "Print", outline: "print-outline", fill: "print" },
 ];
 
-function NavIcon({ outline, fill, active, size }) {
-  if (active) return <ion-icon name={fill} style={{ fontSize: size }} />;
+function SideNavItem({ to, label, outline, fill, active, size, labelClass }) {
+  const [hover, setHover] = useState(false);
+  const on = active || hover;
   return (
-    <>
-      <ion-icon name={outline} className="block group-hover:hidden" style={{ fontSize: size }} />
-      <ion-icon name={fill} className="hidden group-hover:block" style={{ fontSize: size }} />
-    </>
+    <Link
+      to={to}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      className={`relative flex w-full flex-col items-center gap-1.5 rounded-xl px-1 py-2.5 font-bold transition ${labelClass} ${
+        active ? "text-[#DC3522]" : "text-[#5C5953] hover:text-[#4F46E5]"
+      }`}
+    >
+      <span
+        className={`flex h-10 w-10 items-center justify-center rounded-xl transition ${
+          active ? "bg-[#FDE8E4]" : hover ? "bg-[#EEF2FF]" : ""
+        }`}
+      >
+        <ion-icon name={on ? fill : outline} style={{ fontSize: size }} />
+      </span>
+      {label}
+    </Link>
+  );
+}
+
+function NotifButton({ open, unread, onClick, size }) {
+  const [hover, setHover] = useState(false);
+  const on = open || hover;
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      className={`group relative flex w-full flex-col items-center gap-1.5 rounded-xl px-1 py-2.5 font-bold transition ${
+        open ? "text-[#DC3522]" : "text-[#5C5953] hover:text-[#4F46E5]"
+      }`}
+    >
+      <span
+        className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition ${
+          open ? "bg-[#FDE8E4]" : hover ? "bg-[#EEF2FF]" : ""
+        }`}
+      >
+        <ion-icon name={on ? "notifications" : "notifications-outline"} style={{ fontSize: size }} />
+        {unread > 0 && (
+          <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#DC3522] px-1 text-[9px] font-bold text-white ring-2 ring-[#F5F0EA]">
+            {unread}
+          </span>
+        )}
+      </span>
+      <span className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-y-1/2 whitespace-nowrap rounded-md bg-[#1A1A1A] px-2.5 py-1.5 text-xs font-medium text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100">
+        Notifications
+      </span>
+    </button>
   );
 }
 
@@ -56,64 +101,35 @@ export default function AppShell() {
 
   const isActive = (to) => location.pathname === to;
 
-  const navItemCls = (active) =>
-    `group relative flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 text-[10px] font-bold transition ${
-      active ? "text-[#DC3522]" : "text-[#5C5953] hover:text-[#4F46E5]"
-    }`;
-  const iconWrapCls = (active) =>
-    `flex h-9 w-9 items-center justify-center rounded-xl transition ${
-      active ? "bg-[#FDE8E4]" : "group-hover:bg-[#EEF2FF]"
-    }`;
-
   return (
     <div className="min-h-screen bg-white text-[#2D2D2D] pb-20 md:pb-0 md:pl-20">
       <aside className="hidden md:fixed md:inset-y-0 md:left-0 md:flex md:w-20 md:flex-col md:items-center md:border-r md:border-[#E8E2D8] md:bg-[#F5F0EA] md:py-5">
         <Link to="/dashboard" className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#DC3522] text-white">
-          <Flower2 size={20} strokeWidth={1.7} />
+          <Flower2 size={22} strokeWidth={1.7} />
         </Link>
-        <nav className="mt-9 flex flex-1 flex-col items-center gap-1">
-          {items.map(({ to, label, outline, fill }) => {
-            const active = isActive(to);
-            return (
-              <Link key={to} to={to} className={navItemCls(active)}>
-                <span className={iconWrapCls(active)}>
-                  <NavIcon outline={outline} fill={fill} active={active} size={20} />
-                </span>
-                {label}
-              </Link>
-            );
-          })}
-          <button
-            onClick={() => setNotifOpen((v) => !v)}
-            className={`group relative flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 transition ${
-              notifOpen ? "text-[#DC3522]" : "text-[#5C5953] hover:text-[#4F46E5]"
-            }`}
-          >
-            <span
-              className={`relative flex h-9 w-9 items-center justify-center rounded-xl transition ${
-                notifOpen ? "bg-[#FDE8E4]" : "group-hover:bg-[#EEF2FF]"
-              }`}
-            >
-              <NavIcon outline="notifications-outline" fill="notifications" active={notifOpen} size={20} />
-              {unread > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#DC3522] px-1 text-[9px] font-bold text-white ring-2 ring-[#F5F0EA]">
-                  {unread}
-                </span>
-              )}
-            </span>
-            <span className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-y-1/2 whitespace-nowrap rounded-md bg-[#1A1A1A] px-2.5 py-1.5 text-xs font-medium text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100">
-              Notifications
-            </span>
-          </button>
+        <nav className="mt-8 flex flex-1 flex-col items-center gap-1.5">
+          {items.map(({ to, label, outline, fill }) => (
+            <SideNavItem
+              key={to}
+              to={to}
+              label={label}
+              outline={outline}
+              fill={fill}
+              active={isActive(to)}
+              size={26}
+              labelClass="text-[13px]"
+            />
+          ))}
+          <NotifButton open={notifOpen} unread={unread} onClick={() => setNotifOpen((v) => !v)} size={26} />
         </nav>
         <Link
           to="/profile"
           title={user?.full_name || user?.email || "Profile"}
-          className={`mt-2 flex h-10 w-10 items-center justify-center rounded-full transition ${
+          className={`mt-2 flex h-12 w-12 items-center justify-center rounded-full transition ${
             isActive("/profile") ? "bg-[#EEF2FF]" : "hover:bg-[#EEF2FF]"
           }`}
         >
-          <UserAvatar user={user} size="sm" />
+          <UserAvatar user={user} size="md" />
         </Link>
       </aside>
 
@@ -128,22 +144,22 @@ export default function AppShell() {
             <Link
               key={to}
               to={to}
-              className={`flex flex-1 flex-col items-center gap-1 py-1 text-[9px] font-bold ${
+              className={`flex flex-1 flex-col items-center gap-1 py-1 text-[10px] font-bold ${
                 active ? "text-[#DC3522]" : "text-[#8A8580]"
               }`}
             >
-              <NavIcon outline={outline} fill={fill} active={active} size={18} />
+              <ion-icon name={active ? fill : outline} style={{ fontSize: 22 }} />
               {label}
             </Link>
           );
         })}
         <button
           onClick={() => setNotifOpen(true)}
-          className={`relative flex flex-1 flex-col items-center gap-1 py-1 text-[9px] font-bold ${
+          className={`relative flex flex-1 flex-col items-center gap-1 py-1 text-[10px] font-bold ${
             notifOpen ? "text-[#DC3522]" : "text-[#8A8580]"
           }`}
         >
-          <NavIcon outline="notifications-outline" fill="notifications" active={notifOpen} size={18} />
+          <ion-icon name={notifOpen ? "notifications" : "notifications-outline"} style={{ fontSize: 22 }} />
           {unread > 0 && (
             <span className="absolute right-1 top-0 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-[#DC3522] px-1 text-[8px] font-bold text-white">
               {unread}
@@ -158,7 +174,7 @@ export default function AppShell() {
           }`}
         >
           <UserAvatar user={user} size="sm" className="!h-7 !w-7" />
-          <span className="text-[9px] font-bold">You</span>
+          <span className="text-[10px] font-bold">You</span>
         </Link>
       </nav>
 
