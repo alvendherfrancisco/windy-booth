@@ -63,7 +63,7 @@ export default function Profile() {
 
         <>
             <p className="mt-2 text-sm text-[#5C5953]">10 booth sessions per month and up to 10 saved strips. Upgrade anytime.</p>
-            <button onClick={() => setUpgradeOpen(true)} className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#f06595] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#e64980]"><Sparkles size={15} className="hidden" /> Get Lifetime Pass · ₱{LIFETIME_PRICE}</button>
+            <button onClick={() => setUpgradeOpen(true)} className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#f06595] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#e64980]"> Get Lifetime Pass · ₱{LIFETIME_PRICE}</button>
           </>
         }
       </section>
