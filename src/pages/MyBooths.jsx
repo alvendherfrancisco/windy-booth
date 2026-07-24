@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Download, Printer, Trash2 } from "lucide-react";
+import { Download, Printer, Share2, Trash2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import StripPreview from "@/components/booth/StripPreview";
 import PolkaDots from "@/components/PolkaDots";
 import FaceDoodles from "@/components/FaceDoodles";
 import { downloadStrip } from "@/components/booth/downloadStrip";
+import { shareToInstagram } from "@/components/booth/shareStrip";
 import UpgradeModal from "@/components/upgrade/UpgradeModal";
 
 const dotted = (v) => { const d = new Date(v); return `${d.getMonth() + 1}.${d.getDate()}.${d.getFullYear()}`; };
@@ -17,6 +18,7 @@ export default function MyBooths() {
   const [templates, setTemplates] = useState({});
   const plan = user?.plan || "free";
   const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const [sharingId, setSharingId] = useState(null);
 
   const load = async () => {
     if (!user) return;
@@ -43,6 +45,14 @@ export default function MyBooths() {
   const download = (strip) => {
     downloadStrip(templates[strip.template_id], strip.photo_urls, `vendi-strip-${strip.id}.png`);
   };
+  const share = async (strip) => {
+    setSharingId(strip.id);
+    try {
+      await shareToInstagram(templates[strip.template_id], strip.photo_urls);
+    } finally {
+      setSharingId(null);
+    }
+  };
 
   return (
     <div>
@@ -59,6 +69,7 @@ export default function MyBooths() {
               <StripPreview template={templates[strip.template_id]} photos={strip.photo_urls} className="mx-auto w-[124px]" />
               <div className="mt-3 flex justify-center gap-3">
                 <button onClick={() => download(strip)} aria-label="Download strip" className="text-[#228be6]"><Download size={17} /></button>
+                <button onClick={() => share(strip)} aria-label="Share strip" disabled={sharingId === strip.id} className="text-[#e64980] disabled:opacity-50"><Share2 size={17} /></button>
                 {printShopEnabled && <Link to="/print-shop" aria-label="Order prints" className="text-[#228be6]"><Printer size={17} /></Link>}
                 <button onClick={() => remove(strip.id)} aria-label="Delete strip" className="text-[#DC2626]"><Trash2 size={17} /></button>
               </div>

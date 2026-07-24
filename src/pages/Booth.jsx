@@ -16,6 +16,7 @@ import ModeCardDecor from "@/components/booth/ModeCardDecor";
 import { downloadStrip } from "@/components/booth/downloadStrip";
 import { shareToInstagram } from "@/components/booth/shareStrip";
 import PrintSimulation from "@/components/booth/PrintSimulation";
+import HeroFaceScatter from "@/components/booth/HeroFaceScatter";
 import PolkaDots from "@/components/PolkaDots";
 import FaceDoodles from "@/components/FaceDoodles";
 import UpgradeModal from "@/components/upgrade/UpgradeModal";
@@ -285,27 +286,26 @@ export default function Booth() {
       {/* STEP 5 — Download */}
       {step === 5 &&
       <div className="mx-auto max-w-sm text-center">
-          <div className="animate-pop relative isolate mt-4 overflow-hidden rounded-[22px] border border-[#E8E2D8] bg-[#ebfbee] p-6">
-            <PolkaDots />
-            <FaceDoodles variant="success" />
+          <div className="animate-pop relative isolate mt-4 overflow-hidden rounded-[18px] bg-[#f06595] p-6 text-white">
+            <HeroFaceScatter />
             <div className="mx-auto w-[180px]">
               <StripPreview template={selected} photos={finalPhotos} />
             </div>
-            <p className="mt-5 font-heading text-xl font-extrabold text-[#2D2D2D]">Your strip is ready!</p>
+            <p className="mt-5 font-heading text-xl font-extrabold text-white">Your strip is ready!</p>
             {!lifetime && used >= 10 &&
-          <p className="mt-2 text-sm text-[#8A8580]">Your oldest strip was replaced — download it to keep it.</p>
+          <p className="mt-2 text-sm text-white/85">Your oldest strip was replaced — download it to keep it.</p>
           }
             <div className="mt-6 space-y-3">
-              <button onClick={download} className="flex w-full items-center justify-center gap-2 rounded-full bg-[#f06595] px-5 py-4 text-sm font-bold text-white transition hover:bg-[#e64980]">
+              <button onClick={download} className="flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-4 text-sm font-bold text-[#e64980] transition hover:bg-white/90">
                 <Download size={16} />Download Strip
               </button>
-              <button onClick={async () => { try { setSharing(true); await shareToInstagram(selected, finalPhotos); } finally { setSharing(false); } }} disabled={sharing} className="flex w-full items-center justify-center gap-2 rounded-full border border-[#e64980] px-5 py-3 text-sm font-bold text-[#e64980] transition hover:bg-[#fff0f6] disabled:opacity-60">
+              <button onClick={async () => { try { setSharing(true); await shareToInstagram(selected, finalPhotos); } finally { setSharing(false); } }} disabled={sharing} className="flex w-full items-center justify-center gap-2 rounded-full border border-white px-5 py-3 text-sm font-bold text-white transition hover:bg-white/10 disabled:opacity-60">
                 <Instagram size={16} />{sharing ? "Opening share…" : "Share to Instagram"}
               </button>
-              <button onClick={() => {if (mode === "camera") setCameraPhotos([]); else {setUploadPhotos([]);setRawFiles([]);} setFinalPhotos([]);setStep(3);}} className="flex w-full items-center justify-center gap-2 rounded-full border border-[#228be6] px-5 py-3 text-sm font-bold text-[#228be6] transition hover:bg-[#e7f5ff]">
+              <button onClick={() => {if (mode === "camera") setCameraPhotos([]); else {setUploadPhotos([]);setRawFiles([]);} setFinalPhotos([]);setStep(3);}} className="flex w-full items-center justify-center gap-2 rounded-full border border-white px-5 py-3 text-sm font-bold text-white transition hover:bg-white/10">
                 <RotateCcw size={14} />Retake Photos
               </button>
-              <button onClick={resetAll} className="block w-full text-sm font-bold text-[#228be6]">Start over with a new design →</button>
+              <button onClick={resetAll} className="block w-full text-sm font-bold text-white/90 hover:text-white">Start over with a new design →</button>
             </div>
           </div>
         </div>
