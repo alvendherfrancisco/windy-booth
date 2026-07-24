@@ -2,6 +2,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { createCheckoutSession } from '../../shared/paymongo.ts';
 
 // One-time unlock purchases: Lifetime Pass (₱299) or a single collection (₱49).
+// Routed through PayMongo (see shared/paymongo.ts) — no Stripe.
 const LIFETIME_PRICE = 29900;  // centavos
 const COLLECTION_PRICE = 4900; // centavos
 const PMT = ["card", "gcash", "paymaya"];

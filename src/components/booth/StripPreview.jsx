@@ -34,7 +34,7 @@ export default function StripPreview({ template, photos = [], imgFilter = "none"
             left: `${STRIP_SLOTS.left * 100}%`,
             width: `${STRIP_SLOTS.width * 100}%`,
             top: `${STRIP_SLOTS.tops[i] * 100}%`,
-            height: `${STRIP_SLOTS.height * 100}%`,
+            height: `${STRIP_SLOTS.heights[i] * 100}%`,
           }}
         >
           <img src={p} alt="" className="h-full w-full object-cover" style={{ filter: imgFilter }} />

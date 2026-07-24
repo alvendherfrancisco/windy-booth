@@ -29,7 +29,7 @@ const CameraCapture = forwardRef(function CameraCapture(
     const img = new Image();
     img.onload = () => {
       const w = STRIP_SLOTS.width * img.naturalWidth;
-      const h = STRIP_SLOTS.height * img.naturalHeight;
+      const h = STRIP_SLOTS.heights[0] * img.naturalHeight;
       if (h > 0) setSlotAspect(w / h);
     };
     img.src = asset;

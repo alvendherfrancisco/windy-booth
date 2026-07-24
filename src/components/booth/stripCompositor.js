@@ -42,12 +42,12 @@ export async function composeStrip(template, photos) {
   const ctx = canvas.getContext("2d");
   ctx.drawImage(bg, 0, 0);
   const slotW = canvas.width * STRIP_SLOTS.width;
-  const slotH = canvas.height * STRIP_SLOTS.height;
   const slotX = canvas.width * STRIP_SLOTS.left;
   for (let i = 0; i < 3; i++) {
     if (!photos[i]) continue;
     const img = await loadImg(photos[i]);
     const y = canvas.height * STRIP_SLOTS.tops[i];
+    const slotH = canvas.height * STRIP_SLOTS.heights[i];
     drawCover(ctx, img, slotX, y, slotW, slotH);
   }
   return canvas.toDataURL("image/png");
