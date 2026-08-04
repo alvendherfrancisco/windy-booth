@@ -25,7 +25,6 @@ export default function StripPreview({ template, photos = [], imgFilter = "none"
 
   return (
     <div className={`relative mx-auto w-full overflow-hidden rounded-md bg-white shadow-[0_8px_24px_rgba(40,30,20,.12)] ${className}`}>
-      <img src={thumb} alt={template?.name || "Vendi strip"} className="block w-full" />
       {photos.slice(0, 3).map((p, i) => (
         <div
           key={i}
@@ -40,6 +39,7 @@ export default function StripPreview({ template, photos = [], imgFilter = "none"
           <img src={p} alt="" className="h-full w-full object-cover" style={{ filter: imgFilter }} />
         </div>
       ))}
+      <img src={thumb} alt={template?.name || "Vendi strip"} className="relative z-10 block w-full" />
     </div>
   );
 }

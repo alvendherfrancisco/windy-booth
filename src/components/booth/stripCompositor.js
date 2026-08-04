@@ -40,9 +40,11 @@ export async function composeStrip(template, photos) {
   canvas.width = bg.naturalWidth;
   canvas.height = bg.naturalHeight;
   const ctx = canvas.getContext("2d");
-  ctx.drawImage(bg, 0, 0);
   const slotW = canvas.width * STRIP_SLOTS.width;
   const slotX = canvas.width * STRIP_SLOTS.left;
+  // Photos first (behind), then the template frame on top — the template's
+  // transparent windows let the photos show through while its decorative
+  // frame/graphics overlay the photo edges.
   for (let i = 0; i < 3; i++) {
     if (!photos[i]) continue;
     const img = await loadImg(photos[i]);
@@ -50,5 +52,6 @@ export async function composeStrip(template, photos) {
     const slotH = canvas.height * STRIP_SLOTS.heights[i];
     drawCover(ctx, img, slotX, y, slotW, slotH);
   }
+  ctx.drawImage(bg, 0, 0);
   return canvas.toDataURL("image/png");
 }
