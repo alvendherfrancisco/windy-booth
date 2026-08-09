@@ -3,6 +3,7 @@ import { Check, X, Loader2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Image } from "@/components/ui/image";
+import { generateReceiptPdf } from "@/components/admin/receiptPdf";
 
 const fmtDate = (v) => (v ? new Date(v).toLocaleString() : "—");
 
@@ -29,12 +30,34 @@ export default function AdminUnlockRequests({ requests, users, onChanged }) {
             }
           }
         }
-        await base44.entities.BillingRecord.create({
+        const billingRec = await base44.entities.BillingRecord.create({
           user_id: req.user_id,
           type: "unlock",
           amount: req.amount || 0,
           status: "paid",
           paymongo_transaction_id: `unlock-${req.id}`,
+          created_at: new Date().toISOString(),
+        });
+        const planDesc = req.plan_type === "lifetime" ? "Lifetime Pass" : `Collection: ${req.collection}`;
+        try {
+          const doc = await generateReceiptPdf({ user: u, request: req, billingId: billingRec.id });
+          const pdfBlob = doc.output("blob");
+          const pdfFile = new File([pdfBlob], `receipt-${req.id}.pdf`, { type: "application/pdf" });
+          const uploadRes = await base44.integrations.Core.UploadFile({ file: pdfFile });
+          await base44.integrations.Core.SendEmail({
+            to: u?.email,
+            subject: "Your windy the pooh purchase is confirmed!",
+            body: `Hi ${u?.full_name || u?.email || "there"},\n\nThank you for your purchase! Your ${planDesc} has been activated.\n\nAmount: $${(req.amount || 0).toFixed(2)}\nPayment Method: ${req.payment_method || "—"}\n\nDownload your receipt: ${uploadRes.file_url}\n\nEnjoy creating memories with windy the pooh!`,
+          });
+        } catch (_e) {
+          // Receipt/email failure should not block the approval
+        }
+        await base44.entities.Notification.create({
+          user_id: req.user_id,
+          type: "payment",
+          message: `Your ${planDesc} purchase is confirmed! A receipt was sent to your email.`,
+          link: "/profile",
+          read: false,
           created_at: new Date().toISOString(),
         });
       }

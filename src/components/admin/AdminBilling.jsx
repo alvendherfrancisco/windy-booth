@@ -1,15 +1,47 @@
 import React, { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { Search, Trash2, Loader2 } from "lucide-react";
+import { base44 } from "@/api/base44Client";
 
 const fmtDate = (v) => (v ? new Date(v).toLocaleDateString() : "—");
 const PESO = (n) => `₱${(n || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 const STATUS_TONE = { paid: "bg-[#ebfbee] text-[#37b24d]", failed: "bg-[#ffe3e3] text-[#DC2626]", refunded: "bg-[#f1f5fb] text-[#94a3b8]" };
 
-export default function AdminBilling({ billing, users }) {
+export default function AdminBilling({ billing, users, unlockRequests, onChanged }) {
   const [q, setQ] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [delBusy, setDelBusy] = useState(null);
 
   const userMap = useMemo(() => { const m = {}; users.forEach((u) => (m[u.id] = u)); return m; }, [users]);
+  const reqMap = useMemo(() => { const m = {}; unlockRequests?.forEach((r) => (m[r.id] = r)); return m; }, [unlockRequests]);
+
+  const del = async (b) => {
+    if (!window.confirm("Delete this billing record? This will revoke the user's access and remove the associated unlock request.")) return;
+    setDelBusy(b.id);
+    try {
+      const txId = b.paymongo_transaction_id || "";
+      const unlockId = txId.startsWith("unlock-") ? txId.slice(7) : null;
+      const req = unlockId ? reqMap[unlockId] : null;
+      if (req) {
+        const u = userMap[b.user_id];
+        if (u) {
+          if (req.plan_type === "lifetime") {
+            await base44.entities.User.update(u.id, { plan: "free" });
+          } else if (req.plan_type === "collection" && req.collection) {
+            const owned = (u.owned_collections || []).filter((c) => c !== req.collection);
+            await base44.entities.User.update(u.id, { owned_collections: owned });
+          }
+        }
+        await base44.entities.UnlockRequest.delete(req.id);
+      } else if (b.type === "subscription") {
+        const u = userMap[b.user_id];
+        if (u) await base44.entities.User.update(u.id, { plan: "free" });
+      }
+      await base44.entities.BillingRecord.delete(b.id);
+      await onChanged();
+    } finally {
+      setDelBusy(null);
+    }
+  };
 
   const rows = useMemo(() => billing.filter((b) => {
     const u = userMap[b.user_id];
@@ -50,6 +82,7 @@ export default function AdminBilling({ billing, users }) {
               <th className="px-3 py-2">Status</th>
               <th className="px-3 py-2">Transaction</th>
               <th className="px-3 py-2">Date</th>
+              <th className="px-3 py-2 text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -63,10 +96,15 @@ export default function AdminBilling({ billing, users }) {
                   <td className="px-3 py-2.5"><span className={`rounded-full px-2 py-0.5 text-xs font-bold capitalize ${STATUS_TONE[b.status] || "bg-[#f1f5fb]"}`}>{b.status}</span></td>
                   <td className="px-3 py-2.5 text-xs text-[#475569]">{b.paymongo_transaction_id || "—"}</td>
                   <td className="px-3 py-2.5 text-[#475569]">{fmtDate(b.created_at)}</td>
+                  <td className="px-3 py-2.5 text-right">
+                    <button onClick={() => del(b)} disabled={delBusy === b.id} className="rounded-full p-1.5 text-[#DC2626] hover:bg-[#ffe3e3] disabled:opacity-50" title="Delete billing record">
+                      {delBusy === b.id ? <Loader2 size={15} className="animate-spin" /> : <Trash2 size={15} />}
+                    </button>
+                  </td>
                 </tr>
               );
             })}
-            {rows.length === 0 && <tr><td colSpan={6} className="px-3 py-10 text-center text-sm text-[#94a3b8]">No billing records found.</td></tr>}
+            {rows.length === 0 && <tr><td colSpan={7} className="px-3 py-10 text-center text-sm text-[#94a3b8]">No billing records found.</td></tr>}
           </tbody>
         </table>
       </div>

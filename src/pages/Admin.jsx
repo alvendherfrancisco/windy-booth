@@ -156,7 +156,7 @@ export default function Admin() {
           section === "orders" ?
           <AdminOrders orders={orders} users={users} strips={strips} templates={templates} onChanged={refresh} /> :
           section === "billing" ?
-          <AdminBilling billing={billing} users={users} /> :
+          <AdminBilling billing={billing} users={users} unlockRequests={unlockRequests} onChanged={refresh} /> :
           section === "unlocks" ?
           <AdminUnlockRequests requests={unlockRequests} users={users} onChanged={refresh} /> :
 
