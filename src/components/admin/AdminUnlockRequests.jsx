@@ -6,6 +6,7 @@ import { Image } from "@/components/ui/image";
 import { generateReceiptPdf } from "@/components/admin/receiptPdf";
 import { buildPaymentConfirmationEmail } from "@/lib/emailTemplates";
 import { paymentMethodLabel } from "@/lib/paymentMethods";
+import { PESO, toPhp } from "@/lib/currency";
 
 const fmtDate = (v) => (v ? new Date(v).toLocaleString() : "—");
 
@@ -127,7 +128,7 @@ export default function AdminUnlockRequests({ requests, users, onChanged }) {
                 <tr key={r.id} className="cursor-pointer border-b border-[#F0EBE2] last:border-0 hover:bg-[#FBFAF7]" onClick={() => setView(r)}>
                   <td className="px-3 py-2.5"><p className="font-medium">{u?.full_name || "—"}</p><p className="text-xs text-[#94a3b8]">{u?.email || "—"}</p></td>
                   <td className="px-3 py-2.5">{r.plan_type === "lifetime" ? "Lifetime Pass" : `Collection: ${r.collection || "—"}`}</td>
-                  <td className="px-3 py-2.5 font-bold">${(r.amount || 0).toFixed(2)}</td>
+                  <td className="px-3 py-2.5 font-bold">{PESO(toPhp(r.amount, r.amount_php))}</td>
                   <td className="px-3 py-2.5 capitalize text-[#475569]">{r.payment_method || "—"}</td>
                   <td className="px-3 py-2.5"><span className={`rounded-full px-2 py-0.5 text-xs font-bold capitalize ${STATUS_TONE[r.status]}`}>{r.status}</span></td>
                   <td className="px-3 py-2.5 text-[#475569]">{fmtDate(r.created_date)}</td>
@@ -161,7 +162,7 @@ export default function AdminUnlockRequests({ requests, users, onChanged }) {
             <div className="space-y-3 text-sm">
               <p><b>User:</b> {userMap[view.user_id]?.full_name || "—"} ({userMap[view.user_id]?.email || "—"})</p>
               <p><b>Plan:</b> {view.plan_type === "lifetime" ? "Lifetime Pass" : `Collection: ${view.collection}`}</p>
-              <p><b>Amount:</b> ${(view.amount || 0).toFixed(2)}</p>
+              <p><b>Amount:</b> {PESO(toPhp(view.amount, view.amount_php))}</p>
               <p><b>Method:</b> {view.payment_method}</p>
               <Image src={view.proof_url} alt="Proof of payment" className="w-full rounded-xl border border-[#e2e8f0]" fittingType="fit" />
               {view.status === "pending" && (

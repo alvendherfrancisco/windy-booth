@@ -3,10 +3,10 @@ import { Users, UserPlus, Image as ImageIcon, Activity, Crown, Sparkles, Key, Wa
 import { ResponsiveContainer, LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import PolkaDots from "@/components/PolkaDots";
 import FaceDoodles from "@/components/FaceDoodles";
+import { PESO, toPhp } from "@/lib/currency";
 
 const DAY = 86400000;
 const fmt = (n) => n.toLocaleString();
-const PESO = (n) => `₱${(n || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 export default function AdminOverview({ users, strips, billing, templates }) {
   const stats = useMemo(() => {
@@ -37,7 +37,7 @@ export default function AdminOverview({ users, strips, billing, templates }) {
       lifetime: users.filter((u) => u.plan === "lifetime").length,
       collectionUnlocks: users.reduce((s, u) => s + (u.owned_collections?.length || 0), 0),
       unlockUsers: users.filter((u) => u.plan === "lifetime" || (u.owned_collections?.length || 0) > 0).length,
-      revenue: billing.filter((b) => b.status === "paid").reduce((s, b) => s + (b.amount || 0), 0),
+      revenue: billing.filter((b) => b.status === "paid").reduce((s, b) => s + toPhp(b.amount, b.amount_php), 0),
       templateCount: Object.keys(templates).length,
     };
   }, [users, strips, billing, templates]);

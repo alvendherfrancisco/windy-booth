@@ -1,26 +1,33 @@
 import React, { useMemo, useState } from "react";
-import { Search, Trash2, Loader2 } from "lucide-react";
+import { Search, Trash2, Loader2, Pencil, Check, X } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { PESO, toPhp } from "@/lib/currency";
 
 const fmtDate = (v) => (v ? new Date(v).toLocaleDateString() : "—");
-const PESO = (n) => `₱${(n || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 const STATUS_TONE = { paid: "bg-[#ebfbee] text-[#37b24d]", failed: "bg-[#ffe3e3] text-[#DC2626]", refunded: "bg-[#f1f5fb] text-[#94a3b8]" };
 
 export default function AdminBilling({ billing, users, unlockRequests, onChanged }) {
   const [q, setQ] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [delBusy, setDelBusy] = useState(null);
+  const [editingId, setEditingId] = useState(null);
+  const [editValue, setEditValue] = useState("");
+  const [saveBusy, setSaveBusy] = useState(null);
 
   const userMap = useMemo(() => { const m = {}; users.forEach((u) => (m[u.id] = u)); return m; }, [users]);
   const reqMap = useMemo(() => { const m = {}; unlockRequests?.forEach((r) => (m[r.id] = r)); return m; }, [unlockRequests]);
+
+  const linkedRequest = (b) => {
+    const txId = b.paymongo_transaction_id || "";
+    const unlockId = txId.startsWith("unlock-") ? txId.slice(7) : null;
+    return unlockId ? reqMap[unlockId] : null;
+  };
 
   const del = async (b) => {
     if (!window.confirm("Delete this billing record? This will revoke the user's access and remove the associated unlock request.")) return;
     setDelBusy(b.id);
     try {
-      const txId = b.paymongo_transaction_id || "";
-      const unlockId = txId.startsWith("unlock-") ? txId.slice(7) : null;
-      const req = unlockId ? reqMap[unlockId] : null;
+      const req = linkedRequest(b);
       if (req) {
         const u = userMap[b.user_id];
         if (u) {
@@ -43,6 +50,26 @@ export default function AdminBilling({ billing, users, unlockRequests, onChanged
     }
   };
 
+  const startEdit = (b) => {
+    setEditingId(b.id);
+    setEditValue(toPhp(b.amount, b.amount_php).toFixed(2));
+  };
+
+  const saveEdit = async (b) => {
+    const parsed = parseFloat(editValue);
+    if (isNaN(parsed) || parsed < 0) return;
+    setSaveBusy(b.id);
+    try {
+      await base44.entities.BillingRecord.update(b.id, { amount_php: parsed });
+      const req = linkedRequest(b);
+      if (req) await base44.entities.UnlockRequest.update(req.id, { amount_php: parsed });
+      setEditingId(null);
+      await onChanged();
+    } finally {
+      setSaveBusy(null);
+    }
+  };
+
   const rows = useMemo(() => billing.filter((b) => {
     const u = userMap[b.user_id];
     const name = (u?.full_name || u?.email || "").toLowerCase();
@@ -51,7 +78,7 @@ export default function AdminBilling({ billing, users, unlockRequests, onChanged
     return true;
   }).sort((a, b) => new Date(b.created_at) - new Date(a.created_at)), [billing, userMap, q, statusFilter]);
 
-  const revenue = useMemo(() => billing.filter((b) => b.status === "paid").reduce((s, b) => s + (b.amount || 0), 0), [billing]);
+  const revenue = useMemo(() => billing.filter((b) => b.status === "paid").reduce((s, b) => s + toPhp(b.amount, b.amount_php), 0), [billing]);
 
   return (
     <div className="space-y-4">
@@ -88,11 +115,37 @@ export default function AdminBilling({ billing, users, unlockRequests, onChanged
           <tbody>
             {rows.map((b) => {
               const u = userMap[b.user_id];
+              const isEditing = editingId === b.id;
               return (
                 <tr key={b.id} className="border-b border-[#F0EBE2] last:border-0 hover:bg-[#FBFAF7]">
                   <td className="px-3 py-2.5"><p className="font-medium">{u?.full_name || "—"}</p><p className="text-xs text-[#94a3b8]">{u?.email || ""}</p></td>
                   <td className="px-3 py-2.5 capitalize">{b.type === "print_order" ? "Print order" : b.type === "unlock" ? "Unlock" : "Subscription"}</td>
-                  <td className="px-3 py-2.5 font-bold">{PESO(b.amount)}</td>
+                  <td className="px-3 py-2.5 font-bold">
+                    {isEditing ? (
+                      <div className="flex items-center gap-1">
+                        <span>₱</span>
+                        <input
+                          type="number"
+                          step="0.01"
+                          autoFocus
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                          className="w-20 rounded-md border border-[#e2e8f0] px-1.5 py-1 text-sm outline-none focus:border-[#228be6]"
+                        />
+                        <button onClick={() => saveEdit(b)} disabled={saveBusy === b.id} className="rounded-full p-1 text-[#37b24d] hover:bg-[#ebfbee] disabled:opacity-50">
+                          {saveBusy === b.id ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
+                        </button>
+                        <button onClick={() => setEditingId(null)} className="rounded-full p-1 text-[#94a3b8] hover:bg-[#f1f5fb]"><X size={14} /></button>
+                      </div>
+                    ) : (
+                      <div className="group flex items-center gap-1.5">
+                        {PESO(toPhp(b.amount, b.amount_php))}
+                        <button onClick={() => startEdit(b)} className="rounded-full p-1 text-[#94a3b8] opacity-0 transition group-hover:opacity-100 hover:bg-[#f1f5fb] hover:text-[#228be6]" title="Edit amount">
+                          <Pencil size={12} />
+                        </button>
+                      </div>
+                    )}
+                  </td>
                   <td className="px-3 py-2.5"><span className={`rounded-full px-2 py-0.5 text-xs font-bold capitalize ${STATUS_TONE[b.status] || "bg-[#f1f5fb]"}`}>{b.status}</span></td>
                   <td className="px-3 py-2.5 text-xs text-[#475569]">{b.paymongo_transaction_id || "—"}</td>
                   <td className="px-3 py-2.5 text-[#475569]">{fmtDate(b.created_at)}</td>

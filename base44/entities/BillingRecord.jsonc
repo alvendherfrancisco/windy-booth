@@ -16,6 +16,9 @@
     "amount": {
       "type": "number"
     },
+    "amount_php": {
+      "type": "number"
+    },
     "status": {
       "type": "string",
       "enum": [
