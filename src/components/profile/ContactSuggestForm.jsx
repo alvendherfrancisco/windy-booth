@@ -38,18 +38,18 @@ export default function ContactSuggestForm() {
   return (
     <section className="mt-4 rounded-[18px] border border-[#D8D9DC] bg-white p-5">
       <p className="text-xs font-bold uppercase tracking-wider text-[#8B8D93]">Get in touch</p>
-      <div className="mt-3 flex gap-2">
+      <div className="mt-3 flex flex-col gap-2 sm:flex-row">
         <button
           type="button"
           onClick={() => { setType("contact"); setSent(false); }}
-          className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold transition ${
+          className={`flex items-center justify-center gap-1.5 rounded-full px-3 py-2 text-xs font-bold transition ${
             type === "contact" ? "bg-[#5080da] text-white" : "bg-[#eaf2fd] text-[#3a6cbf]"}`}>
           <MessageCircle size={13} /> Contact developer
         </button>
         <button
           type="button"
           onClick={() => { setType("suggestion"); setSent(false); }}
-          className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold transition ${
+          className={`flex items-center justify-center gap-1.5 rounded-full px-3 py-2 text-xs font-bold transition ${
             type === "suggestion" ? "bg-[#5080da] text-white" : "bg-[#eaf2fd] text-[#3a6cbf]"}`}>
           <Sparkles size={13} /> Suggest a design
         </button>
