@@ -123,7 +123,7 @@ export default function AdminTemplates({ templates, onChanged }) {
             <DialogTitle>{editing ? "Edit template" : "New template"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <Field label="Name">
                 <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="input" placeholder="Sunset Bloom" />
               </Field>
@@ -146,7 +146,7 @@ export default function AdminTemplates({ templates, onChanged }) {
               </Field>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <UploadBox label="Design image" hint="The template artwork (required)" url={form.canvas_asset_url} loading={uploading === "canvas"} onPick={() => canvasRef.current?.click()} />
               <UploadBox label="Thumbnail" hint="Optional — defaults to design" url={form.thumbnail_url} loading={uploading === "thumb"} onPick={() => thumbRef.current?.click()} />
             </div>

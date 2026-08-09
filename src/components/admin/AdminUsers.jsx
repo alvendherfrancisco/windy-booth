@@ -182,7 +182,7 @@ export default function AdminUsers({ users, strips, templates, meId, onChanged }
           </DialogHeader>
           {view && (
             <div className="space-y-3 text-sm">
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 <Info label="Email" value={view.email} />
                 <Info label="Plan" value={planLabel(view)} />
                 <Info label="Joined" value={fmtDate(view.created_date)} />

@@ -98,28 +98,25 @@ export default function Admin() {
 
   return (
     <div className="min-h-screen bg-[#F7F5F1] text-[#1e1b4b]">
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-[#e2e8f0] bg-white px-4 py-3">
-        <div className="flex items-center gap-2">
-          <span className="font-heading text-lg font-extrabold text-[#3a6cbf]">windy the pooh</span>
-          
-        </div>
-        <div className="flex items-center gap-2">
-          <button onClick={togglePrint} className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ${printOn ? "bg-[#37b24d] text-white" : "border border-[#e2e8f0] bg-white text-[#1e1b4b] hover:bg-[#f1f5fb]"}`}>
-            <Printer size={14} /> Print &amp; Orders: {printOn ? "On" : "Off"}
+      <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-2 border-b border-[#e2e8f0] bg-white px-3 py-3 sm:px-4">
+        <span className="font-heading text-base font-extrabold text-[#3a6cbf] sm:text-lg">windy the pooh</span>
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+          <button onClick={togglePrint} className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-bold ${printOn ? "bg-[#37b24d] text-white" : "border border-[#e2e8f0] bg-white text-[#1e1b4b] hover:bg-[#f1f5fb]"}`}>
+            <Printer size={14} /> <span className="hidden sm:inline">Print &amp; Orders: </span>{printOn ? "On" : "Off"}
           </button>
-          <button onClick={refresh} className="inline-flex items-center gap-1.5 rounded-full border border-[#e2e8f0] px-3 py-1.5 text-xs font-bold text-[#1e1b4b] hover:bg-[#f1f5fb]">
-            <RefreshCw size={14} /> Refresh
+          <button onClick={refresh} className="inline-flex items-center gap-1.5 rounded-full border border-[#e2e8f0] px-2.5 py-1.5 text-xs font-bold text-[#1e1b4b] hover:bg-[#f1f5fb]">
+            <RefreshCw size={14} /> <span className="hidden sm:inline">Refresh</span>
           </button>
-          <Link to="/dashboard" className="inline-flex items-center gap-1.5 rounded-full border border-[#e2e8f0] px-3 py-1.5 text-xs font-bold text-[#1e1b4b] hover:bg-[#f1f5fb]">
-            <ArrowLeft size={14} /> Back to app
+          <Link to="/dashboard" className="inline-flex items-center gap-1.5 rounded-full border border-[#e2e8f0] px-2.5 py-1.5 text-xs font-bold text-[#1e1b4b] hover:bg-[#f1f5fb]">
+            <ArrowLeft size={14} /> <span className="hidden sm:inline">Back to app</span>
           </Link>
-          <button onClick={() => base44.auth.logout("/login")} className="inline-flex items-center gap-1.5 rounded-full border border-[#e2e8f0] px-3 py-1.5 text-xs font-bold text-[#1e1b4b] hover:bg-[#f1f5fb]">
-            <LogOut size={14} /> Log out
+          <button onClick={() => base44.auth.logout("/login")} className="inline-flex items-center gap-1.5 rounded-full border border-[#e2e8f0] px-2.5 py-1.5 text-xs font-bold text-[#1e1b4b] hover:bg-[#f1f5fb]">
+            <LogOut size={14} /> <span className="hidden sm:inline">Log out</span>
           </button>
         </div>
       </header>
 
-      <div className="mx-auto flex max-w-7xl flex-col gap-4 p-4 md:flex-row">
+      <div className="mx-auto flex max-w-7xl flex-col gap-4 p-3 sm:p-4 md:flex-row">
         <nav className="md:w-56 md:shrink-0">
           <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1 md:flex-col md:overflow-visible">
             {NAV.filter((n) => n.key !== "orders" || printOn).map((n) => {
