@@ -6,6 +6,7 @@ import UserAvatar from "@/components/UserAvatar";
 import NotificationsPopover from "@/components/NotificationsPopover";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
 import VendiLogo from "@/components/VendiLogo";
+import OnboardingModal from "@/components/onboarding/OnboardingModal";
 
 const items = [
 { to: "/dashboard", label: "Home", outline: "home-outline", fill: "home" },
@@ -204,6 +205,7 @@ export default function AppShell() {
         onMarkAll={markAllRead}
         user={user} />
       
+      {user && !user.terms_accepted_at && <OnboardingModal />}
     </div>);
 
 }

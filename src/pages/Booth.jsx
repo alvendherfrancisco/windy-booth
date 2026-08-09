@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Camera, Download, ImageUp, Instagram, RotateCcw } from "lucide-react";
+import { ArrowLeft, Camera, Download, ImageUp, Instagram, Printer, RotateCcw } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { useBoothWizard } from "@/components/booth/BoothWizardContext";
@@ -138,7 +138,7 @@ export default function Booth() {
       }
       await base44.entities.Notification.create({ user_id: user.id, type: "booth_activity", message: "Your strip is ready!", link: "/my-booths", read: false, created_at: now.toISOString() });
       setFinalPhotos(finalUrls);
-      setStep(4);
+      setStep(5);
     } finally {
       setSaving(false);
     }
@@ -278,7 +278,7 @@ export default function Booth() {
         </>
       }
 
-      {/* STEP 4 — Print Simulation */}
+      {/* STEP 4 — Print Simulation (opt-in, launched from the download screen) */}
       {step === 4 &&
         <PrintSimulation template={selected} photos={finalPhotos} onDone={() => setStep(5)} />
       }
@@ -298,6 +298,9 @@ export default function Booth() {
             <div className="mt-6 space-y-3">
               <button onClick={download} className="flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-4 text-sm font-bold text-[#3a6cbf] transition hover:bg-white/90">
                 <Download size={16} />Download Strip
+              </button>
+              <button onClick={() => setStep(4)} className="flex w-full items-center justify-center gap-2 rounded-full border border-white px-5 py-3 text-sm font-bold text-white transition hover:bg-white/10">
+                <Printer size={16} />Print Strip
               </button>
               <button onClick={async () => { try { setSharing(true); await shareToInstagram(selected, finalPhotos); } finally { setSharing(false); } }} disabled={sharing} className="flex w-full items-center justify-center gap-2 rounded-full border border-white px-5 py-3 text-sm font-bold text-white transition hover:bg-white/10 disabled:opacity-60">
                 <Instagram size={16} />{sharing ? "Opening share…" : "Share to Instagram"}

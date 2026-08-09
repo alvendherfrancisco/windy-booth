@@ -60,6 +60,10 @@
         "custom",
         "google"
       ]
+    },
+    "terms_accepted_at": {
+      "type": "string",
+      "format": "date-time"
     }
   }
 }
