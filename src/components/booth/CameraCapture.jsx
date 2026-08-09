@@ -9,7 +9,7 @@ const TIMERS = [3, 5, 10];
 // so capture itself applies no filter. onComplete hands the File[] back to the
 // parent; onPhotosChange receives local object URLs for the live thumbnails.
 const CameraCapture = forwardRef(function CameraCapture(
-  { selected, photos, onPhotosChange, onComplete, onCapturingChange },
+  { selected, photos, onPhotosChange, onComplete, onCapturingChange, imgFilter = "none" },
   ref
 ) {
   const videoRef = useRef(null);
@@ -151,7 +151,7 @@ const CameraCapture = forwardRef(function CameraCapture(
                 } bg-[#f1f5fb]`}
               >
                 {photos[i] ? (
-                  <img src={photos[i]} alt="" className="h-full w-full object-cover" />
+                  <img src={photos[i]} alt="" className="h-full w-full object-cover" style={{ filter: imgFilter }} />
                 ) : uploadingIdx === i ? (
                   <span className="text-[10px] text-[#94a3b8]">…</span>
                 ) : null}
@@ -162,7 +162,7 @@ const CameraCapture = forwardRef(function CameraCapture(
         {/* Your Strip card */}
         <div className="mx-auto w-full max-w-[180px] flex flex-col rounded-2xl border border-[#e2e8f0] bg-white p-4 lg:max-w-none">
           <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#94a3b8]">Your Strip</p>
-          <StripPreview template={selected} photos={photos} />
+          <StripPreview template={selected} photos={photos} imgFilter={imgFilter} />
         </div>
       </div>
 

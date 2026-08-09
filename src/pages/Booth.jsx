@@ -219,84 +219,78 @@ export default function Booth() {
         </>
       }
 
-      {/* STEP 3 — Capture, then Filter (filter phase appears once 3 photos are ready) */}
-      {step === 3 &&
-      (
-        photosComplete ?
+      {/* STEP 3 — Capture/Upload + Filter on the same page */}
+      {step === 3 && (
         <>
-            <h1 className="mb-5 font-heading text-2xl font-extrabold text-[#1e1b4b]">Choose your filter</h1>
+          <h1 className="mb-5 font-heading text-2xl font-extrabold text-[#1e1b4b]">{mode === "camera" ? "Ready when you are" : "Pick three photos"}</h1>
+          {mode === "camera" ? (
+            <CameraCapture ref={captureRef} selected={selected} photos={cameraPhotos} onPhotosChange={setCameraPhotos} onComplete={setCameraFiles} onCapturingChange={setCapturing} imgFilter={previewFilterCss} />
+          ) : (
             <div className="grid gap-4 lg:grid-cols-[1fr_220px]">
-              <FilterCard filter={filter} onFilterChange={setFilter} />
+              <div className="flex flex-col rounded-2xl border border-[#e2e8f0] bg-white p-4">
+                <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#94a3b8]">Live Preview</p>
+                <button
+                  type="button"
+                  onClick={() => { if (uploadPhotos.length < 3) fileInput.current.click(); }}
+                  className="flex w-full flex-1 min-h-[200px] flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#228be6] bg-[#e7f5ff] text-center transition hover:border-[#228be6]">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#228be6]"><ImageUp size={24} /></span>
+                  <span className="mt-4 block font-bold text-[#1e1b4b]">Tap to choose a photo</span>
+                  <span className="mt-1 block text-sm text-[#94a3b8]">or drag and drop here</span>
+                  <span className="mt-3 block text-xs font-bold text-[#228be6]">{uploadPhotos.length} / 3 uploaded</span>
+                </button>
+                <input ref={fileInput} className="hidden" type="file" accept="image/*" multiple onChange={(e) => addFiles(e.target.files)} />
+                <div className="mt-4 flex gap-2">
+                  {[0, 1, 2].map((i) => (
+                    <div key={i} className={`relative h-16 w-16 overflow-hidden rounded-lg border-2 ${i < uploadPhotos.length ? "border-[#228be6]" : "border-dashed border-[#e2e8f0]"} bg-[#f1f5fb]`}>
+                      {uploadPhotos[i] && (
+                        <>
+                          <img src={photos[i]} alt="" className="h-full w-full object-cover" style={{ filter: previewFilterCss }} />
+                          <button onClick={() => removePhoto(i)} className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold text-white bg-[hsl(var(--sidebar-ring))]">×</button>
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
               <div className="mx-auto w-full max-w-[180px] flex flex-col rounded-2xl border border-[#e2e8f0] bg-white p-4 lg:max-w-none">
                 <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#94a3b8]">Your Strip</p>
-                <StripPreview template={selected} photos={photos} imgFilter={previewFilterCss} />
+                <StripPreview template={selected} photos={uploadPhotos} imgFilter={previewFilterCss} />
               </div>
             </div>
-            <StickyAction>
+          )}
+
+          {/* Filter — below the live preview, available before and after photos */}
+          <div className="mt-4">
+            <FilterCard filter={filter} onFilterChange={setFilter} />
+          </div>
+
+          {/* Dynamic bottom navigation */}
+          <StickyAction>
+            {photosComplete ? (
               <div className="flex items-center justify-between gap-3">
                 <button onClick={retakePhotos} className="text-xs font-bold text-[#94a3b8] hover:text-[#1e1b4b]">Retake photos</button>
                 <button disabled={saving} onClick={finish} className="rounded-full bg-[#5080da] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#3a6cbf] disabled:bg-[#e2e8f0] disabled:text-[#94a3b8]">
                   {saving ? "Making your strip…" : "Continue"}
                 </button>
               </div>
-            </StickyAction>
-          </> :
-
-        <>
-            <h1 className="mb-5 font-heading text-2xl font-extrabold text-[#1e1b4b]">{mode === "camera" ? "Ready when you are" : "Pick three photos"}</h1>
-            {mode === "camera" ?
-          <CameraCapture ref={captureRef} selected={selected} photos={cameraPhotos} onPhotosChange={setCameraPhotos} onComplete={setCameraFiles} onCapturingChange={setCapturing} /> :
-
-          <div className="space-y-4">
-                <div className="grid gap-4 lg:grid-cols-[1fr_220px]">
-                  <div className="flex flex-col rounded-2xl border border-[#e2e8f0] bg-white p-4">
-                    <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#94a3b8]">Live Preview</p>
-                    <button
-                type="button"
-                onClick={() => {if (uploadPhotos.length < 3) fileInput.current.click();}}
-                className="flex w-full flex-1 min-h-[200px] flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#228be6] bg-[#e7f5ff] text-center transition hover:border-[#228be6]">
-                
-                     <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#228be6]"><ImageUp size={24} /></span>
-                     <span className="mt-4 block font-bold text-[#1e1b4b]">Tap to choose a photo</span>
-                     <span className="mt-1 block text-sm text-[#94a3b8]">or drag and drop here</span>
-                     <span className="mt-3 block text-xs font-bold text-[#228be6]">{uploadPhotos.length} / 3 uploaded</span>
-                   </button>
-                   <input ref={fileInput} className="hidden" type="file" accept="image/*" multiple onChange={(e) => addFiles(e.target.files)} />
-                   <div className="mt-4 flex gap-2">
-                     {[0, 1, 2].map((i) =>
-                <div key={i} className={`relative h-16 w-16 overflow-hidden rounded-lg border-2 ${i < uploadPhotos.length ? "border-[#228be6]" : "border-dashed border-[#e2e8f0]"} bg-[#f1f5fb]`}>
-                    {uploadPhotos[i] &&
-                  <>
-                            <img src={photos[i]} alt="" className="h-full w-full object-cover" />
-                            <button onClick={() => removePhoto(i)} className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold text-white bg-[hsl(var(--sidebar-ring))]">×</button>
-                          </>
-                  }
-                      </div>
-                )}
-                   </div>
-                 </div>
-                 <div className="mx-auto w-full max-w-[180px] flex flex-col rounded-2xl border border-[#e2e8f0] bg-white p-4 lg:max-w-none">
-                   <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#94a3b8]">Your Strip</p>
-                   <StripPreview template={selected} photos={uploadPhotos} />
-                 </div>
-               </div>
-             </div>
-        }
-            <StickyAction>
+            ) : mode === "camera" ? (
               <div className="flex items-center justify-between gap-3">
                 <span className="text-xs text-[#475569]">
-                  {mode === "camera" ?
-                (capturing ? "Capturing your photos…" : <>Ready to start — take <span className="font-bold text-[#228be6]">3 photos</span></>) :
-                (photos.length < 3 ? <>Upload <span className="font-bold text-[#228be6]">3 photos</span> from your device</> : "All 3 photos ready!")}
+                  {capturing ? "Capturing your photos…" : <>Ready to start — take <span className="font-bold text-[#228be6]">3 photos</span></>}
                 </span>
-                {mode === "camera" &&
-              <button disabled={capturing} onClick={() => captureRef.current?.capture()} className="flex items-center gap-2 rounded-full bg-[#5080da] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#3a6cbf] disabled:bg-[#e2e8f0] disabled:text-[#94a3b8]">
-                      <Camera size={16} />{capturing ? "Capturing…" : "Start"}
-                    </button>
-                }
+                <button disabled={capturing} onClick={() => captureRef.current?.capture()} className="flex items-center gap-2 rounded-full bg-[#5080da] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#3a6cbf] disabled:bg-[#e2e8f0] disabled:text-[#94a3b8]">
+                  <Camera size={16} />{capturing ? "Capturing…" : "Start"}
+                </button>
               </div>
-            </StickyAction>
-          </>
+            ) : (
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-xs text-[#475569]">
+                  {photos.length < 3 ? <>Upload <span className="font-bold text-[#228be6]">3 photos</span> from your device</> : "All 3 photos ready!"}
+                </span>
+              </div>
+            )}
+          </StickyAction>
+        </>
       )}
 
       {/* STEP 4 — Print Simulation (auto-redirects to Download on completion) */}
