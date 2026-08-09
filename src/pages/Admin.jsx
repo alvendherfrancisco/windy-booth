@@ -146,7 +146,7 @@ export default function Admin() {
           error ?
           <div className="rounded-xl border border-[#e2e8f0] bg-white p-6 text-sm text-[#94a3b8]">{error}</div> :
           section === "overview" ?
-          <AdminOverview users={users} strips={strips} orders={orders} billing={billing} templates={templates} /> :
+          <AdminOverview users={users} strips={strips} billing={billing} templates={templates} /> :
           section === "templates" ?
           <AdminTemplates templates={templates} onChanged={refresh} /> :
           section === "users" ?

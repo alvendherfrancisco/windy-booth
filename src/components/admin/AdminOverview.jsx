@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Users, UserPlus, Image as ImageIcon, Activity, Crown, Sparkles, ShoppingBag, Wallet, LayoutTemplate } from "lucide-react";
+import { Users, UserPlus, Image as ImageIcon, Activity, Crown, Sparkles, Key, Wallet, LayoutTemplate } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import PolkaDots from "@/components/PolkaDots";
 import FaceDoodles from "@/components/FaceDoodles";
@@ -8,7 +8,7 @@ const DAY = 86400000;
 const fmt = (n) => n.toLocaleString();
 const PESO = (n) => `₱${(n || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-export default function AdminOverview({ users, strips, orders, billing, templates }) {
+export default function AdminOverview({ users, strips, billing, templates }) {
   const stats = useMemo(() => {
     const now = Date.now();
     const startToday = new Date();
@@ -34,13 +34,13 @@ export default function AdminOverview({ users, strips, orders, billing, template
       active7: activeIds(w),
       active30: activeIds(m),
       free: users.filter((u) => (u.plan || "free") === "free").length,
-      premium: users.filter((u) => u.plan === "premium").length,
-      orders: orders.length,
+      lifetime: users.filter((u) => u.plan === "lifetime").length,
+      collectionUnlocks: users.reduce((s, u) => s + (u.owned_collections?.length || 0), 0),
+      unlockUsers: users.filter((u) => u.plan === "lifetime" || (u.owned_collections?.length || 0) > 0).length,
       revenue: billing.filter((b) => b.status === "paid").reduce((s, b) => s + (b.amount || 0), 0),
       templateCount: Object.keys(templates).length,
-      pendingFulfillment: orders.filter((o) => o.fulfillment_status !== "delivered").length,
     };
-  }, [users, strips, orders, billing, templates]);
+  }, [users, strips, billing, templates]);
 
   const chartData = useMemo(() => {
     const now = Date.now();
@@ -91,12 +91,6 @@ export default function AdminOverview({ users, strips, orders, billing, template
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4">
-          <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-[#eaf2fd] text-[#3a6cbf]"><ShoppingBag size={18} /></div>
-          <p className="font-heading text-2xl font-extrabold">{fmt(stats.orders)}</p>
-          <p className="text-xs font-bold text-[#475569]">Orders</p>
-          <p className="mt-1 text-xs text-[#94a3b8]">{stats.pendingFulfillment} pending</p>
-        </div>
-        <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4">
           <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-[#ebfbee] text-[#37b24d]"><Wallet size={18} /></div>
           <p className="font-heading text-2xl font-extrabold">{PESO(stats.revenue)}</p>
           <p className="text-xs font-bold text-[#475569]">Revenue</p>
@@ -109,10 +103,16 @@ export default function AdminOverview({ users, strips, orders, billing, template
           <p className="mt-1 text-xs text-[#94a3b8]">Available designs</p>
         </div>
         <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4">
-          <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-[#e7f5ff] text-[#228be6]"><Activity size={18} /></div>
-          <p className="font-heading text-2xl font-extrabold">{fmt(stats.active7)}</p>
-          <p className="text-xs font-bold text-[#475569]">Active (7d)</p>
-          <p className="mt-1 text-xs text-[#94a3b8]">{stats.active30} in 30 days</p>
+          <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-[#eaf2fd] text-[#3a6cbf]"><Crown size={18} /></div>
+          <p className="font-heading text-2xl font-extrabold">{fmt(stats.lifetime)}</p>
+          <p className="text-xs font-bold text-[#475569]">Lifetime</p>
+          <p className="mt-1 text-xs text-[#94a3b8]">{stats.totalUsers > 0 ? Math.round(stats.lifetime / stats.totalUsers * 100) : 0}% of users</p>
+        </div>
+        <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4">
+          <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-[#fef3c7] text-[#b45309]"><Key size={18} /></div>
+          <p className="font-heading text-2xl font-extrabold">{fmt(stats.collectionUnlocks)}</p>
+          <p className="text-xs font-bold text-[#475569]">Collection unlocks</p>
+          <p className="mt-1 text-xs text-[#94a3b8]">{stats.unlockUsers} users with access</p>
         </div>
       </div>
 
@@ -151,14 +151,19 @@ export default function AdminOverview({ users, strips, orders, billing, template
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4">
-          <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-[#eaf2fd] text-[#3a6cbf]"><Crown size={16} /></div>
-          <p className="font-heading text-xl font-extrabold">{fmt(stats.premium)}</p>
-          <p className="text-xs font-bold text-[#475569]">Premium</p>
-        </div>
-        <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4">
           <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-[#e7f5ff] text-[#228be6]"><Sparkles size={16} /></div>
           <p className="font-heading text-xl font-extrabold">{fmt(stats.free)}</p>
-          <p className="text-xs font-bold text-[#475569]">Free</p>
+          <p className="text-xs font-bold text-[#475569]">Free plan</p>
+        </div>
+        <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4">
+          <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-[#eaf2fd] text-[#3a6cbf]"><Crown size={16} /></div>
+          <p className="font-heading text-xl font-extrabold">{fmt(stats.lifetime)}</p>
+          <p className="text-xs font-bold text-[#475569]">Lifetime</p>
+        </div>
+        <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4">
+          <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-[#fef3c7] text-[#b45309]"><Key size={16} /></div>
+          <p className="font-heading text-xl font-extrabold">{fmt(stats.unlockUsers)}</p>
+          <p className="text-xs font-bold text-[#475569]">Users with unlocks</p>
         </div>
       </div>
     </div>
