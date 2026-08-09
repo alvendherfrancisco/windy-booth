@@ -71,8 +71,8 @@ export default function Admin() {
   const togglePrint = async () => {
     const newVal = !(printSetting ? printSetting.value !== false : true);
     try {
-      if (printSetting) await base44.entities.AppSetting.update(printSetting.id, { value: newVal });
-      else await base44.entities.AppSetting.create({ key: "print_shop_enabled", value: newVal });
+      if (printSetting) await base44.entities.AppSetting.update(printSetting.id, { value: newVal });else
+      await base44.entities.AppSetting.create({ key: "print_shop_enabled", value: newVal });
       await refresh();
       refreshSettings();
     } catch (e) {
@@ -100,7 +100,7 @@ export default function Admin() {
     <div className="min-h-screen bg-[#F7F5F1] text-[#1e1b4b]">
       <header className="sticky top-0 z-20 flex items-center justify-between border-b border-[#e2e8f0] bg-white px-4 py-3">
         <div className="flex items-center gap-2">
-          <span className="font-heading text-lg font-extrabold text-[#3a6cbf]">Admin</span>
+          <span className="font-heading text-lg font-extrabold text-[#3a6cbf]">windy the pooh</span>
           
         </div>
         <div className="flex items-center gap-2">
