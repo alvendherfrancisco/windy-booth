@@ -72,7 +72,7 @@ export default function AdminOverview({ users, strips, orders, billing, template
         <FaceDoodles variant="empty" />
         <p className="relative text-xs font-bold uppercase tracking-wider text-[#3a6cbf]">Admin dashboard</p>
         <h2 className="relative mt-1 font-heading text-2xl font-extrabold text-[#1e1b4b]">Welcome back 👋</h2>
-        <p className="relative mt-1 text-sm text-[#475569]">Here's what's happening across Vendi right now.</p>
+        <p className="relative mt-1 text-sm text-[#475569]">Here's what's happening across windy the pooh right now.</p>
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">

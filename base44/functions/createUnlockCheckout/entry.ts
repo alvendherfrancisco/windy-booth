@@ -31,7 +31,7 @@ Deno.serve(async (req) => {
     }
 
     const amount = isLifetime ? LIFETIME_PRICE : COLLECTION_PRICE;
-    const name = isLifetime ? "Vendi Lifetime Pass" : `${category} Collection — Vendi`;
+    const name = isLifetime ? "windy the pooh Lifetime Pass" : `${category} Collection — windy the pooh`;
     const secretKey = Deno.env.get("PAYMONGO_SECRET_KEY");
 
     const session = await createCheckoutSession({

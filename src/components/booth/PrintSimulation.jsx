@@ -87,7 +87,7 @@ export default function PrintSimulation({ template, photos, onDone }) {
           }}
         >
           <div className="mb-2 flex items-center justify-between">
-            <span className="text-[9px] font-bold uppercase tracking-widest text-[#94a3b8]">Vendi</span>
+            <span className="text-[9px] font-bold small-caps tracking-widest text-[#94a3b8]">windy the pooh</span>
             <div className="flex gap-1">
               <span className="h-1.5 w-1.5 rounded-full bg-[#5080da]" />
               <span className={`h-1.5 w-1.5 rounded-full bg-[#37b24d] ${printing ? "animate-pulse" : ""}`} />

@@ -10,7 +10,7 @@ import {
 
 const PRIVACY = `Last updated: July 23, 2026
 
-Vendi ("we", "us", "our") operates the Vendi photo booth app. This Privacy Policy explains what information we collect and how we use it.
+windy the pooh ("we", "us", "our") operates the windy the pooh photo booth app. This Privacy Policy explains what information we collect and how we use it.
 
 Information we collect
 - Account information you provide, such as your name and email address.
@@ -41,7 +41,7 @@ For privacy questions or concerns, contact us at alvendherfrancisco01@gmail.com.
 
 const TERMS = `Last updated: July 23, 2026
 
-By using Vendi, you agree to these Terms & Conditions.
+By using windy the pooh, you agree to these Terms & Conditions.
 
 Your account
 You are responsible for keeping your account secure and for the content you create. You must be old enough to use the service under the law of your country, or have a guardian's permission.
@@ -102,7 +102,7 @@ export default function LegalLinks() {
         <DialogContent className="max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Privacy Policy</DialogTitle>
-            <DialogDescription>How Vendi handles your data.</DialogDescription>
+            <DialogDescription>How windy the pooh handles your data.</DialogDescription>
           </DialogHeader>
           <div className="whitespace-pre-line text-sm leading-relaxed text-[#1e1b4b]">{PRIVACY}</div>
         </DialogContent>
@@ -112,7 +112,7 @@ export default function LegalLinks() {
         <DialogContent className="max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Terms &amp; Conditions</DialogTitle>
-            <DialogDescription>The rules for using Vendi.</DialogDescription>
+            <DialogDescription>The rules for using windy the pooh.</DialogDescription>
           </DialogHeader>
           <div className="whitespace-pre-line text-sm leading-relaxed text-[#1e1b4b]">{TERMS}</div>
         </DialogContent>

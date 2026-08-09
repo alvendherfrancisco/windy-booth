@@ -39,7 +39,7 @@ export default function StripPreview({ template, photos = [], imgFilter = "none"
           <img src={p} alt="" className="h-full w-full object-cover" style={{ filter: imgFilter }} />
         </div>
       ))}
-      <img src={thumb} alt={template?.name || "Vendi strip"} className="relative z-10 block w-full" />
+      <img src={thumb} alt={template?.name || "windy the pooh strip"} className="relative z-10 block w-full" />
     </div>
   );
 }

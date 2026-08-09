@@ -18,8 +18,8 @@ export async function shareToInstagram(template, photos) {
     try {
       await navigator.share({
         files: [file],
-        text: "Made with Vendi 🌸",
-        title: "My Vendi strip",
+        text: "Made with windy the pooh 🌸",
+        title: "My windy the pooh strip",
       });
       return "shared";
     } catch (e) {

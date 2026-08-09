@@ -1,5 +1,5 @@
 {
-  "name": "Vendhee's Booth",
+  "name": "windy the pooh",
   "site": {
     "installCommand": "npm install",
     "buildCommand": "npm run build",

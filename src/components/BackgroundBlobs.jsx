@@ -4,11 +4,11 @@ import React from "react";
 // viewport. Fixed to the viewport so they never tile or seam on scroll, and
 // pinned to the lowest layer so cards/content stay fully legible on top.
 const BLOBS = [
-  { top: "-8%", left: "-10%", size: 540, color: "#ffdeeb" }, // pink-1, top-left
-  { top: "5%", left: "60%", size: 460, color: "#fff3bf" },   // yellow-1, upper-right
-  { top: "45%", left: "-12%", size: 560, color: "#d0ebff" }, // blue-1, lower-left
-  { top: "55%", left: "58%", size: 500, color: "#d3f9d8" },  // green-1, lower-right
-  { top: "82%", left: "24%", size: 480, color: "#f3d9fa" },  // grape-1, bottom-center
+  { top: "-8%", left: "-10%", size: 540, color: "#cfe0f6" }, // blue, top-left
+  { top: "5%", left: "60%", size: 460, color: "#fbf7c8" },   // yellow, upper-right
+  { top: "45%", left: "-12%", size: 560, color: "#dbe4fb" }, // indigo, lower-left
+  { top: "55%", left: "58%", size: 500, color: "#e7eefb" },  // light indigo, lower-right
+  { top: "82%", left: "24%", size: 480, color: "#f8f2a7" },  // yellow, bottom-center
 ];
 
 export default function BackgroundBlobs() {
