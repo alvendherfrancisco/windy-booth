@@ -2,7 +2,7 @@ import React from "react";
 import { Image } from "@/components/ui/image";
 
 const LOGO_URL =
-  "https://media.base44.com/images/public/6a60bb3456cf14775962b360/63f18b26c_windythepoohpost1.svg";
+  "https://media.base44.com/images/public/6a60bb3456cf14775962b360/e4dfd3c61_windythepoohpost5.png";
 
 // windy the pooh mark — high-resolution SVG (2915px embedded source), rendered
 // via the Image component so it stays crisp at any display size. `color` is
