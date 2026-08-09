@@ -43,7 +43,7 @@ export default function Booth() {
   const [sharing, setSharing] = useState(false);
   const [capturing, setCapturing] = useState(false);
 
-  const used = user?.sessions_used_this_month || 0;
+  const used = user?.sessions_period === currentPeriod() ? (user?.sessions_used_this_month || 0) : 0;
   const lifetime = isLifetime(user);
   const limitReached = sessionLimitReached(user);
   const [upgradeOpen, setUpgradeOpen] = useState(false);

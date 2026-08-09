@@ -27,8 +27,11 @@ export const hasAnyUnlock = (user) =>
 export const canUseTemplate = (user, template) =>
   !template || template.tier !== "premium" || isLifetime(user) || ownsCollection(user, template.code);
 
-export const sessionLimitReached = (user) =>
-  !isLifetime(user) && (user?.sessions_used_this_month || 0) >= SESSION_LIMIT;
+export const sessionLimitReached = (user) => {
+  if (isLifetime(user)) return false;
+  if (user?.sessions_period !== currentPeriod()) return false;
+  return (user?.sessions_used_this_month || 0) >= SESSION_LIMIT;
+};
 
 export const planLabel = (user) =>
   isLifetime(user) ? "Lifetime Pass" : hasAnyUnlock(user) ? "Collection Unlocked" : "Free";

@@ -39,10 +39,10 @@ export default function Profile() {
         <UserAvatar user={user} size="lg" />
         <div className="min-w-0">
           <p className="text-xs font-bold uppercase tracking-wider text-[#8B8D93]">Account</p>
-          <p className="mt-2 truncate font-heading text-xl font-extrabold text-[#1e1b4b]">
+          <p className="mt-2 break-words font-heading text-xl font-extrabold text-[#1e1b4b]">
             {user?.full_name || "Your account"}
           </p>
-          <p className="truncate text-sm text-[#8B8D93]">{user?.email}</p>
+          <p className="break-all text-sm text-[#8B8D93]">{user?.email}</p>
           <div className="mt-3 flex items-center gap-3">
             <button
               onClick={() => fileRef.current?.click()}
