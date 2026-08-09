@@ -9,7 +9,6 @@ export const PAYMENT_METHODS = [
   { key: "gcash", label: "GCash", qr: PLACEHOLDER_QR },
   { key: "paypal", label: "PayPal", qr: PLACEHOLDER_QR },
   { key: "wise", label: "Wise", qr: PLACEHOLDER_QR },
-  { key: "qrph", label: "QR PH", qr: PLACEHOLDER_QR },
 ];
 
 export const paymentMethodLabel = (key) => PAYMENT_METHODS.find((m) => m.key === key)?.label || key || "—";

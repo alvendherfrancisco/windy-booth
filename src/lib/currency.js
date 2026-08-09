@@ -1,7 +1,7 @@
 // The app charges in USD but the admin dashboard reports revenue in PHP.
 // Conversion rates fluctuate and differ for local vs. international payers,
 // so an approximate default rate is used and can be overridden per-record.
-export const USD_TO_PHP = 58;
+export const USD_TO_PHP = 60.82;
 
 export const PESO = (n) => `₱${(n || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
