@@ -4,9 +4,10 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { UserPlus, Mail, Lock, Loader2 } from "lucide-react";
+import { Mail, Lock, Loader2 } from "lucide-react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import AuthLayout from "@/components/AuthLayout";
+import VendiLogo from "@/components/VendiLogo";
 import GoogleIcon from "@/components/GoogleIcon";
 import { toast } from "@/components/ui/use-toast";
 
@@ -126,7 +127,8 @@ export default function Register() {
 
   return (
     <AuthLayout
-      icon={UserPlus}
+      icon={VendiLogo}
+      bare
       title="Create your account"
       subtitle="Sign up to get started"
       footer={

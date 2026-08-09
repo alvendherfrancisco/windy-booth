@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Lock, Loader2, AlertTriangle } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
+import VendiLogo from "@/components/VendiLogo";
 
 export default function ResetPassword() {
   const [searchParams] = useSearchParams();
@@ -55,7 +56,8 @@ export default function ResetPassword() {
 
   return (
     <AuthLayout
-      icon={Lock}
+      icon={VendiLogo}
+      bare
       title="New password"
       subtitle="Enter your new password below"
     >

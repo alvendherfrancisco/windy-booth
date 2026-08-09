@@ -5,6 +5,7 @@ import { useAuth } from "@/lib/AuthContext";
 import UserAvatar from "@/components/UserAvatar";
 import NotificationsPopover from "@/components/NotificationsPopover";
 import BackgroundBlobs from "@/components/BackgroundBlobs";
+import VendiLogo from "@/components/VendiLogo";
 
 const items = [
 { to: "/dashboard", label: "Home", outline: "home-outline", fill: "home" },
@@ -107,8 +108,8 @@ export default function AppShell() {
     <div className="min-h-screen overflow-x-hidden text-[#1e1b4b] pb-20 md:pb-0 md:pl-20">
       <BackgroundBlobs />
       <aside className="hidden md:fixed md:inset-y-0 md:left-0 md:flex md:w-20 md:flex-col md:items-center md:border-r md:border-[#e2e8f0] md:bg-[#ffffff] md:py-5 text-[hsl(var(--primary-foreground))]">
-        <Link to="/dashboard" className="flex h-10 w-10 shrink-0 items-center justify-center">
-          <ion-icon name="flower-outline" style={{ fontSize: 30, color: "#5080da" }} />
+        <Link to="/dashboard" className="flex h-10 w-10 shrink-0 items-center justify-center" title="windy the pooh">
+          <VendiLogo size={36} />
         </Link>
         <nav className="notifications-scroll mt-8 flex min-h-0 flex-1 flex-col items-center gap-1.5 overflow-y-auto">
           {navItems.map(({ to, label, outline, fill }) =>
