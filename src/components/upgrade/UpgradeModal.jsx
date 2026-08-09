@@ -50,7 +50,7 @@ export default function UpgradeModal({ open, onClose, variant = "lifetime", coll
         <>
               <VendiLogo size={56} className="mx-auto" />
               
-              <p className="mt-2 text-sm text-[#475569]">Unlock this collection for life, plus unlimited booth sessions, for <b className="text-[#1e1b4b]">${COLLECTION_PRICE.toFixed(2)}</b> — a one-time payment.</p>
+              <p className="mt-2 text-sm text-[#475569]">Unlock this collection for life for <b className="text-[#1e1b4b]">${COLLECTION_PRICE.toFixed(2)}</b> — a one-time payment.</p>
               <div className="my-4 flex items-center gap-3 text-xs text-[#94a3b8]"><span className="h-px flex-1 bg-[#e2e8f0]" />or<span className="h-px flex-1 bg-[#e2e8f0]" /></div>
               <p className="text-sm text-[#475569]">Prefer full access to every collection?</p>
               <p className="font-heading text-lg font-extrabold text-[#3a6cbf]">Lifetime Pass · ${LIFETIME_PRICE.toFixed(2)}</p>
