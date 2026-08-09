@@ -61,9 +61,9 @@ export default function AdminUsers({ users, strips, templates, meId, onChanged }
     } finally { setBusy(null); }
   };
 
-  const premiumCategories = useMemo(() => {
+  const premiumCollections = useMemo(() => {
     const set = new Set();
-    Object.values(templates).forEach((t) => { if (t.tier === "premium" && t.category) set.add(t.category); });
+    Object.values(templates).forEach((t) => { if (t.tier === "premium" && t.code) set.add(t.code); });
     return [...set].sort();
   }, [templates]);
 
@@ -201,11 +201,11 @@ export default function AdminUsers({ users, strips, templates, meId, onChanged }
                     </span>
                   ))}
                 </div>
-                {premiumCategories.length > 0 && (
+                {premiumCollections.length > 0 && (
                   <div className="mt-2 flex items-center gap-2">
                     <select value={grantCat} onChange={(e) => setGrantCat(e.target.value)} disabled={busy === view.id} className="flex-1 rounded-full border border-[#e2e8f0] bg-white px-3 py-1.5 text-xs font-bold outline-none disabled:opacity-50">
                       <option value="" disabled>Grant a collection…</option>
-                      {premiumCategories.filter((c) => !(view.owned_collections || []).includes(c)).map((c) => <option key={c} value={c}>{c}</option>)}
+                      {premiumCollections.filter((c) => !(view.owned_collections || []).includes(c)).map((c) => <option key={c} value={c}>{c}</option>)}
                     </select>
                     <button onClick={() => { grantCollection(view, grantCat); setGrantCat(""); }} disabled={busy === view.id || !grantCat} className="rounded-full bg-[#3a6cbf] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#2f5fbf] disabled:opacity-50">Grant</button>
                   </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, Camera, Download, ImageUp, Instagram, RotateCcw } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
@@ -36,7 +36,8 @@ export default function Booth() {
   const [rawFiles, setRawFiles] = useState([]);
   const [finalPhotos, setFinalPhotos] = useState([]);
   const [filter, setFilter] = useState("none");
-  const [category, setCategory] = useState("all");
+  const [tier, setTier] = useState("all");
+  const [collection, setCollection] = useState("all");
   const [query, setQuery] = useState("");
   const [saving, setSaving] = useState(false);
   const [sharing, setSharing] = useState(false);
@@ -64,10 +65,14 @@ export default function Booth() {
     setFinalPhotos([]);setFilter("none");setStep(3);
   };
 
-  const filteredTemplates = templates.filter((t) =>
-  (category === "all" || t.category === category) &&
-  t.name.toLowerCase().includes(query.toLowerCase())
-  );
+  const collections = useMemo(() => [...new Set(templates.map((t) => t.code).filter(Boolean))].sort(), [templates]);
+
+  const filteredTemplates = templates.filter((t) => {
+    if (tier === "free" && t.tier !== "free") return false;
+    if (tier === "locked" && t.tier !== "premium") return false;
+    if (collection !== "all" && t.code !== collection) return false;
+    return t.name.toLowerCase().includes(query.toLowerCase());
+  });
 
   const choose = (t) => {
     if (!canUseTemplate(user, t)) { setLockedTemplate(t); return; }
@@ -175,7 +180,7 @@ export default function Booth() {
             </div> :
 
         <>
-              <TemplateFilters category={category} onCategoryChange={setCategory} query={query} onQueryChange={setQuery} />
+              <TemplateFilters tier={tier} onTierChange={setTier} collection={collection} onCollectionChange={setCollection} collections={collections} query={query} onQueryChange={setQuery} />
               <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
                 {filteredTemplates.map((t) =>
             <TemplateCard key={t.id} template={t} selected={selected?.id === t.id} locked={!canUseTemplate(user, t)} onSelect={choose} />
@@ -327,7 +332,7 @@ export default function Booth() {
         </div>
       }
       <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
-      <UpgradeModal open={!!lockedTemplate} variant="collection" collection={lockedTemplate?.category || lockedTemplate?.name} onClose={() => setLockedTemplate(null)} />
+      <UpgradeModal open={!!lockedTemplate} variant="collection" collection={lockedTemplate?.code} onClose={() => setLockedTemplate(null)} />
     </div>);
 
 }
