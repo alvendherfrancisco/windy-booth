@@ -8,13 +8,13 @@ Windy the Pooh ("we," "us," or "our") operates the Windy the Pooh photo booth ap
 1. Information We Collect
 - Account information: Your name, email address, and profile photo, including details obtained through Google sign-in when you choose that method.
 - Content you create: Photos you capture or upload, the filters you apply, and the finished photo strips you save to your account.
-- Order information: Shipping details (full name, phone number, and delivery address) submitted when you place a print order.
+- Order information: When the Print Shop is available, shipping details (full name, phone number, and delivery address) submitted when you place a print order.
 - Payment confirmations: Proof-of-payment screenshots or receipts you upload for manual verification. We do not collect, process, or store your card, wallet, or bank account credentials.
 - Usage information: Activity data necessary to enforce plan limits, such as your daily session count.
 
 2. How We Use Your Information
 - To create, store, retrieve, and display your photo strips and account history.
-- To process, fulfill, and ship physical print orders you place through the Print Shop.
+- To process, fulfill, and ship physical print orders you place through the Print Shop, when that feature is available.
 - To verify manual payments and activate the collection or plan you purchased.
 - To deliver service-related notifications regarding your orders, account status, and usage.
 - To maintain the security, integrity, and proper functioning of the Service.
@@ -28,7 +28,7 @@ We do not sell your personal information. We share information only:
 - when required to comply with applicable law, legal process, or to protect the rights, safety, and property of our users.
 
 5. Your Rights and Choices
-You may delete individual strips at any time from "My Booths." You may request a copy of your data or full account deletion by contacting us at the email provided below, and we will respond within a reasonable timeframe.
+You may delete individual strips at any time from the "Strips" section. You may request a copy of your data or full account deletion by contacting us at the email provided below, and we will respond within a reasonable timeframe.
 
 6. Children's Privacy
 The Service is not directed to individuals under the age required by local law to consent to data processing without parental permission. If you believe a minor has provided us personal information without appropriate consent, please contact us so we may remove it.
@@ -59,7 +59,7 @@ You retain ownership of the photos and photo strips you create ("Your Content").
 All purchases are one-time and non-recurring. There are no subscriptions or automatic renewals. Payments are processed manually by scanning a provided QR code for one of our supported methods (GoTyme, UnionBank, BPI, GCash, PayPal, or Wise) and submitting proof of payment for review. Access is granted only after we verify your payment. Except where required by law, verified one-time purchases are non-refundable once access has been granted.
 
 4. Print Orders
-Physical print orders placed through the Print Shop are fulfilled via a third-party shipping partner. Delivery times, shipping fees, and tracking information shown in the app are estimates provided in good faith. We are not liable for delays, loss, or damage caused by the carrier once an order has been handed over for shipment.
+The Print Shop is an optional feature that may not always be available within the Service. When enabled, physical print orders are fulfilled via a third-party shipping partner. Delivery times, shipping fees, and tracking information shown in the app are estimates provided in good faith. We are not liable for delays, loss, or damage caused by the carrier once an order has been handed over for shipment.
 
 5. Acceptable Use
 You agree not to: (a) use the Service for any unlawful purpose; (b) upload content that is obscene, infringing, or harmful to others; (c) attempt to disrupt, reverse-engineer, or gain unauthorized access to the Service or other users' data; or (d) use the Service to harass, impersonate, or deceive others.
