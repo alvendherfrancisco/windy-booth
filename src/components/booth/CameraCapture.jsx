@@ -1,14 +1,15 @@
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
-import { base44 } from "@/api/base44Client";
-import { filterCss } from "@/components/booth/filterPresets";
 import { STRIP_SLOTS } from "@/components/booth/stripSlots";
 import StripPreview from "@/components/booth/StripPreview";
-import FilterCard from "@/components/booth/FilterCard";
 
 const TIMERS = [3, 5, 10];
 
+// Captures three raw (unfiltered) frames from the webcam as local File objects.
+// The filter is chosen in a later step and baked into the photos at finish time,
+// so capture itself applies no filter. onComplete hands the File[] back to the
+// parent; onPhotosChange receives local object URLs for the live thumbnails.
 const CameraCapture = forwardRef(function CameraCapture(
-  { selected, photos, onPhotosChange, filter, onFilterChange, onComplete, onCapturingChange },
+  { selected, photos, onPhotosChange, onComplete, onCapturingChange },
   ref
 ) {
   const videoRef = useRef(null);
@@ -21,8 +22,6 @@ const CameraCapture = forwardRef(function CameraCapture(
   const [camError, setCamError] = useState(null);
   const [slotAspect, setSlotAspect] = useState(null);
 
-  // Match the live preview to the strip's photo-slot aspect ratio so users
-  // frame exactly what will land in the template.
   useEffect(() => {
     const asset = selected?.thumbnail_url || selected?.canvas_asset_url;
     if (!asset) return;
@@ -61,28 +60,26 @@ const CameraCapture = forwardRef(function CameraCapture(
     canvas.width = video.videoWidth || 640;
     canvas.height = video.videoHeight || 480;
     const ctx = canvas.getContext("2d");
-    ctx.filter = filterCss(filter);
     // Mirror the frame so the saved strip matches the live (selfie) preview.
+    // No filter here — it is applied in the filter step and baked at finish.
     ctx.translate(canvas.width, 0);
     ctx.scale(-1, 1);
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     return new Promise(resolve =>
-      canvas.toBlob(async blob => {
+      canvas.toBlob(blob => {
         const file = new File([blob], `vendi-${Date.now()}.jpg`, { type: "image/jpeg" });
-        const result = await base44.integrations.Core.UploadFile({ file });
-        resolve(result.file_url);
+        const url = URL.createObjectURL(file);
+        resolve({ url, file });
       }, "image/jpeg", 0.95)
     );
-  }, [filter]);
+  }, []);
 
-  // Automatic photobooth sequence: countdown -> snap -> brief pause -> repeat
-  // until 3 photos, then hand the captured URLs back to the parent to finish.
   const runCapture = useCallback(async () => {
     if (capturing) return;
     setCapturing(true);
     onCapturingChange?.(true);
     let taken = photos.length;
-    const captured = [...photos];
+    const capturedFiles = [];
     while (taken < 3) {
       let t = timerVal;
       setCountdown(t);
@@ -97,10 +94,10 @@ const CameraCapture = forwardRef(function CameraCapture(
         }, 1000);
       });
       setUploadingIdx(taken);
-      const url = await captureFrame();
-      if (url) {
-        captured.push(url);
-        onPhotosChange(prev => [...prev, url]);
+      const result = await captureFrame();
+      if (result) {
+        capturedFiles.push(result.file);
+        onPhotosChange(prev => [...prev, result.url]);
         taken++;
       }
       setUploadingIdx(null);
@@ -108,7 +105,7 @@ const CameraCapture = forwardRef(function CameraCapture(
     }
     setCapturing(false);
     onCapturingChange?.(false);
-    onComplete?.(captured);
+    onComplete?.(capturedFiles);
   }, [capturing, photos.length, timerVal, captureFrame, onPhotosChange, onComplete, onCapturingChange]);
 
   useImperativeHandle(ref, () => ({ capture: runCapture }), [runCapture]);
@@ -134,7 +131,7 @@ const CameraCapture = forwardRef(function CameraCapture(
                 playsInline
                 muted
                 className="h-full w-full object-cover"
-                style={{ transform: "scaleX(-1)", filter: filterCss(filter) }}
+                style={{ transform: "scaleX(-1)" }}
               />
               {countdown !== null && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/30">
@@ -168,9 +165,6 @@ const CameraCapture = forwardRef(function CameraCapture(
           <StripPreview template={selected} photos={photos} />
         </div>
       </div>
-
-      {/* Filter card — locked while a capture sequence is running */}
-      <FilterCard filter={filter} onFilterChange={onFilterChange} disabled={capturing} />
 
       {/* Countdown Timer card — locked while a capture sequence is running */}
       <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4">

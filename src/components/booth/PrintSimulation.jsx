@@ -22,6 +22,16 @@ export default function PrintSimulation({ template, photos, onDone }) {
   const [done, setDone] = useState(false);
   const [petals, setPetals] = useState([]);
 
+  // Auto-redirect to the download step shortly after the print finishes, so
+  // the user lands on download without an extra tap (a manual button remains
+  // for anyone who wants to proceed immediately).
+  useEffect(() => {
+    if (done) {
+      const t = setTimeout(() => onDone(), 1800);
+      return () => clearTimeout(t);
+    }
+  }, [done, onDone]);
+
   useEffect(() => {
     const timers = STATUS.map((s) => setTimeout(() => setStatus(s.text), s.t));
     const buzzT = setTimeout(() => setPrinting(true), 400);
