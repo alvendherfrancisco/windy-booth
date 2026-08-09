@@ -64,7 +64,7 @@ export default function Profile() {
         <p className="mt-2 text-sm text-[#475569]">Unlimited booth sessions, every artist-designed collection, and unlimited saved strips — for life.</p> :
 
         <>
-            <p className="mt-2 text-sm text-[#475569]">10 booth sessions per month and up to 10 saved strips. Upgrade anytime.</p>
+            <p className="mt-2 text-sm text-[#475569]">10 booth sessions per day and up to 10 saved strips. Upgrade anytime.</p>
             <button onClick={() => setUpgradeOpen(true)} className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#5080da] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#3a6cbf]">Get Lifetime Pass</button>
           </>
         }

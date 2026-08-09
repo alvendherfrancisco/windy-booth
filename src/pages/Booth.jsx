@@ -139,7 +139,7 @@ export default function Booth() {
         await base44.auth.updateMe({ sessions_used_this_month: nextUsed, sessions_period: period });
         updateUser({ sessions_used_this_month: nextUsed, sessions_period: period });
         if (nextUsed === 8 || nextUsed === 10) {
-          await base44.entities.Notification.create({ user_id: user.id, type: "usage_limit", message: `You've used ${nextUsed} of 10 sessions this month.`, link: "/profile", read: false, created_at: now.toISOString() });
+          await base44.entities.Notification.create({ user_id: user.id, type: "usage_limit", message: `You've used ${nextUsed} of 10 sessions today.`, link: "/profile", read: false, created_at: now.toISOString() });
         }
       }
       await base44.entities.Notification.create({ user_id: user.id, type: "booth_activity", message: "Your strip is ready!", link: "/my-booths", read: false, created_at: now.toISOString() });
@@ -174,7 +174,7 @@ export default function Booth() {
         <div className="relative isolate mt-7 overflow-hidden rounded-[18px] border border-dashed border-[#AEB0B5] bg-[#eaf2fd] px-6 py-14 text-center">
               <PolkaDots />
               <FaceDoodles variant="empty" />
-              <p className="relative font-heading text-xl font-bold">You've used all 10 booth sessions this month</p>
+              <p className="relative font-heading text-xl font-bold">You've used all 10 booth sessions today</p>
               <p className="relative mt-1 text-sm text-[#8B8D93]">Continue creating memories anytime with the Lifetime Pass.</p>
               <button onClick={() => setUpgradeOpen(true)} className="relative mt-5 inline-block rounded-full bg-[#5080da] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#3a6cbf]">Get Lifetime Pass</button>
             </div> :

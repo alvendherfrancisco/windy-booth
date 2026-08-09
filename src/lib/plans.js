@@ -4,10 +4,10 @@ export const LIFETIME_PRICE = 3.99;
 export const COLLECTION_PRICE = 1;
 export const CURRENCY = "$";
 
-// Billing period key (local month) used to reset the free session counter.
+// Billing period key (local day) used to reset the free session counter.
 export const currentPeriod = () => {
   const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 };
 
 // Legacy "premium" accounts are treated as Lifetime Pass owners.
