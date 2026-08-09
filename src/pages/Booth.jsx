@@ -11,7 +11,7 @@ import StickyAction from "@/components/booth/StickyAction";
 import FilterCard from "@/components/booth/FilterCard";
 import BoothStepper from "@/components/booth/BoothStepper";
 import CameraCapture from "@/components/booth/CameraCapture";
-import ModeCardDecor from "@/components/booth/ModeCardDecor";
+import { RAINBOW_DOTS_BG } from "@/lib/rainbowDotsBg";
 import { downloadStrip } from "@/components/booth/downloadStrip";
 import { shareToInstagram } from "@/components/booth/shareStrip";
 import PrintSimulation from "@/components/booth/PrintSimulation";
@@ -205,13 +205,11 @@ export default function Booth() {
       <>
           <h1 className="font-heading text-2xl font-extrabold text-[#1e1b4b]">How would you like to add your photos?</h1>
           <div className="mt-7 grid grid-cols-2 gap-4">
-            <button onClick={() => {setMode("camera");setStep(3);}} className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-[18px] border border-[#e2e8f0] bg-white p-8 text-center transition hover:border-[#228be6] hover:bg-[#e7f5ff]">
-              <ModeCardDecor variant="camera" />
+            <button onClick={() => {setMode("camera");setStep(3);}} className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-[18px] border border-[#D8D9DC] bg-white p-8 text-center transition hover:border-[#228be6]" style={{ backgroundImage: RAINBOW_DOTS_BG, backgroundRepeat: "no-repeat" }}>
               <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-[#e7f5ff]"><Camera size={22} className="text-[#228be6]" /></div>
               <div className="relative z-10"><b className="block text-sm text-[#1e1b4b]">Take Photos</b><small className="text-[#94a3b8]">Use your camera</small></div>
             </button>
-            <button onClick={() => {setMode("upload");setStep(3);}} className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-[18px] border border-[#e2e8f0] bg-white p-8 text-center transition hover:border-[#228be6] hover:bg-[#e7f5ff]">
-              <ModeCardDecor variant="upload" />
+            <button onClick={() => {setMode("upload");setStep(3);}} className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-[18px] border border-[#D8D9DC] bg-white p-8 text-center transition hover:border-[#228be6]" style={{ backgroundImage: RAINBOW_DOTS_BG, backgroundRepeat: "no-repeat" }}>
               <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-[#e7f5ff]"><ImageUp size={22} className="text-[#228be6]" /></div>
               <div className="relative z-10"><b className="block text-sm text-[#1e1b4b]">Upload Photos</b><small className="text-[#94a3b8]">Choose from gallery</small></div>
             </button>
