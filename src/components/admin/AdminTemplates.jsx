@@ -125,7 +125,7 @@ export default function AdminTemplates({ templates, onChanged }) {
                 <div className="mt-1.5 flex flex-wrap gap-1">
                   <span className="rounded-full bg-[#f1f5fb] px-2 py-0.5 text-[10px] font-bold capitalize text-[#475569]">{t.category || "—"}</span>
                   <button onClick={() => toggleTier(t)} className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${t.tier === "premium" ? "bg-[#eaf2fd] text-[#3a6cbf]" : "bg-[#e7f5ff] text-[#228be6]"}`}>
-                    <Star size={10} className="mr-0.5 inline" />{t.tier}
+                    <Star size={10} className="mr-0.5 inline" />{t.tier === "premium" ? "Lock" : "Free"}
                   </button>
                 </div>
               </div>
@@ -151,17 +151,10 @@ export default function AdminTemplates({ templates, onChanged }) {
               <Field label="Code">
                 <input value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value })} className="input" placeholder="sunset-bloom" />
               </Field>
-              <Field label="Category">
-                <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="input">
-                  {categories.map((c) => <option key={c.id} value={c.name}>{c.name}</option>)}
-                  {form.category && !categories.some((c) => c.name === form.category) && <option value={form.category}>{form.category}</option>}
-                  {categories.length === 0 && <option value="">No categories yet</option>}
-                </select>
-              </Field>
               <Field label="Tier">
                 <select value={form.tier} onChange={(e) => setForm({ ...form, tier: e.target.value })} className="input">
                   <option value="free">Free</option>
-                  <option value="premium">Premium</option>
+                  <option value="premium">Lock</option>
                 </select>
               </Field>
               <Field label="Released date">
