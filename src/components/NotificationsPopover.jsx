@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import { Bell, Check, Flower2, X } from "lucide-react";
+import { Bell, Check, X } from "lucide-react";
 import UserAvatar from "@/components/UserAvatar";
 
 const SYSTEM_TYPES = ["order_update", "payment", "subscription", "usage_limit", "storage_expiry", "storage_eviction"];
+const NOTIF_LOGO_URL = "https://media.base44.com/images/public/6a60bb3456cf14775962b360/98da874e1_windythepoohnotificationlogo.svg";
 
 function RowAvatar({ item, user }) {
   if (SYSTEM_TYPES.includes(item.type)) {
     return (
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#5080da]">
-        <Flower2 size={16} className="text-white" />
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white">
+        <img src={NOTIF_LOGO_URL} alt="windy the pooh" className="h-full w-full object-cover" />
       </div>
     );
   }
@@ -77,7 +78,7 @@ export default function NotificationsPopover({ open, onClose, notifs, onToggleRe
                   className="group relative flex cursor-pointer items-start gap-3 px-4 py-4 transition hover:bg-[#FAF7F2]"
                 >
                   <RowAvatar item={item} user={user} />
-                  <div className="min-w-0 flex-1">
+                  <div className="min-w-0 flex-1 pr-8">
                     <p className="text-sm font-medium leading-snug text-[#1e1b4b]">{item.message}</p>
                     <p className="mt-1 text-xs text-[#9AA0A6]">
                       {format(new Date(item.created_at), "h:mm a, MMM d, yyyy")}

@@ -1,7 +1,7 @@
 import { jsPDF } from "jspdf";
 
 const LOGO_URL =
-  "https://media.base44.com/images/public/6a60bb3456cf14775962b360/724a11589_windythepoohpost1.svg";
+  "https://media.base44.com/images/public/6a60bb3456cf14775962b360/1e11302a9_windylogo.svg";
 
 // Loads the Windy SVG logo and rasterizes it to a PNG data URL so jsPDF
 // can embed it (jsPDF does not support SVG directly).
@@ -14,6 +14,8 @@ function loadLogoPng() {
       canvas.width = 200;
       canvas.height = 200;
       const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, 200, 200);
       ctx.drawImage(img, 0, 0, 200, 200);
       resolve(canvas.toDataURL("image/png"));
     };

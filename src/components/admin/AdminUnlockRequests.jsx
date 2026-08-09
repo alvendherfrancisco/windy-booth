@@ -46,8 +46,33 @@ export default function AdminUnlockRequests({ requests, users, onChanged }) {
           const uploadRes = await base44.integrations.Core.UploadFile({ file: pdfFile });
           await base44.integrations.Core.SendEmail({
             to: u?.email,
-            subject: "Your windy the pooh purchase is confirmed!",
-            body: `Hi ${u?.full_name || u?.email || "there"},\n\nThank you for your purchase! Your ${planDesc} has been activated.\n\nAmount: $${(req.amount || 0).toFixed(2)}\nPayment Method: ${req.payment_method || "—"}\n\nDownload your receipt: ${uploadRes.file_url}\n\nEnjoy creating memories with windy the pooh!`,
+            subject: "windy the pooh — Payment Confirmation",
+            body: [
+              "windy the pooh — Payment Confirmation",
+              "",
+              `Hi ${u?.full_name || u?.email || "there"},`,
+              "",
+              `Thank you for your purchase! Your ${planDesc} has been successfully activated.`,
+              "",
+              "----------------------------------------",
+              "TRANSACTION DETAILS",
+              "----------------------------------------",
+              `  Receipt ID:     ${billingRec.id}`,
+              `  Date:           ${new Date().toLocaleString()}`,
+              `  Plan:           ${planDesc}`,
+              `  Amount:         $${(req.amount || 0).toFixed(2)}`,
+              `  Payment Method: ${req.payment_method || "—"}`,
+              `  Status:         Approved`,
+              "----------------------------------------",
+              "",
+              "Download your PDF receipt:",
+              `  ${uploadRes.file_url}`,
+              "",
+              "Thank you for choosing windy the pooh!",
+              "",
+              "windy the pooh Team",
+              "Capture memories, create forever.",
+            ].join("\n"),
           });
         } catch (_e) {
           // Receipt/email failure should not block the approval
