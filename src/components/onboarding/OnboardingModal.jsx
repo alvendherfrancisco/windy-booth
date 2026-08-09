@@ -12,8 +12,8 @@ import {
 } from "@/components/ui/dialog";
 import { PRIVACY_POLICY, TERMS_AND_CONDITIONS } from "@/lib/legalContent";
 
-const FLOWER_URL = "https://media.base44.com/images/public/6a60bb3456cf14775962b360/90f8e9e6a_windythepoohpost2.svg";
-const GREETING_LOGO_URL = "https://media.base44.com/images/public/6a60bb3456cf14775962b360/e7a268be1_windythepoohpost3.svg";
+const FLOWER_URL = "https://media.base44.com/images/public/6a60bb3456cf14775962b360/85fbbf227_flower.svg";
+const GREETING_LOGO_URL = "https://media.base44.com/images/public/6a60bb3456cf14775962b360/1b90c0fb5_windylogo.svg";
 
 const HOW_IT_WORKS = [
   { icon: Sparkles, title: "Pick a design", desc: "Choose from artist-designed collections to frame your strip." },
