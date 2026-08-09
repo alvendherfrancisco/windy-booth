@@ -5,7 +5,7 @@ import { Bell, Check, X } from "lucide-react";
 import UserAvatar from "@/components/UserAvatar";
 
 const SYSTEM_TYPES = ["order_update", "payment", "subscription", "usage_limit", "storage_expiry", "storage_eviction"];
-const NOTIF_LOGO_URL = "https://media.base44.com/images/public/6a60bb3456cf14775962b360/98da874e1_windythepoohnotificationlogo.svg";
+const NOTIF_LOGO_URL = "https://media.base44.com/images/public/6a60bb3456cf14775962b360/1ec7d044f_windythepoohpost6.png";
 
 function RowAvatar({ item, user }) {
   if (SYSTEM_TYPES.includes(item.type)) {

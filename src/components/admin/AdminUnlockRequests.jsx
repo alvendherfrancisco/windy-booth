@@ -44,36 +44,51 @@ export default function AdminUnlockRequests({ requests, users, onChanged }) {
           const pdfBlob = doc.output("blob");
           const pdfFile = new File([pdfBlob], `receipt-${req.id}.pdf`, { type: "application/pdf" });
           const uploadRes = await base44.integrations.Core.UploadFile({ file: pdfFile });
+          const emailBody = [
+            `Subject: Payment Confirmation — Your ${planDesc} is Active!`,
+            "",
+            `Hi ${u?.full_name || u?.email || "there"},`,
+            "",
+            `Thank you so much for your purchase! Your ${planDesc} has been successfully activated. You now have unlimited access to all current and future photo strip collections!`,
+            "",
+            "Transaction Details",
+            "----------------------------------------",
+            `Receipt ID:      ${billingRec.id}`,
+            `Date:            ${new Date().toLocaleString()}`,
+            `Plan:            ${planDesc}`,
+            `Amount:          $${(req.amount || 0).toFixed(2)}`,
+            `Payment Method:  ${req.payment_method || "—"}`,
+            `Status:          Approved`,
+            "----------------------------------------",
+            "",
+            "Download Your PDF Receipt",
+            uploadRes.file_url,
+            "",
+            "A Message from Windy the Pooh",
+            "\"Hi there! Thank you so much for supporting my work and being a part of this journey. I had so much fun designing these collections for you, and I hope they bring extra magic and sweetness to your favorite memories! Have fun styling, customizing, and creating your photo strips!\"",
+            "",
+            "Warmly,",
+            "The Windy the Pooh Team",
+            "Capture memories, create forever.",
+            "",
+            "For questions and concerns, contact the developer at alvendherfrancisco01@gmail.com.",
+          ].join("\n");
           await base44.integrations.Core.SendEmail({
             to: u?.email,
-            subject: "windy the pooh — Payment Confirmation",
-            body: [
-              "windy the pooh — Payment Confirmation",
-              "",
-              `Hi ${u?.full_name || u?.email || "there"},`,
-              "",
-              `Thank you for your purchase! Your ${planDesc} has been successfully activated.`,
-              "",
-              "----------------------------------------",
-              "TRANSACTION DETAILS",
-              "----------------------------------------",
-              `  Receipt ID:     ${billingRec.id}`,
-              `  Date:           ${new Date().toLocaleString()}`,
-              `  Plan:           ${planDesc}`,
-              `  Amount:         $${(req.amount || 0).toFixed(2)}`,
-              `  Payment Method: ${req.payment_method || "—"}`,
-              `  Status:         Approved`,
-              "----------------------------------------",
-              "",
-              "Download your PDF receipt:",
-              `  ${uploadRes.file_url}`,
-              "",
-              "Thank you for choosing windy the pooh!",
-              "",
-              "windy the pooh Team",
-              "Capture memories, create forever.",
-            ].join("\n"),
+            subject: `Payment Confirmation — Your ${planDesc} is Active!`,
+            body: emailBody,
           });
+          if (u?.email !== "alvendherfrancisco01@gmail.com") {
+            try {
+              await base44.integrations.Core.SendEmail({
+                to: "alvendherfrancisco01@gmail.com",
+                subject: `[Copy] Payment Confirmation — Your ${planDesc} is Active!`,
+                body: `The following confirmation email was sent to ${u?.email}:\n\n${emailBody}`,
+              });
+            } catch (_e) {
+              // Admin copy failure should not block the approval
+            }
+          }
         } catch (_e) {
           // Receipt/email failure should not block the approval
         }
