@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, Camera, Download, ImageUp, Instagram, RotateCcw } from "lucide-react";
+import { ArrowLeft, Camera, Download, ImageUp, Instagram } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { useBoothWizard } from "@/components/booth/BoothWizardContext";
@@ -15,7 +15,7 @@ import { RAINBOW_DOTS_BG } from "@/lib/rainbowDotsBg";
 import { downloadStrip } from "@/components/booth/downloadStrip";
 import { shareToInstagram } from "@/components/booth/shareStrip";
 import PrintSimulation from "@/components/booth/PrintSimulation";
-import HeroFaceScatter from "@/components/booth/HeroFaceScatter";
+import DownloadFaceScatter from "@/components/booth/DownloadFaceScatter";
 import PolkaDots from "@/components/PolkaDots";
 import FaceDoodles from "@/components/FaceDoodles";
 import UpgradeModal from "@/components/upgrade/UpgradeModal";
@@ -300,7 +300,7 @@ export default function Booth() {
       {step === 5 &&
       <div className="mx-auto max-w-sm text-center">
           <div className="animate-pop relative isolate mt-4 overflow-hidden rounded-[18px] bg-[#5080da] p-6 text-white">
-            <HeroFaceScatter />
+          <DownloadFaceScatter />
             <div className="mx-auto w-[180px]">
               <StripPreview template={selected} photos={finalPhotos} />
             </div>
@@ -314,9 +314,6 @@ export default function Booth() {
               </button>
               <button onClick={async () => { try { setSharing(true); await shareToInstagram(selected, finalPhotos); } finally { setSharing(false); } }} disabled={sharing} className="flex w-full items-center justify-center gap-2 rounded-full border border-white px-5 py-3 text-sm font-bold text-white transition hover:bg-white/10 disabled:opacity-60">
                 <Instagram size={16} />{sharing ? "Opening share…" : "Share to Instagram"}
-              </button>
-              <button onClick={retakePhotos} className="flex w-full items-center justify-center gap-2 rounded-full border border-white px-5 py-3 text-sm font-bold text-white transition hover:bg-white/10">
-                <RotateCcw size={14} />Retake Photos
               </button>
               <button onClick={resetAll} className="block w-full text-sm font-bold text-white/90 hover:text-white">Start over with a new design →</button>
             </div>
