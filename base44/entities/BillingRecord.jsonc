@@ -9,7 +9,8 @@
       "type": "string",
       "enum": [
         "subscription",
-        "print_order"
+        "print_order",
+        "unlock"
       ]
     },
     "amount": {

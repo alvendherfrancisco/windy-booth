@@ -1,17 +1,14 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { Search, Plus, Trash2, Pencil, Upload, Star, CheckCircle2, Circle } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import StripPreview from "@/components/booth/StripPreview";
-import CategoryManager from "@/components/admin/CategoryManager";
 
 const EMPTY = { name: "", code: "", category: "", tier: "free", canvas_asset_url: "", thumbnail_url: "", active: true, released_at: "" };
 
 export default function AdminTemplates({ templates, onChanged }) {
   const list = useMemo(() => Object.values(templates).sort((a, b) => (a.name || "").localeCompare(b.name || "")), [templates]);
   const [q, setQ] = useState("");
-  const [cat, setCat] = useState("all");
-  const [categories, setCategories] = useState([]);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(EMPTY);
@@ -21,20 +18,14 @@ export default function AdminTemplates({ templates, onChanged }) {
   const canvasRef = useRef();
   const thumbRef = useRef();
 
-  const loadCats = () => base44.entities.Category.list("order").then(setCategories).catch(() => {});
-  useEffect(() => { loadCats(); }, []);
-
-  const cats = ["all", ...categories.map((c) => c.name)];
-
   const rows = useMemo(
     () => list.filter((t) =>
-      (cat === "all" || t.category === cat) &&
-      ((t.name || "").toLowerCase().includes(q.toLowerCase()) || (t.code || "").toLowerCase().includes(q.toLowerCase()))
+      (t.name || "").toLowerCase().includes(q.toLowerCase()) || (t.code || "").toLowerCase().includes(q.toLowerCase())
     ),
-    [list, cat, q]
+    [list, q]
   );
 
-  const openNew = () => { setEditing(null); setForm({ ...EMPTY, category: categories[0]?.name || "" }); setOpen(true); };
+  const openNew = () => { setEditing(null); setForm({ ...EMPTY }); setOpen(true); };
   const openEdit = (t) => {
     setEditing(t);
     setForm({ ...EMPTY, ...t, released_at: t.released_at ? t.released_at.slice(0, 10) : "" });
@@ -57,7 +48,6 @@ export default function AdminTemplates({ templates, onChanged }) {
       const payload = {
         name: form.name.trim(),
         code: form.code.trim(),
-        category: form.category || categories[0]?.name || "Vendi",
         tier: form.tier,
         canvas_asset_url: form.canvas_asset_url,
         thumbnail_url: form.thumbnail_url || form.canvas_asset_url,
@@ -89,20 +79,10 @@ export default function AdminTemplates({ templates, onChanged }) {
             <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94a3b8]" />
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name or code" className="w-56 max-w-[50vw] rounded-full border border-[#e2e8f0] bg-white py-2 pl-9 pr-3 text-sm outline-none focus:border-[#228be6]" />
           </div>
-          <button onClick={openNew} className="inline-flex items-center gap-1.5 rounded-full bg-[#3a6cbf] px-4 py-2 text-sm font-bold text-white hover:bg-[#d04072]">
+          <button onClick={openNew} className="inline-flex items-center gap-1.5 rounded-full bg-[#3a6cbf] px-4 py-2 text-sm font-bold text-white hover:bg-[#2f5fbf]">
             <Plus size={15} /> New template
           </button>
         </div>
-      </div>
-
-      <CategoryManager categories={categories} onChanged={loadCats} onTemplatesChanged={onChanged} />
-
-      <div className="flex gap-2 overflow-x-auto pb-1">
-        {cats.map((c) => (
-          <button key={c} onClick={() => setCat(c)} className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-bold capitalize transition ${cat === c ? "border-[#3a6cbf] bg-[#eaf2fd] text-[#3a6cbf]" : "border-[#e2e8f0] bg-white text-[#475569] hover:border-[#3a6cbf]"}`}>
-            {c}
-          </button>
-        ))}
       </div>
 
       {rows.length === 0 ? (
@@ -123,7 +103,6 @@ export default function AdminTemplates({ templates, onChanged }) {
                 </div>
                 <p className="truncate text-[#94a3b8]">{t.code}</p>
                 <div className="mt-1.5 flex flex-wrap gap-1">
-                  <span className="rounded-full bg-[#f1f5fb] px-2 py-0.5 text-[10px] font-bold capitalize text-[#475569]">{t.category || "—"}</span>
                   <button onClick={() => toggleTier(t)} className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${t.tier === "premium" ? "bg-[#eaf2fd] text-[#3a6cbf]" : "bg-[#e7f5ff] text-[#228be6]"}`}>
                     <Star size={10} className="mr-0.5 inline" />{t.tier === "premium" ? "Lock" : "Free"}
                   </button>
@@ -176,7 +155,7 @@ export default function AdminTemplates({ templates, onChanged }) {
 
             <div className="flex justify-end gap-2 pt-1">
               <button onClick={() => setOpen(false)} className="rounded-full border border-[#e2e8f0] px-4 py-2 text-sm font-bold text-[#475569] hover:bg-[#f1f5fb]">Cancel</button>
-              <button onClick={save} disabled={busy || !form.name.trim() || !form.code.trim() || !form.canvas_asset_url} className="rounded-full bg-[#3a6cbf] px-5 py-2 text-sm font-bold text-white hover:bg-[#d04072] disabled:bg-[#e2e8f0] disabled:text-[#94a3b8]">
+              <button onClick={save} disabled={busy || !form.name.trim() || !form.code.trim() || !form.canvas_asset_url} className="rounded-full bg-[#3a6cbf] px-5 py-2 text-sm font-bold text-white hover:bg-[#2f5fbf] disabled:bg-[#e2e8f0] disabled:text-[#94a3b8]">
                 {busy ? "Saving…" : editing ? "Save changes" : "Create template"}
               </button>
             </div>

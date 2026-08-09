@@ -58,7 +58,7 @@ export default function AdminBilling({ billing, users }) {
               return (
                 <tr key={b.id} className="border-b border-[#F0EBE2] last:border-0 hover:bg-[#FBFAF7]">
                   <td className="px-3 py-2.5"><p className="font-medium">{u?.full_name || "—"}</p><p className="text-xs text-[#94a3b8]">{u?.email || ""}</p></td>
-                  <td className="px-3 py-2.5 capitalize">{b.type === "print_order" ? "Print order" : "Subscription"}</td>
+                  <td className="px-3 py-2.5 capitalize">{b.type === "print_order" ? "Print order" : b.type === "unlock" ? "Unlock" : "Subscription"}</td>
                   <td className="px-3 py-2.5 font-bold">{PESO(b.amount)}</td>
                   <td className="px-3 py-2.5"><span className={`rounded-full px-2 py-0.5 text-xs font-bold capitalize ${STATUS_TONE[b.status] || "bg-[#f1f5fb]"}`}>{b.status}</span></td>
                   <td className="px-3 py-2.5 text-xs text-[#475569]">{b.paymongo_transaction_id || "—"}</td>

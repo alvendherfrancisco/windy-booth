@@ -55,7 +55,7 @@ export default function AdminNotifications({ users, onChanged }) {
         </label>
         <div className="mt-3 flex items-center justify-between">
           <span className="flex items-center gap-1.5 text-xs text-[#94a3b8]"><Bell size={13} /> Delivered instantly to all inboxes</span>
-          <button onClick={send} disabled={busy || !message.trim()} className="inline-flex items-center gap-1.5 rounded-full bg-[#3a6cbf] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#d04072] disabled:bg-[#e2e8f0] disabled:text-[#94a3b8]">
+          <button onClick={send} disabled={busy || !message.trim()} className="inline-flex items-center gap-1.5 rounded-full bg-[#3a6cbf] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#2f5fbf] disabled:bg-[#e2e8f0] disabled:text-[#94a3b8]">
             {busy ? "Sending…" : <><Send size={15} /> Send broadcast</>}
           </button>
         </div>

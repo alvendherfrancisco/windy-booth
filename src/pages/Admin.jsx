@@ -122,7 +122,7 @@ export default function Admin() {
       <div className="mx-auto flex max-w-7xl flex-col gap-4 p-4 md:flex-row">
         <nav className="md:w-56 md:shrink-0">
           <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1 md:flex-col md:overflow-visible">
-            {NAV.map((n) => {
+            {NAV.filter((n) => n.key !== "orders" || printOn).map((n) => {
               const Icon = n.icon;
               const active = section === n.key;
               return (

@@ -29,6 +29,14 @@ export default function AdminUnlockRequests({ requests, users, onChanged }) {
             }
           }
         }
+        await base44.entities.BillingRecord.create({
+          user_id: req.user_id,
+          type: "unlock",
+          amount: req.amount || 0,
+          status: "paid",
+          paymongo_transaction_id: `unlock-${req.id}`,
+          created_at: new Date().toISOString(),
+        });
       }
       setView(null);
       await onChanged();
