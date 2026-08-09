@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Camera, ImageUp, Printer, Sparkles, Check } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
-import VendiLogo from "@/components/VendiLogo";
+import { Image } from "@/components/ui/image";
 import {
   Dialog,
   DialogContent,
@@ -11,6 +11,9 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { PRIVACY_POLICY, TERMS_AND_CONDITIONS } from "@/lib/legalContent";
+
+const FLOWER_URL = "https://media.base44.com/images/public/6a60bb3456cf14775962b360/90f8e9e6a_windythepoohpost2.svg";
+const GREETING_LOGO_URL = "https://media.base44.com/images/public/6a60bb3456cf14775962b360/e7a268be1_windythepoohpost3.svg";
 
 const HOW_IT_WORKS = [
   { icon: Sparkles, title: "Pick a design", desc: "Choose from artist-designed collections to frame your strip." },
@@ -43,19 +46,21 @@ export default function OnboardingModal() {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4">
       <div className="relative w-full max-w-sm overflow-hidden rounded-[22px] border border-[#e2e8f0] bg-white p-6 text-center animate-modal-in">
-        <div className="mb-5 flex justify-center gap-1.5">
+        <Image src={FLOWER_URL} alt="" fittingType="fit" className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 opacity-15" />
+        <Image src={FLOWER_URL} alt="" fittingType="fit" className="pointer-events-none absolute -bottom-12 -left-12 h-40 w-40 rotate-180 opacity-15" />
+        <div className="relative mb-5 flex justify-center gap-1.5">
           {[0, 1, 2].map((i) => (
             <span key={i} className={`h-1.5 rounded-full transition-all ${i === step ? "w-6 bg-[#5080da]" : "w-1.5 bg-[#e2e8f0]"}`} />
           ))}
         </div>
 
         {step === 0 && (
-          <>
-            <VendiLogo size={64} className="mx-auto" />
+          <div className="relative">
+            <Image src={GREETING_LOGO_URL} alt="windy the pooh" fittingType="fit" className="mx-auto h-20 w-20" />
             <h2 className="mt-4 font-heading text-2xl font-extrabold text-[#1e1b4b]">Welcome to windy the pooh!</h2>
             <p className="mt-2 text-sm text-[#475569]">A photo booth in your pocket. Pick a frame, strike a pose, and take it with you — anytime, anywhere.</p>
             <button onClick={() => setStep(1)} className="mt-6 w-full rounded-full bg-[#5080da] px-5 py-3.5 text-sm font-bold text-white transition hover:bg-[#3a6cbf]">Get Started</button>
-          </>
+          </div>
         )}
 
         {step === 1 && (
