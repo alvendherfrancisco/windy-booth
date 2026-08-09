@@ -18,8 +18,9 @@ export const isLifetime = (user) => user?.plan === "lifetime" || user?.plan === 
 export const ownsCollection = (user, code) =>
   !!code && (user?.owned_collections || []).includes(code);
 
-// Any paid unlock (a single collection or the Lifetime Pass) removes the
-// free-plan session cap and the 10-saved-strip cap.
+// A single collection unlock grants access to that collection's templates only.
+// It does NOT remove the free-plan session cap or the 10-saved-strip cap —
+// only the Lifetime Pass does.
 export const hasAnyUnlock = (user) =>
   isLifetime(user) || (user?.owned_collections || []).length > 0;
 
@@ -27,7 +28,7 @@ export const canUseTemplate = (user, template) =>
   !template || template.tier !== "premium" || isLifetime(user) || ownsCollection(user, template.code);
 
 export const sessionLimitReached = (user) =>
-  !hasAnyUnlock(user) && (user?.sessions_used_this_month || 0) >= SESSION_LIMIT;
+  !isLifetime(user) && (user?.sessions_used_this_month || 0) >= SESSION_LIMIT;
 
 export const planLabel = (user) =>
   isLifetime(user) ? "Lifetime Pass" : hasAnyUnlock(user) ? "Collection Unlocked" : "Free";
