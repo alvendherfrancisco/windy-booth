@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Check, X, Loader2 } from "lucide-react";
+import { Check, X, Loader2, Trash2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Image } from "@/components/ui/image";
@@ -68,6 +68,18 @@ export default function AdminUnlockRequests({ requests, users, onChanged }) {
     }
   };
 
+  const del = async (req) => {
+    if (!window.confirm("Delete this unlock request record?")) return;
+    setBusy(req.id);
+    try {
+      await base44.entities.UnlockRequest.delete(req.id);
+      setView(null);
+      await onChanged();
+    } finally {
+      setBusy(null);
+    }
+  };
+
   const STATUS_TONE = { pending: "bg-[#fff3bf] text-[#f59f00]", approved: "bg-[#ebfbee] text-[#37b24d]", rejected: "bg-[#ffe3e3] text-[#DC2626]" };
 
   return (
@@ -103,7 +115,14 @@ export default function AdminUnlockRequests({ requests, users, onChanged }) {
                         <button onClick={() => decide(r, "approved")} disabled={busy === r.id} className="rounded-full bg-[#ebfbee] p-1.5 text-[#37b24d] hover:bg-[#d3f9d8] disabled:opacity-50">{busy === r.id ? <Loader2 size={15} className="animate-spin" /> : <Check size={15} />}</button>
                         <button onClick={() => decide(r, "rejected")} disabled={busy === r.id} className="rounded-full bg-[#ffe3e3] p-1.5 text-[#DC2626] hover:bg-[#ffcccc] disabled:opacity-50"><X size={15} /></button>
                       </div>
-                    ) : <span className="text-xs text-[#94a3b8]">Reviewed</span>}
+                    ) : (
+                    <div className="flex items-center justify-end gap-1.5">
+                      <span className="text-xs text-[#94a3b8]">Reviewed</span>
+                      <button onClick={() => del(r)} disabled={busy === r.id} className="rounded-full bg-[#ffe3e3] p-1.5 text-[#DC2626] hover:bg-[#ffcccc] disabled:opacity-50" title="Delete record">
+                        {busy === r.id ? <Loader2 size={15} className="animate-spin" /> : <Trash2 size={15} />}
+                      </button>
+                    </div>
+                  )}
                   </td>
                 </tr>
               );
