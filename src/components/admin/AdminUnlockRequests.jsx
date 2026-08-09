@@ -4,6 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Image } from "@/components/ui/image";
 import { generateReceiptPdf } from "@/components/admin/receiptPdf";
+import { buildPaymentConfirmationEmail } from "@/lib/emailTemplates";
 
 const fmtDate = (v) => (v ? new Date(v).toLocaleString() : "—");
 
@@ -44,35 +45,15 @@ export default function AdminUnlockRequests({ requests, users, onChanged }) {
           const pdfBlob = doc.output("blob");
           const pdfFile = new File([pdfBlob], `receipt-${req.id}.pdf`, { type: "application/pdf" });
           const uploadRes = await base44.integrations.Core.UploadFile({ file: pdfFile });
-          const emailBody = [
-            `Subject: Payment Confirmation — Your ${planDesc} is Active!`,
-            "",
-            `Hi ${u?.full_name || u?.email || "there"},`,
-            "",
-            `Thank you so much for your purchase! Your ${planDesc} has been successfully activated. You now have unlimited access to all current and future photo strip collections!`,
-            "",
-            "Transaction Details",
-            "----------------------------------------",
-            `Receipt ID:      ${billingRec.id}`,
-            `Date:            ${new Date().toLocaleString()}`,
-            `Plan:            ${planDesc}`,
-            `Amount:          $${(req.amount || 0).toFixed(2)}`,
-            `Payment Method:  ${req.payment_method || "—"}`,
-            `Status:          Approved`,
-            "----------------------------------------",
-            "",
-            "Download Your PDF Receipt",
-            uploadRes.file_url,
-            "",
-            "A Message from Windy the Pooh",
-            "\"Hi there! Thank you so much for supporting my work and being a part of this journey. I had so much fun designing these collections for you, and I hope they bring extra magic and sweetness to your favorite memories! Have fun styling, customizing, and creating your photo strips!\"",
-            "",
-            "Warmly,",
-            "The Windy the Pooh Team",
-            "Capture memories, create forever.",
-            "",
-            "For questions and concerns, contact the developer at alvendherfrancisco01@gmail.com.",
-          ].join("\n");
+          const emailBody = buildPaymentConfirmationEmail({
+            userName: u?.full_name || u?.email || "there",
+            planDesc,
+            receiptId: billingRec.id,
+            dateStr: new Date().toLocaleString(),
+            amount: (req.amount || 0).toFixed(2),
+            paymentMethod: req.payment_method || "—",
+            receiptUrl: uploadRes.file_url,
+          });
           await base44.integrations.Core.SendEmail({
             to: u?.email,
             subject: `Payment Confirmation — Your ${planDesc} is Active!`,
@@ -83,7 +64,7 @@ export default function AdminUnlockRequests({ requests, users, onChanged }) {
               await base44.integrations.Core.SendEmail({
                 to: "alvendherfrancisco01@gmail.com",
                 subject: `[Copy] Payment Confirmation — Your ${planDesc} is Active!`,
-                body: `The following confirmation email was sent to ${u?.email}:\n\n${emailBody}`,
+                body: `<p>The following confirmation email was sent to ${u?.email}:</p><hr/>${emailBody}`,
               });
             } catch (_e) {
               // Admin copy failure should not block the approval
