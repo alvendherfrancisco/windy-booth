@@ -8,6 +8,7 @@ import PolkaDots from "@/components/PolkaDots";
 import UpgradeModal from "@/components/upgrade/UpgradeModal";
 import { isLifetime, LIFETIME_PRICE, planLabel } from "@/lib/plans";
 import LegalLinks from "@/components/profile/LegalLinks";
+import ContactSuggestForm from "@/components/profile/ContactSuggestForm";
 import VendiLogo from "@/components/VendiLogo";
 
 export default function Profile() {
@@ -69,6 +70,7 @@ export default function Profile() {
           </>
         }
       </section>
+      <ContactSuggestForm />
       <LegalLinks />
       {user?.email === "alvendherfrancisco01@gmail.com" &&
       <Link to="/admin" className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#3a6cbf] px-4 py-2 text-sm font-bold text-[#3a6cbf] transition hover:bg-[#eaf2fd]">

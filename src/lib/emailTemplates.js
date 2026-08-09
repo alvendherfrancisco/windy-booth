@@ -26,6 +26,21 @@ export function buildPaymentConfirmationEmail({ userName, planDesc, receiptId, d
   </div>`;
 }
 
+// Builds the HTML body for the admin notification sent when a user submits a contact message or design suggestion.
+export function buildContactMessageEmail({ userName, userEmail, type, message }) {
+  const label = type === "suggestion" ? "🌼 New design suggestion" : "🌼 New contact message";
+  return `
+  <div style="font-family: Arial, Helvetica, sans-serif; color: #1e1b4b; max-width: 560px; margin: 0 auto; line-height: 1.6;">
+    <p>${label} from a user.</p>
+    <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+      <tr><td style="padding: 4px 0; color: #64748b;">User</td><td style="padding: 4px 0; text-align: right;">${userName} (${userEmail})</td></tr>
+      <tr><td style="padding: 4px 0; color: #64748b;">Type</td><td style="padding: 4px 0; text-align: right;">${type === "suggestion" ? "Design Suggestion" : "General Contact"}</td></tr>
+    </table>
+    <h3 style="margin-bottom: 8px;">Message</h3>
+    <p style="white-space: pre-line; background: #f1f5fb; border-radius: 8px; padding: 12px;">${message}</p>
+  </div>`;
+}
+
 // Builds the HTML body for the admin notification sent when a user submits a new unlock request.
 export function buildNewUnlockRequestEmail({ userName, userEmail, planDesc, amount, paymentMethod }) {
   return `
