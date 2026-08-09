@@ -1,8 +1,18 @@
 export const SESSION_LIMIT = 10;
 export const SAVED_STRIP_LIMIT = 10;
-export const LIFETIME_PRICE = 3.99;
+
+// Default (international) pricing, shown until the user's country is detected.
+export const LIFETIME_PRICE = 4.99;
 export const COLLECTION_PRICE = 1;
 export const CURRENCY = "$";
+
+// Country-specific pricing: PH users are billed in PHP, everyone else in USD.
+export const PRICING = {
+  PH: { collection: 39, lifetime: 199, currency: "₱" },
+  INTL: { collection: COLLECTION_PRICE, lifetime: LIFETIME_PRICE, currency: CURRENCY },
+};
+
+export const getPricing = (countryCode) => (countryCode === "PH" ? PRICING.PH : PRICING.INTL);
 
 // Billing period key (local day) used to reset the free session counter.
 export const currentPeriod = () => {

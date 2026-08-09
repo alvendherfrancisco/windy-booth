@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Loader2, Upload } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
-import { LIFETIME_PRICE, COLLECTION_PRICE } from "@/lib/plans";
+import { getPricing } from "@/lib/plans";
+import { getUserCountry } from "@/lib/geo";
+import { USD_TO_PHP } from "@/lib/currency";
 import { PAYMENT_METHODS, paymentMethodLabel } from "@/lib/paymentMethods";
 import PaymentMethodPicker from "@/components/upgrade/PaymentMethodPicker";
 import { buildNewUnlockRequestEmail } from "@/lib/emailTemplates";
@@ -17,8 +19,13 @@ export default function PaymentStep({ type, collection, onSubmitted, onBack }) {
   const [file, setFile] = useState(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [country, setCountry] = useState(null);
 
-  const amount = type === "lifetime" ? LIFETIME_PRICE : COLLECTION_PRICE;
+  useEffect(() => { getUserCountry().then(setCountry); }, []);
+
+  const isPH = country === "PH";
+  const pricing = getPricing(country);
+  const displayAmount = type === "lifetime" ? pricing.lifetime : pricing.collection;
   const title = type === "lifetime" ? "Lifetime Pass" : `${collection || "Collection"}`;
 
   const submit = async () => {
@@ -33,7 +40,8 @@ export default function PaymentStep({ type, collection, onSubmitted, onBack }) {
         collection: type === "collection" ? collection : undefined,
         payment_method: method,
         proof_url: file_url,
-        amount,
+        amount: isPH ? +(displayAmount / USD_TO_PHP).toFixed(2) : displayAmount,
+        amount_php: isPH ? displayAmount : undefined,
         status: "pending",
       });
       try {
@@ -44,7 +52,7 @@ export default function PaymentStep({ type, collection, onSubmitted, onBack }) {
             userName: user?.full_name || user?.email || "A user",
             userEmail: user?.email || "—",
             planDesc: title,
-            amount: amount.toFixed(2),
+            amount: `${pricing.currency}${displayAmount.toFixed(2)}`,
             paymentMethod: paymentMethodLabel(method),
           }),
         });
@@ -62,7 +70,7 @@ export default function PaymentStep({ type, collection, onSubmitted, onBack }) {
   return (
     <div>
       <h2 className="text-center font-heading text-xl font-extrabold text-[#1e1b4b]">Pay for {title}</h2>
-      <p className="mt-1 text-center text-sm text-[#475569]">Amount due: <b className="text-[#1e1b4b]">${amount.toFixed(2)}</b></p>
+      <p className="mt-1 text-center text-sm text-[#475569]">Amount due: <b className="text-[#1e1b4b]">{pricing.currency}{displayAmount.toFixed(2)}</b></p>
 
       <div className="mt-4">
         <PaymentMethodPicker method={method} onMethodChange={setMethod} />

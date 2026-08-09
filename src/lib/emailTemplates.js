@@ -49,9 +49,9 @@ export function buildNewUnlockRequestEmail({ userName, userEmail, planDesc, amou
     <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
       <tr><td style="padding: 4px 0; color: #64748b;">User</td><td style="padding: 4px 0; text-align: right;">${userName} (${userEmail})</td></tr>
       <tr><td style="padding: 4px 0; color: #64748b;">Plan</td><td style="padding: 4px 0; text-align: right;">${planDesc}</td></tr>
-      <tr><td style="padding: 4px 0; color: #64748b;">Amount</td><td style="padding: 4px 0; text-align: right;">$${amount}</td></tr>
+      <tr><td style="padding: 4px 0; color: #64748b;">Amount</td><td style="padding: 4px 0; text-align: right;">${amount}</td></tr>
       <tr><td style="padding: 4px 0; color: #64748b;">Payment Method</td><td style="padding: 4px 0; text-align: right;">${paymentMethod}</td></tr>
-    </table>
-    <p style="margin-top: 20px;">Review and approve it in the Admin dashboard under Unlock Requests.</p>
+      </table>
+      <p style="margin-top: 20px;">Review and approve it in the Admin dashboard under Unlock Requests.</p>
   </div>`;
 }

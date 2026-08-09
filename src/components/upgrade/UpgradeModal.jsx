@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Check, CheckCircle2, X } from "lucide-react";
-import { LIFETIME_PRICE, COLLECTION_PRICE } from "@/lib/plans";
+import { getPricing } from "@/lib/plans";
+import { getUserCountry } from "@/lib/geo";
 import VendiLogo from "@/components/VendiLogo";
 import PaymentStep from "@/components/upgrade/PaymentStep";
 
@@ -14,10 +15,16 @@ const INCLUDED = [
 export default function UpgradeModal({ open, onClose, variant = "lifetime", collection }) {
   const [stage, setStage] = useState("plans");
   const [chosenType, setChosenType] = useState(null);
+  const [country, setCountry] = useState(null);
 
-  useEffect(() => {if (open) {setStage("plans");setChosenType(null);}}, [open]);
+  useEffect(() => {if (open) {setStage("plans");setChosenType(null);getUserCountry().then(setCountry);}}, [open]);
 
   if (!open) return null;
+
+  const pricing = getPricing(country);
+  const LIFETIME_PRICE = pricing.lifetime;
+  const COLLECTION_PRICE = pricing.collection;
+  const CUR = pricing.currency;
 
   const choose = (type) => {setChosenType(type);setStage("payment");};
   const close = () => {onClose();};
@@ -50,13 +57,13 @@ export default function UpgradeModal({ open, onClose, variant = "lifetime", coll
         <>
               <VendiLogo size={56} className="mx-auto" />
               
-              <p className="mt-2 text-sm text-[#475569]">Unlock this collection for life for <b className="text-[#1e1b4b]">${COLLECTION_PRICE.toFixed(2)}</b> — a one-time payment.</p>
+              <p className="mt-2 text-sm text-[#475569]">Unlock this collection for life for <b className="text-[#1e1b4b]">{CUR}{COLLECTION_PRICE.toFixed(2)}</b> — a one-time payment.</p>
               <div className="my-4 flex items-center gap-3 text-xs text-[#94a3b8]"><span className="h-px flex-1 bg-[#e2e8f0]" />or<span className="h-px flex-1 bg-[#e2e8f0]" /></div>
               <p className="text-sm text-[#475569]">Prefer full access to every collection?</p>
-              <p className="font-heading text-lg font-extrabold text-[#3a6cbf]">Lifetime Pass · ${LIFETIME_PRICE.toFixed(2)}</p>
+              <p className="font-heading text-lg font-extrabold text-[#3a6cbf]">Lifetime Pass · {CUR}{LIFETIME_PRICE.toFixed(2)}</p>
               <div className="mt-5 space-y-2.5">
                 <button onClick={() => choose("lifetime")} className="flex w-full items-center justify-center gap-2 rounded-full bg-[#5080da] px-5 py-3.5 text-sm font-bold text-white transition hover:bg-[#3a6cbf]">Get Lifetime Pass</button>
-                <button onClick={() => choose("collection")} className="flex w-full items-center justify-center gap-2 rounded-full border border-[#3a6cbf] px-5 py-3.5 text-sm font-bold text-[#3a6cbf] transition hover:bg-[#eaf2fd]">Buy This Collection · ${COLLECTION_PRICE.toFixed(2)}</button>
+                <button onClick={() => choose("collection")} className="flex w-full items-center justify-center gap-2 rounded-full border border-[#3a6cbf] px-5 py-3.5 text-sm font-bold text-[#3a6cbf] transition hover:bg-[#eaf2fd]">Buy This Collection · {CUR}{COLLECTION_PRICE.toFixed(2)}</button>
                 <button onClick={close} className="block w-full pt-1 text-xs font-bold text-[#94a3b8] hover:text-[#1e1b4b]">Maybe later</button>
               </div>
             </> :
@@ -71,7 +78,7 @@ export default function UpgradeModal({ open, onClose, variant = "lifetime", coll
             )}
               </ul>
               <p className="mt-4 text-xs font-bold uppercase tracking-wider text-[#94a3b8]">One-time payment</p>
-              <p className="font-heading text-3xl font-extrabold text-[#3a6cbf]">${LIFETIME_PRICE.toFixed(2)}</p>
+              <p className="font-heading text-3xl font-extrabold text-[#3a6cbf]">{CUR}{LIFETIME_PRICE.toFixed(2)}</p>
               <p className="text-xs text-[#94a3b8]">No monthly subscription. No renewals.</p>
               <div className="mt-5 space-y-2.5">
                 <button onClick={() => choose("lifetime")} className="flex w-full items-center justify-center gap-2 rounded-full bg-[#5080da] px-5 py-3.5 text-sm font-bold text-white transition hover:bg-[#3a6cbf]">Get Lifetime Pass</button>
