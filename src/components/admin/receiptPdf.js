@@ -1,4 +1,5 @@
 import { jsPDF } from "jspdf";
+import { paymentMethodLabel } from "@/lib/paymentMethods";
 
 const LOGO_URL =
   "https://media.base44.com/images/public/6a60bb3456cf14775962b360/1e11302a9_windylogo.svg";
@@ -44,7 +45,7 @@ export async function generateReceiptPdf({ user, request, billingId }) {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(13);
   doc.setTextColor(120);
-  doc.text("Payment Receipt", 105, 78, { align: "center" });
+  doc.text("a little strip of your day.", 105, 78, { align: "center" });
 
   doc.setDrawColor(220);
   doc.line(20, 85, 190, 85);
@@ -64,7 +65,7 @@ export async function generateReceiptPdf({ user, request, billingId }) {
     ["Email:", user?.email || "—"],
     ["Plan:", planDesc],
     ["Amount:", `$${(request.amount || 0).toFixed(2)}`],
-    ["Payment Method:", request.payment_method || "—"],
+    ["Payment Method:", paymentMethodLabel(request.payment_method)],
     ["Status:", "Approved"],
   ];
 

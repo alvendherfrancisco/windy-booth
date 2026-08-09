@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Image } from "@/components/ui/image";
 import { generateReceiptPdf } from "@/components/admin/receiptPdf";
 import { buildPaymentConfirmationEmail } from "@/lib/emailTemplates";
+import { paymentMethodLabel } from "@/lib/paymentMethods";
 
 const fmtDate = (v) => (v ? new Date(v).toLocaleString() : "—");
 
@@ -51,7 +52,7 @@ export default function AdminUnlockRequests({ requests, users, onChanged }) {
             receiptId: billingRec.id,
             dateStr: new Date().toLocaleString(),
             amount: (req.amount || 0).toFixed(2),
-            paymentMethod: req.payment_method || "—",
+            paymentMethod: paymentMethodLabel(req.payment_method),
             receiptUrl: uploadRes.file_url,
           });
           await base44.integrations.Core.SendEmail({

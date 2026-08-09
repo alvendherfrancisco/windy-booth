@@ -18,7 +18,7 @@ export function buildPaymentConfirmationEmail({ userName, planDesc, receiptId, d
     <p style="margin-top: 20px;"><a href="${receiptUrl}" style="color: #228be6; font-weight: bold;">Download Your PDF Receipt</a></p>
 
     <h3 style="margin-bottom: 8px;">A Message from Windy the Pooh</h3>
-    <p style="font-style: italic; color: #475569;">"Hi there! Thank you so much for supporting my work and being a part of this journey. I had so much fun designing these collections for you, and I hope they bring extra magic and sweetness to your favorite memories! Have fun styling, customizing, and creating your photo strips!"</p>
+    <p style="font-style: italic; color: #475569;">"Thank you so much for supporting my work! It means a lot to me. I had so much fun creating these collections, and I hope they bring a little extra joy to your day. Have fun creating your photo strips! ♡"</p>
 
     <p style="margin-top: 24px;">Warmly,<br/>The Windy the Pooh Team<br/>Capture memories, create forever.</p>
 
