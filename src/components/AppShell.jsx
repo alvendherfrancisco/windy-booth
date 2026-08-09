@@ -143,7 +143,7 @@ export default function AppShell() {
         </div>
       </main>
 
-      <nav className="fixed inset-x-0 bottom-0 z-30 flex items-stretch border-t border-[#e2e8f0] bg-white px-1 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 md:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-50 flex items-stretch border-t border-[#e2e8f0] bg-white px-1 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 md:hidden">
         {navItems.map(({ to, label, outline, fill }) => {
           const active = isActive(to);
           return (

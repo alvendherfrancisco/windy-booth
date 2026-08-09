@@ -19,23 +19,53 @@ const SCATTER = [
   { face: 7, left: "57.78%", top: "77.09%", rotate: 7 },
 ];
 
+// On mobile the card is nearly full viewport width, so the desktop percentage
+// layout (tuned for a wide two-column card) lands several faces directly over
+// the headline/description text. This mobile-only set keeps faces smaller and
+// confined to a safe strip on the right edge, clear of all text and the
+// "Begin" button (bottom-left).
+const MOBILE_SCATTER = [
+  { face: 6, left: "78%", top: "10%", rotate: -4 },
+  { face: 2, left: "95%", top: "34%", rotate: 6 },
+  { face: 8, left: "80%", top: "58%", rotate: -8 },
+  { face: 3, left: "96%", top: "86%", rotate: 10 },
+];
+
 export default function HeroFaceScatter() {
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden text-white" style={{ zIndex: -1, opacity: 0.8 }} aria-hidden="true">
-      {SCATTER.map((p, i) => (
-        <span
-          key={i}
-          className="absolute"
-          style={{
-            left: p.left,
-            top: p.top,
-            width: 84,
-            height: 84,
-            transform: `translate(-50%, -50%) rotate(${p.rotate}deg)`,
-          }}
-          dangerouslySetInnerHTML={{ __html: FACE_SVG[p.face] }}
-        />
-      ))}
-    </div>
+    <>
+      <div className="pointer-events-none absolute inset-0 hidden overflow-hidden text-white md:block" style={{ zIndex: -1, opacity: 0.8 }} aria-hidden="true">
+        {SCATTER.map((p, i) => (
+          <span
+            key={i}
+            className="absolute"
+            style={{
+              left: p.left,
+              top: p.top,
+              width: 84,
+              height: 84,
+              transform: `translate(-50%, -50%) rotate(${p.rotate}deg)`,
+            }}
+            dangerouslySetInnerHTML={{ __html: FACE_SVG[p.face] }}
+          />
+        ))}
+      </div>
+      <div className="pointer-events-none absolute inset-0 overflow-hidden text-white md:hidden" style={{ zIndex: -1, opacity: 0.8 }} aria-hidden="true">
+        {MOBILE_SCATTER.map((p, i) => (
+          <span
+            key={i}
+            className="absolute"
+            style={{
+              left: p.left,
+              top: p.top,
+              width: 56,
+              height: 56,
+              transform: `translate(-50%, -50%) rotate(${p.rotate}deg)`,
+            }}
+            dangerouslySetInnerHTML={{ __html: FACE_SVG[p.face] }}
+          />
+        ))}
+      </div>
+    </>
   );
 }
