@@ -57,7 +57,7 @@ export default function Profile() {
       </section>
       <section className="relative mt-4 overflow-hidden rounded-[18px] bg-[#eaf2fd] p-6 text-[#1e1b4b]">
         <PolkaDots />
-        {lifetime ? <Sparkles size={22} className="text-[#3a6cbf]" /> : <VendiLogo size={24} color="#f59f00" />}
+        {lifetime ? <Sparkles size={22} className="text-[#3a6cbf]" /> : <VendiLogo size={36} color="#f59f00" />}
         <p className="mt-6 text-sm text-[#475569]">Status</p>
         <h2 className="font-heading text-2xl font-extrabold">{lifetime ? "Lifetime Pass Owner ✨" : planLabel(user)}</h2>
         {lifetime ?

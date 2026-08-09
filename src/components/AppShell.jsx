@@ -109,7 +109,7 @@ export default function AppShell() {
       <BackgroundBlobs />
       <aside className="hidden md:fixed md:inset-y-0 md:left-0 md:flex md:w-20 md:flex-col md:items-center md:border-r md:border-[#e2e8f0] md:bg-[#ffffff] md:py-5 text-[hsl(var(--primary-foreground))]">
         <Link to="/dashboard" className="flex h-10 w-10 shrink-0 items-center justify-center" title="windy the pooh">
-          <VendiLogo size={36} />
+          <VendiLogo size={54} />
         </Link>
         <nav className="notifications-scroll mt-8 flex min-h-0 flex-1 flex-col items-center gap-1.5 overflow-y-auto">
           {navItems.map(({ to, label, outline, fill }) =>

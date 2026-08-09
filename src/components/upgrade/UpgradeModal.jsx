@@ -44,7 +44,7 @@ export default function UpgradeModal({ open, onClose, variant = "lifetime", coll
 
         {variant === "collection" ?
         <>
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#eaf2fd]"><VendiLogo size={28} color="#3a6cbf" /></div>
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#eaf2fd]"><VendiLogo size={42} color="#3a6cbf" /></div>
             <h2 className="mt-3 font-heading text-2xl font-extrabold text-[#1e1b4b]">{collection || "Collection"}</h2>
             <p className="mt-2 text-sm text-[#475569]">Unlock this collection for <b className="text-[#1e1b4b]">₱{COLLECTION_PRICE}</b></p>
             <div className="my-4 flex items-center gap-3 text-xs text-[#94a3b8]"><span className="h-px flex-1 bg-[#e2e8f0]" />or<span className="h-px flex-1 bg-[#e2e8f0]" /></div>
@@ -62,7 +62,7 @@ export default function UpgradeModal({ open, onClose, variant = "lifetime", coll
           </> :
 
         <>
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#eaf2fd]"><VendiLogo size={28} color="#3a6cbf" /></div>
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#eaf2fd]"><VendiLogo size={42} color="#3a6cbf" /></div>
             <h2 className="mt-3 font-heading text-2xl font-extrabold text-[#1e1b4b]">Unlock Everything</h2>
             <p className="mt-1.5 text-sm text-[#475569]">Create without limits and access every artist-designed collection.</p>
             <ul className="mt-4 space-y-2 text-left">
