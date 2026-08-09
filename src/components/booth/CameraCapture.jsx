@@ -117,10 +117,10 @@ const CameraCapture = forwardRef(function CameraCapture(
     <div className="space-y-4">
       <div className="grid gap-4 lg:grid-cols-[1fr_220px]">
         {/* Live Preview card */}
-        <div className="flex flex-col rounded-2xl border border-[#E8E2D8] bg-white p-4">
-          <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#8A8580]">Live Preview</p>
+        <div className="flex flex-col rounded-2xl border border-[#e2e8f0] bg-white p-4">
+          <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#94a3b8]">Live Preview</p>
           {camError ? (
-            <div className="flex h-64 items-center justify-center rounded-xl bg-[#F5F0EA] p-4 text-center text-sm text-[#8A8580]">
+            <div className="flex h-64 items-center justify-center rounded-xl bg-[#f1f5fb] p-4 text-center text-sm text-[#94a3b8]">
               {camError}
             </div>
           ) : (
@@ -150,21 +150,21 @@ const CameraCapture = forwardRef(function CameraCapture(
               <div
                 key={i}
                 className={`flex h-14 w-14 items-center justify-center overflow-hidden rounded-lg border-2 ${
-                  i < photos.length ? "border-[#228be6]" : "border-dashed border-[#E8E2D8]"
-                } bg-[#F5F0EA]`}
+                  i < photos.length ? "border-[#228be6]" : "border-dashed border-[#e2e8f0]"
+                } bg-[#f1f5fb]`}
               >
                 {photos[i] ? (
                   <img src={photos[i]} alt="" className="h-full w-full object-cover" />
                 ) : uploadingIdx === i ? (
-                  <span className="text-[10px] text-[#8A8580]">…</span>
+                  <span className="text-[10px] text-[#94a3b8]">…</span>
                 ) : null}
               </div>
             ))}
           </div>
         </div>
         {/* Your Strip card */}
-        <div className="mx-auto w-full max-w-[180px] flex flex-col rounded-2xl border border-[#E8E2D8] bg-white p-4 lg:max-w-none">
-          <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#8A8580]">Your Strip</p>
+        <div className="mx-auto w-full max-w-[180px] flex flex-col rounded-2xl border border-[#e2e8f0] bg-white p-4 lg:max-w-none">
+          <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#94a3b8]">Your Strip</p>
           <StripPreview template={selected} photos={photos} />
         </div>
       </div>
@@ -173,8 +173,8 @@ const CameraCapture = forwardRef(function CameraCapture(
       <FilterCard filter={filter} onFilterChange={onFilterChange} disabled={capturing} />
 
       {/* Countdown Timer card — locked while a capture sequence is running */}
-      <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
-        <p className="mb-2 text-sm font-bold text-[#2D2D2D]">Countdown Timer</p>
+      <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4">
+        <p className="mb-2 text-sm font-bold text-[#1e1b4b]">Countdown Timer</p>
         <div className="flex gap-2">
           {TIMERS.map(t => (
             <button
@@ -184,7 +184,7 @@ const CameraCapture = forwardRef(function CameraCapture(
               className={`rounded-lg border px-4 py-1.5 text-xs font-bold transition disabled:cursor-not-allowed disabled:opacity-50 ${
                 timerVal === t
                   ? "border-[#228be6] bg-[#228be6] text-white"
-                  : "border-[#E8E2D8] bg-white text-[#5C5953] hover:border-[#228be6]"
+                  : "border-[#e2e8f0] bg-white text-[#475569] hover:border-[#228be6]"
               }`}
             >
               {t}s

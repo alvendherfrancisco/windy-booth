@@ -83,17 +83,17 @@ export default function LegalLinks() {
         <div className="mt-3 space-y-2">
           <button
             onClick={() => setOpen("privacy")}
-            className="flex w-full items-center justify-between rounded-xl border border-[#E8E2D8] px-4 py-3 text-left text-sm font-bold text-[#2D2D2D] transition hover:bg-[#F5F0EA]"
+            className="flex w-full items-center justify-between rounded-xl border border-[#e2e8f0] px-4 py-3 text-left text-sm font-bold text-[#1e1b4b] transition hover:bg-[#f1f5fb]"
           >
             <span className="flex items-center gap-2"><Shield size={16} className="text-[#228be6]" />Privacy Policy</span>
-            <span className="text-[#8A8580]">›</span>
+            <span className="text-[#94a3b8]">›</span>
           </button>
           <button
             onClick={() => setOpen("terms")}
-            className="flex w-full items-center justify-between rounded-xl border border-[#E8E2D8] px-4 py-3 text-left text-sm font-bold text-[#2D2D2D] transition hover:bg-[#F5F0EA]"
+            className="flex w-full items-center justify-between rounded-xl border border-[#e2e8f0] px-4 py-3 text-left text-sm font-bold text-[#1e1b4b] transition hover:bg-[#f1f5fb]"
           >
             <span className="flex items-center gap-2"><FileText size={16} className="text-[#228be6]" />Terms &amp; Conditions</span>
-            <span className="text-[#8A8580]">›</span>
+            <span className="text-[#94a3b8]">›</span>
           </button>
         </div>
       </section>
@@ -104,7 +104,7 @@ export default function LegalLinks() {
             <DialogTitle>Privacy Policy</DialogTitle>
             <DialogDescription>How Vendi handles your data.</DialogDescription>
           </DialogHeader>
-          <div className="whitespace-pre-line text-sm leading-relaxed text-[#2D2D2D]">{PRIVACY}</div>
+          <div className="whitespace-pre-line text-sm leading-relaxed text-[#1e1b4b]">{PRIVACY}</div>
         </DialogContent>
       </Dialog>
 
@@ -114,7 +114,7 @@ export default function LegalLinks() {
             <DialogTitle>Terms &amp; Conditions</DialogTitle>
             <DialogDescription>The rules for using Vendi.</DialogDescription>
           </DialogHeader>
-          <div className="whitespace-pre-line text-sm leading-relaxed text-[#2D2D2D]">{TERMS}</div>
+          <div className="whitespace-pre-line text-sm leading-relaxed text-[#1e1b4b]">{TERMS}</div>
         </DialogContent>
       </Dialog>
     </>

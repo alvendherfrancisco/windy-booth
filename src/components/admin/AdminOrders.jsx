@@ -7,9 +7,9 @@ import StripPreview from "@/components/booth/StripPreview";
 const fmtDate = (v) => (v ? new Date(v).toLocaleDateString() : "—");
 const PESO = (n) => `₱${(n || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-const PAY_TONE = { paid: "bg-[#ebfbee] text-[#37b24d]", processing: "bg-[#e7f5ff] text-[#228be6]", pending: "bg-[#fff3bf] text-[#f59f00]", failed: "bg-[#ffe3e3] text-[#DC2626]", refunded: "bg-[#F5F0EA] text-[#8A8580]" };
+const PAY_TONE = { paid: "bg-[#ebfbee] text-[#37b24d]", processing: "bg-[#e7f5ff] text-[#228be6]", pending: "bg-[#fff3bf] text-[#f59f00]", failed: "bg-[#ffe3e3] text-[#DC2626]", refunded: "bg-[#f1f5fb] text-[#94a3b8]" };
 const FULFILL = ["processing", "printed", "shipped", "delivered"];
-const FULFILL_TONE = { processing: "bg-[#fff3bf] text-[#f59f00]", printed: "bg-[#e7f5ff] text-[#228be6]", shipped: "bg-[#fff0f6] text-[#e64980]", delivered: "bg-[#ebfbee] text-[#37b24d]" };
+const FULFILL_TONE = { processing: "bg-[#fff3bf] text-[#f59f00]", printed: "bg-[#e7f5ff] text-[#228be6]", shipped: "bg-[#eaf2fd] text-[#3a6cbf]", delivered: "bg-[#ebfbee] text-[#37b24d]" };
 
 export default function AdminOrders({ orders, users, strips, templates, onChanged }) {
   const [q, setQ] = useState("");
@@ -48,26 +48,26 @@ export default function AdminOrders({ orders, users, strips, templates, onChange
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="font-heading text-xl font-extrabold">Orders <span className="text-sm font-medium text-[#8A8580]">({orders.length})</span></h2>
+        <h2 className="font-heading text-xl font-extrabold">Orders <span className="text-sm font-medium text-[#94a3b8]">({orders.length})</span></h2>
         <div className="flex flex-wrap items-center gap-2">
-          <select value={payFilter} onChange={(e) => setPayFilter(e.target.value)} className="rounded-full border border-[#E8E2D8] bg-white px-3 py-2 text-xs font-bold outline-none">
+          <select value={payFilter} onChange={(e) => setPayFilter(e.target.value)} className="rounded-full border border-[#e2e8f0] bg-white px-3 py-2 text-xs font-bold outline-none">
             <option value="all">All payments</option>
             {["pending", "processing", "paid", "failed", "refunded"].map((p) => <option key={p} value={p} className="capitalize">{p}</option>)}
           </select>
-          <select value={fillFilter} onChange={(e) => setFillFilter(e.target.value)} className="rounded-full border border-[#E8E2D8] bg-white px-3 py-2 text-xs font-bold outline-none">
+          <select value={fillFilter} onChange={(e) => setFillFilter(e.target.value)} className="rounded-full border border-[#e2e8f0] bg-white px-3 py-2 text-xs font-bold outline-none">
             <option value="all">All fulfillment</option>
             {FULFILL.map((p) => <option key={p} value={p} className="capitalize">{p}</option>)}
           </select>
           <div className="relative">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8A8580]" />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search customer" className="w-48 max-w-[50vw] rounded-full border border-[#E8E2D8] bg-white py-2 pl-9 pr-3 text-sm outline-none focus:border-[#228be6]" />
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94a3b8]" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search customer" className="w-48 max-w-[50vw] rounded-full border border-[#e2e8f0] bg-white py-2 pl-9 pr-3 text-sm outline-none focus:border-[#228be6]" />
           </div>
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-[#E8E2D8] bg-white">
+      <div className="overflow-x-auto rounded-2xl border border-[#e2e8f0] bg-white">
         <table className="w-full text-sm">
-          <thead className="border-b border-[#E8E2D8] bg-[#FBFAF7] text-left text-xs font-bold uppercase tracking-wider text-[#8A8580]">
+          <thead className="border-b border-[#e2e8f0] bg-[#FBFAF7] text-left text-xs font-bold uppercase tracking-wider text-[#94a3b8]">
             <tr>
               <th className="px-3 py-2">Customer</th>
               <th className="px-3 py-2">Bundle</th>
@@ -84,29 +84,29 @@ export default function AdminOrders({ orders, users, strips, templates, onChange
               const u = userMap[o.user_id];
               return (
                 <tr key={o.id} className="border-b border-[#F0EBE2] last:border-0 hover:bg-[#FBFAF7]">
-                  <td className="px-3 py-2.5"><p className="font-medium">{u?.full_name || "—"}</p><p className="text-xs text-[#8A8580]">{u?.email || ""}</p></td>
+                  <td className="px-3 py-2.5"><p className="font-medium">{u?.full_name || "—"}</p><p className="text-xs text-[#94a3b8]">{u?.email || ""}</p></td>
                   <td className="px-3 py-2.5 capitalize">{o.bundle_type} · {o.paper_type}</td>
                   <td className="px-3 py-2.5 font-bold">{PESO(o.total)}</td>
-                  <td className="px-3 py-2.5"><span className={`rounded-full px-2 py-0.5 text-xs font-bold capitalize ${PAY_TONE[o.payment_status] || "bg-[#F5F0EA]"}`}>{o.payment_status}</span></td>
+                  <td className="px-3 py-2.5"><span className={`rounded-full px-2 py-0.5 text-xs font-bold capitalize ${PAY_TONE[o.payment_status] || "bg-[#f1f5fb]"}`}>{o.payment_status}</span></td>
                   <td className="px-3 py-2.5">
                     <select value={o.fulfillment_status} disabled={busy === o.id} onChange={(e) => setFulfill(o, e.target.value)} className={`rounded-full border-0 px-2 py-1 text-xs font-bold capitalize outline-none ${FULFILL_TONE[o.fulfillment_status]}`}>
-                      {FULFILL.map((f) => <option key={f} value={f} className="bg-white text-[#2D2D2D]">{f}</option>)}
+                      {FULFILL.map((f) => <option key={f} value={f} className="bg-white text-[#1e1b4b]">{f}</option>)}
                     </select>
                   </td>
                   <td className="px-3 py-2.5">
                     <div className="flex items-center gap-1">
-                      <input value={track[o.id] ?? o.jt_tracking_number ?? ""} onChange={(e) => setTrack((t) => ({ ...t, [o.id]: e.target.value }))} placeholder="—" className="w-24 rounded-full border border-[#E8E2D8] px-2 py-1 text-xs outline-none focus:border-[#228be6]" />
+                      <input value={track[o.id] ?? o.jt_tracking_number ?? ""} onChange={(e) => setTrack((t) => ({ ...t, [o.id]: e.target.value }))} placeholder="—" className="w-24 rounded-full border border-[#e2e8f0] px-2 py-1 text-xs outline-none focus:border-[#228be6]" />
                       <button onClick={() => saveTrack(o)} disabled={busy === o.id} className="rounded-full p-1 text-[#228be6] hover:bg-[#e7f5ff]" title="Save tracking"><Save size={13} /></button>
                     </div>
                   </td>
-                  <td className="px-3 py-2.5 text-[#5C5953]">{fmtDate(o.created_date)}</td>
+                  <td className="px-3 py-2.5 text-[#475569]">{fmtDate(o.created_date)}</td>
                   <td className="px-3 py-2.5 text-right">
                     <button onClick={() => setView(o)} className="rounded-full p-1.5 text-[#228be6] hover:bg-[#e7f5ff]" title="View"><Eye size={15} /></button>
                   </td>
                 </tr>
               );
             })}
-            {rows.length === 0 && <tr><td colSpan={8} className="px-3 py-10 text-center text-sm text-[#8A8580]">No orders found.</td></tr>}
+            {rows.length === 0 && <tr><td colSpan={8} className="px-3 py-10 text-center text-sm text-[#94a3b8]">No orders found.</td></tr>}
           </tbody>
         </table>
       </div>
@@ -133,8 +133,8 @@ export default function AdminOrders({ orders, users, strips, templates, onChange
                   <Info label="Tracking" value={view.jt_tracking_number || "—"} />
                   <Info label="Ordered" value={fmtDate(view.created_date)} />
                 </div>
-                <div className="rounded-lg border border-[#E8E2D8] bg-[#FBFAF7] px-3 py-3">
-                  <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#8A8580]">Shipping (J&T Express)</p>
+                <div className="rounded-lg border border-[#e2e8f0] bg-[#FBFAF7] px-3 py-3">
+                  <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8]">Shipping (J&T Express)</p>
                   <div className="grid grid-cols-2 gap-2">
                     <Info label="Recipient" value={view.ship_full_name || "—"} />
                     <Info label="Phone" value={view.ship_phone || "—"} />
@@ -145,17 +145,17 @@ export default function AdminOrders({ orders, users, strips, templates, onChange
                     <Info label="Postal Code" value={view.ship_postal || "—"} />
                     <Info label="Shipping Cost" value={PESO(view.shipping_cost)} />
                   </div>
-                  <p className="mt-2 text-xs font-bold uppercase tracking-wider text-[#8A8580]">Detailed Address</p>
+                  <p className="mt-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8]">Detailed Address</p>
                   <p className="whitespace-pre-wrap">{view.ship_street || view.shipping_address || "—"}</p>
                 </div>
                 {orderStrips.length > 0 && (
                   <div>
-                    <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#8A8580]">Strips in this order</p>
+                    <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8]">Strips in this order</p>
                     <div className="flex flex-wrap gap-3">
                       {orderStrips.map((s) => (
                         <div key={s.id} className="w-20">
                           <StripPreview template={templates[s.template_id]} photos={s.photo_urls} className="w-20" />
-                          <p className="mt-1 text-center text-[10px] text-[#8A8580]">{fmtDate(s.created_at)}</p>
+                          <p className="mt-1 text-center text-[10px] text-[#94a3b8]">{fmtDate(s.created_at)}</p>
                         </div>
                       ))}
                     </div>
@@ -172,8 +172,8 @@ export default function AdminOrders({ orders, users, strips, templates, onChange
 
 function Info({ label, value }) {
   return (
-    <div className="rounded-lg border border-[#E8E2D8] bg-[#FBFAF7] px-3 py-2">
-      <p className="text-xs font-bold uppercase tracking-wider text-[#8A8580]">{label}</p>
+    <div className="rounded-lg border border-[#e2e8f0] bg-[#FBFAF7] px-3 py-2">
+      <p className="text-xs font-bold uppercase tracking-wider text-[#94a3b8]">{label}</p>
       <p className="truncate font-medium capitalize">{value}</p>
     </div>
   );

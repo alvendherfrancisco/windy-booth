@@ -3,8 +3,8 @@ import { FILTERS } from "@/components/booth/filterPresets";
 
 export default function FilterCard({ filter, onFilterChange, disabled = false }) {
   return (
-    <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
-      <p className="mb-2 text-sm font-bold text-[#2D2D2D]">Filter</p>
+    <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4">
+      <p className="mb-2 text-sm font-bold text-[#1e1b4b]">Filter</p>
       <div className="flex gap-2 overflow-x-auto pb-1">
         {FILTERS.map(f => (
           <button
@@ -16,7 +16,7 @@ export default function FilterCard({ filter, onFilterChange, disabled = false })
             }${
               filter === f.value
                 ? "border-[#228be6] bg-[#228be6] text-white"
-                : "border-[#E8E2D8] bg-white text-[#5C5953] hover:border-[#228be6]"
+                : "border-[#e2e8f0] bg-white text-[#475569] hover:border-[#228be6]"
             }`}
           >
             {f.label}

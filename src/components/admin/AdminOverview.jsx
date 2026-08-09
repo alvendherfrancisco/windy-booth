@@ -61,86 +61,86 @@ export default function AdminOverview({ users, strips, orders, billing, template
   const cards = [
     { label: "Total users", value: stats.totalUsers, sub: `+${stats.newMonth} this month`, icon: Users, tone: "bg-[#e7f5ff] text-[#228be6]" },
     { label: "New signups", value: stats.newWeek, sub: `${stats.newToday} today · ${stats.newMonth} this month`, icon: UserPlus, tone: "bg-[#ebfbee] text-[#37b24d]" },
-    { label: "Strips created", value: stats.totalStrips, sub: `${stats.stripsWeek} this week`, icon: ImageIcon, tone: "bg-[#fff0f6] text-[#e64980]" },
+    { label: "Strips created", value: stats.totalStrips, sub: `${stats.stripsWeek} this week`, icon: ImageIcon, tone: "bg-[#eaf2fd] text-[#3a6cbf]" },
     { label: "Active users", value: stats.active7, sub: `${stats.active30} in last 30 days`, icon: Activity, tone: "bg-[#fff3bf] text-[#f59f00]" },
   ];
 
   return (
     <div className="space-y-6">
-      <div className="relative isolate overflow-hidden rounded-[22px] border border-[#E8E2D8] bg-[#fff0f6] p-6">
+      <div className="relative isolate overflow-hidden rounded-[22px] border border-[#e2e8f0] bg-[#eaf2fd] p-6">
         <PolkaDots count={16} />
         <FaceDoodles variant="empty" />
-        <p className="relative text-xs font-bold uppercase tracking-wider text-[#e64980]">Admin dashboard</p>
-        <h2 className="relative mt-1 font-heading text-2xl font-extrabold text-[#2D2D2D]">Welcome back 👋</h2>
-        <p className="relative mt-1 text-sm text-[#5C5953]">Here's what's happening across Vendi right now.</p>
+        <p className="relative text-xs font-bold uppercase tracking-wider text-[#3a6cbf]">Admin dashboard</p>
+        <h2 className="relative mt-1 font-heading text-2xl font-extrabold text-[#1e1b4b]">Welcome back 👋</h2>
+        <p className="relative mt-1 text-sm text-[#475569]">Here's what's happening across Vendi right now.</p>
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {cards.map((c) => {
           const Icon = c.icon;
           return (
-            <div key={c.label} className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
+            <div key={c.label} className="rounded-2xl border border-[#e2e8f0] bg-white p-4">
               <div className={`mb-3 flex h-9 w-9 items-center justify-center rounded-full ${c.tone}`}><Icon size={18} /></div>
               <p className="font-heading text-2xl font-extrabold">{fmt(c.value)}</p>
-              <p className="text-xs font-bold text-[#5C5953]">{c.label}</p>
-              <p className="mt-1 text-xs text-[#8A8580]">{c.sub}</p>
+              <p className="text-xs font-bold text-[#475569]">{c.label}</p>
+              <p className="mt-1 text-xs text-[#94a3b8]">{c.sub}</p>
             </div>
           );
         })}
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
-          <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-[#fff0f6] text-[#e64980]"><ShoppingBag size={18} /></div>
+        <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4">
+          <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-[#eaf2fd] text-[#3a6cbf]"><ShoppingBag size={18} /></div>
           <p className="font-heading text-2xl font-extrabold">{fmt(stats.orders)}</p>
-          <p className="text-xs font-bold text-[#5C5953]">Orders</p>
-          <p className="mt-1 text-xs text-[#8A8580]">{stats.pendingFulfillment} pending</p>
+          <p className="text-xs font-bold text-[#475569]">Orders</p>
+          <p className="mt-1 text-xs text-[#94a3b8]">{stats.pendingFulfillment} pending</p>
         </div>
-        <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
+        <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4">
           <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-[#ebfbee] text-[#37b24d]"><Wallet size={18} /></div>
           <p className="font-heading text-2xl font-extrabold">{PESO(stats.revenue)}</p>
-          <p className="text-xs font-bold text-[#5C5953]">Revenue</p>
-          <p className="mt-1 text-xs text-[#8A8580]">Paid billing total</p>
+          <p className="text-xs font-bold text-[#475569]">Revenue</p>
+          <p className="mt-1 text-xs text-[#94a3b8]">Paid billing total</p>
         </div>
-        <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
+        <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4">
           <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-[#e7f5ff] text-[#228be6]"><LayoutTemplate size={18} /></div>
           <p className="font-heading text-2xl font-extrabold">{fmt(stats.templateCount)}</p>
-          <p className="text-xs font-bold text-[#5C5953]">Templates</p>
-          <p className="mt-1 text-xs text-[#8A8580]">Available designs</p>
+          <p className="text-xs font-bold text-[#475569]">Templates</p>
+          <p className="mt-1 text-xs text-[#94a3b8]">Available designs</p>
         </div>
-        <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
+        <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4">
           <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-[#e7f5ff] text-[#228be6]"><Activity size={18} /></div>
           <p className="font-heading text-2xl font-extrabold">{fmt(stats.active7)}</p>
-          <p className="text-xs font-bold text-[#5C5953]">Active (7d)</p>
-          <p className="mt-1 text-xs text-[#8A8580]">{stats.active30} in 30 days</p>
+          <p className="text-xs font-bold text-[#475569]">Active (7d)</p>
+          <p className="mt-1 text-xs text-[#94a3b8]">{stats.active30} in 30 days</p>
         </div>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
+        <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4">
           <h3 className="font-heading text-base font-extrabold">Signups over time</h3>
-          <p className="mb-3 text-xs text-[#8A8580]">Last 30 days</p>
+          <p className="mb-3 text-xs text-[#94a3b8]">Last 30 days</p>
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#F0EBE2" />
-                <XAxis dataKey="date" tick={{ fontSize: 10 }} interval={4} stroke="#8A8580" />
-                <YAxis allowDecimals tick={{ fontSize: 10 }} stroke="#8A8580" />
+                <XAxis dataKey="date" tick={{ fontSize: 10 }} interval={4} stroke="#94a3b8" />
+                <YAxis allowDecimals tick={{ fontSize: 10 }} stroke="#94a3b8" />
                 <Tooltip />
-                <Line type="monotone" dataKey="signups" stroke="#e64980" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="signups" stroke="#3a6cbf" strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>
         </div>
-        <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
+        <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4">
           <h3 className="font-heading text-base font-extrabold">Strips created over time</h3>
-          <p className="mb-3 text-xs text-[#8A8580]">Last 30 days</p>
+          <p className="mb-3 text-xs text-[#94a3b8]">Last 30 days</p>
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#F0EBE2" />
-                <XAxis dataKey="date" tick={{ fontSize: 10 }} interval={4} stroke="#8A8580" />
-                <YAxis allowDecimals tick={{ fontSize: 10 }} stroke="#8A8580" />
+                <XAxis dataKey="date" tick={{ fontSize: 10 }} interval={4} stroke="#94a3b8" />
+                <YAxis allowDecimals tick={{ fontSize: 10 }} stroke="#94a3b8" />
                 <Tooltip />
                 <Bar dataKey="strips" fill="#228be6" radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -150,15 +150,15 @@ export default function AdminOverview({ users, strips, orders, billing, template
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
-          <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-[#fff0f6] text-[#e64980]"><Crown size={16} /></div>
+        <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4">
+          <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-[#eaf2fd] text-[#3a6cbf]"><Crown size={16} /></div>
           <p className="font-heading text-xl font-extrabold">{fmt(stats.premium)}</p>
-          <p className="text-xs font-bold text-[#5C5953]">Premium</p>
+          <p className="text-xs font-bold text-[#475569]">Premium</p>
         </div>
-        <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
+        <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4">
           <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-[#e7f5ff] text-[#228be6]"><Sparkles size={16} /></div>
           <p className="font-heading text-xl font-extrabold">{fmt(stats.free)}</p>
-          <p className="text-xs font-bold text-[#5C5953]">Free</p>
+          <p className="text-xs font-bold text-[#475569]">Free</p>
         </div>
       </div>
     </div>

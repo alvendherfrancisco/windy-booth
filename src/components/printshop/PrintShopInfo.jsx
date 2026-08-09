@@ -5,7 +5,7 @@ import { formatPrice, FREE_SHIP_THRESHOLD } from "@/lib/printPricing";
 
 const PLANS = [
 { icon: Sparkles, color: "#228be6", title: "Free", tag: "Try the product", desc: 'The "Rolling 10" model — perfect for trying Vendi\'s Booth.' },
-{ icon: Crown, color: "#e64980", title: "Single Collection", tag: "₱49 one-time", desc: "Lifetime access to one exclusive artist-designed collection, with unlimited use of it." },
+{ icon: Crown, color: "#3a6cbf", title: "Single Collection", tag: "₱49 one-time", desc: "Lifetime access to one exclusive artist-designed collection, with unlimited use of it." },
 { icon: Printer, color: "#37b24d", title: "Lifetime Pass", tag: "₱299 one-time", desc: "Unlimited booth sessions, every current and future collection, and unlimited saved strips." }];
 
 
@@ -39,13 +39,13 @@ export default function PrintShopInfo() {
         
         <div className="mt-3 grid gap-3 sm:grid-cols-3">
           {PLANS.map((p) =>
-          <div key={p.title} className="rounded-2xl border border-[#E8E2D8] bg-white p-4 hidden">
+          <div key={p.title} className="rounded-2xl border border-[#e2e8f0] bg-white p-4 hidden">
               <div className="flex h-9 w-9 items-center justify-center rounded-full" style={{ background: `${p.color}1a` }}>
                 <p.icon size={18} style={{ color: p.color }} />
               </div>
-              <p className="mt-3 font-heading text-base font-extrabold text-[#2D2D2D]">{p.title}</p>
+              <p className="mt-3 font-heading text-base font-extrabold text-[#1e1b4b]">{p.title}</p>
               <p className="text-xs font-bold" style={{ color: p.color }}>{p.tag}</p>
-              <p className="mt-1.5 text-xs leading-relaxed text-[#5C5953]">{p.desc}</p>
+              <p className="mt-1.5 text-xs leading-relaxed text-[#475569]">{p.desc}</p>
             </div>
           )}
         </div>

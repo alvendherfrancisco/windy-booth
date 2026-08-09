@@ -69,7 +69,7 @@ export default function MyBooths() {
               <StripPreview template={templates[strip.template_id]} photos={strip.photo_urls} className="mx-auto w-[124px]" />
               <div className="mt-3 flex justify-center gap-3">
                 <button onClick={() => download(strip)} aria-label="Download strip" className="text-[#228be6]"><Download size={17} /></button>
-                <button onClick={() => share(strip)} aria-label="Share strip" disabled={sharingId === strip.id} className="text-[#e64980] disabled:opacity-50"><Share2 size={17} /></button>
+                <button onClick={() => share(strip)} aria-label="Share strip" disabled={sharingId === strip.id} className="text-[#3a6cbf] disabled:opacity-50"><Share2 size={17} /></button>
                 {printShopEnabled && <Link to="/print-shop" aria-label="Order prints" className="text-[#228be6]"><Printer size={17} /></Link>}
                 <button onClick={() => remove(strip.id)} aria-label="Delete strip" className="text-[#DC2626]"><Trash2 size={17} /></button>
               </div>
@@ -78,12 +78,12 @@ export default function MyBooths() {
           ))}
         </div>
       ) : (
-        <div className="relative isolate overflow-hidden rounded-[18px] border border-dashed border-[#AEB0B5] bg-[#fff0f6] px-6 py-16 text-center">
+        <div className="relative isolate overflow-hidden rounded-[18px] border border-dashed border-[#AEB0B5] bg-[#eaf2fd] px-6 py-16 text-center">
           <PolkaDots />
           <FaceDoodles variant="empty" />
           <p className="font-heading text-xl font-bold">Start your first booth</p>
           <p className="mt-1 text-sm text-[#8B8D93]">Your finished strips will collect here.</p>
-          <Link to="/booth" className="mt-5 inline-block rounded-full bg-[#f06595] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#e64980]">Start a booth</Link>
+          <Link to="/booth" className="mt-5 inline-block rounded-full bg-[#5080da] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#3a6cbf]">Start a booth</Link>
         </div>
       )}
       <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />

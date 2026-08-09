@@ -38,7 +38,7 @@ export default function Profile() {
         <UserAvatar user={user} size="lg" />
         <div className="min-w-0">
           <p className="text-xs font-bold uppercase tracking-wider text-[#8B8D93]">Account</p>
-          <p className="mt-2 truncate font-heading text-xl font-extrabold text-[#2D2D2D]">
+          <p className="mt-2 truncate font-heading text-xl font-extrabold text-[#1e1b4b]">
             {user?.full_name || "Your account"}
           </p>
           <p className="truncate text-sm text-[#8B8D93]">{user?.email}</p>
@@ -55,23 +55,23 @@ export default function Profile() {
           </div>
         </div>
       </section>
-      <section className="relative mt-4 overflow-hidden rounded-[18px] bg-[#fff0f6] p-6 text-[#2D2D2D]">
+      <section className="relative mt-4 overflow-hidden rounded-[18px] bg-[#eaf2fd] p-6 text-[#1e1b4b]">
         <PolkaDots />
-        {lifetime ? <Sparkles size={22} className="text-[#e64980]" /> : <VendiLogo size={24} color="#f59f00" />}
-        <p className="mt-6 text-sm text-[#5C5953]">Status</p>
+        {lifetime ? <Sparkles size={22} className="text-[#3a6cbf]" /> : <VendiLogo size={24} color="#f59f00" />}
+        <p className="mt-6 text-sm text-[#475569]">Status</p>
         <h2 className="font-heading text-2xl font-extrabold">{lifetime ? "Lifetime Pass Owner ✨" : planLabel(user)}</h2>
         {lifetime ?
-        <p className="mt-2 text-sm text-[#5C5953]">Unlimited booth sessions, every artist-designed collection, and unlimited saved strips — for life.</p> :
+        <p className="mt-2 text-sm text-[#475569]">Unlimited booth sessions, every artist-designed collection, and unlimited saved strips — for life.</p> :
 
         <>
-            <p className="mt-2 text-sm text-[#5C5953]">10 booth sessions per month and up to 10 saved strips. Upgrade anytime.</p>
-            <button onClick={() => setUpgradeOpen(true)} className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#f06595] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#e64980]">Get Lifetime Pass</button>
+            <p className="mt-2 text-sm text-[#475569]">10 booth sessions per month and up to 10 saved strips. Upgrade anytime.</p>
+            <button onClick={() => setUpgradeOpen(true)} className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#5080da] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#3a6cbf]">Get Lifetime Pass</button>
           </>
         }
       </section>
       <LegalLinks />
       {user?.email === "alvendherfrancisco01@gmail.com" &&
-      <Link to="/admin" className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#e64980] px-4 py-2 text-sm font-bold text-[#e64980] transition hover:bg-[#fff0f6]">
+      <Link to="/admin" className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#3a6cbf] px-4 py-2 text-sm font-bold text-[#3a6cbf] transition hover:bg-[#eaf2fd]">
           <Shield size={15} /> Admin dashboard
         </Link>
       }

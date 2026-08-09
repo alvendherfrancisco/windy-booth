@@ -122,11 +122,11 @@
   .input {
     width: 100%;
     border-radius: 0.5rem;
-    border: 1px solid #E8E2D8;
+    border: 1px solid #e2e8f0;
     background: #fff;
     padding: 0.5rem 0.75rem;
     font-size: 0.875rem;
-    color: #2D2D2D;
+    color: #1e1b4b;
     outline: none;
   }
   .input:focus {

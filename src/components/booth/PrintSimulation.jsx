@@ -76,7 +76,7 @@ export default function PrintSimulation({ template, photos, onDone }) {
 
   return (
     <div className="mx-auto max-w-sm text-center">
-      <h1 className="font-heading text-2xl font-extrabold text-[#2D2D2D]">Printing your strip</h1>
+      <h1 className="font-heading text-2xl font-extrabold text-[#1e1b4b]">Printing your strip</h1>
       <div className="mt-8 flex flex-col items-center">
         {/* Printer machine */}
         <div
@@ -87,14 +87,14 @@ export default function PrintSimulation({ template, photos, onDone }) {
           }}
         >
           <div className="mb-2 flex items-center justify-between">
-            <span className="text-[9px] font-bold uppercase tracking-widest text-[#a09090]">Vendi</span>
+            <span className="text-[9px] font-bold uppercase tracking-widest text-[#94a3b8]">Vendi</span>
             <div className="flex gap-1">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#f06595]" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[#5080da]" />
               <span className={`h-1.5 w-1.5 rounded-full bg-[#37b24d] ${printing ? "animate-pulse" : ""}`} />
             </div>
           </div>
           <div className="h-0.5 w-full overflow-hidden rounded bg-black/10">
-            <div className="h-full rounded bg-[#f06595]" style={{ width: printing ? "100%" : "0%", transition: "width 2.2s linear" }} />
+            <div className="h-full rounded bg-[#5080da]" style={{ width: printing ? "100%" : "0%", transition: "width 2.2s linear" }} />
           </div>
           {/* slot */}
           <div className="mx-auto mt-3 h-1.5 w-40 rounded-full bg-black/30" />
@@ -111,12 +111,12 @@ export default function PrintSimulation({ template, photos, onDone }) {
           </div>
         </div>
 
-        <p className="mt-8 min-h-5 text-sm italic text-[#5C5953]">{status}</p>
+        <p className="mt-8 min-h-5 text-sm italic text-[#475569]">{status}</p>
 
         {done && (
           <button
             onClick={onDone}
-            className="mt-6 rounded-full bg-[#f06595] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#e64980]"
+            className="mt-6 rounded-full bg-[#5080da] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#3a6cbf]"
           >
             Continue →
           </button>

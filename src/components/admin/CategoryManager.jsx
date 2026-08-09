@@ -55,9 +55,9 @@ export default function CategoryManager({ categories, onChanged, onTemplatesChan
   };
 
   return (
-    <div className="rounded-2xl border border-[#E8E2D8] bg-white p-4">
+    <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4">
       <div className="mb-3 flex items-center justify-between">
-        <p className="text-xs font-bold uppercase tracking-wider text-[#8A8580]">Categories</p>
+        <p className="text-xs font-bold uppercase tracking-wider text-[#94a3b8]">Categories</p>
         {!adding && (
           <button onClick={() => { setAdding(true); setDraft(""); }} className="inline-flex items-center gap-1 rounded-full border border-dashed border-[#228be6] px-2.5 py-1 text-xs font-bold text-[#228be6] hover:bg-[#e7f5ff]">
             <Plus size={13} /> Add
@@ -71,24 +71,24 @@ export default function CategoryManager({ categories, onChanged, onTemplatesChan
             <div key={c.id} className="flex items-center gap-1 rounded-full border border-[#228be6] bg-[#e7f5ff] px-2 py-1">
               <input autoFocus value={editName} onChange={(e) => setEditName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && saveEdit(c)} className="w-24 bg-transparent text-xs font-bold outline-none" />
               <button onClick={() => saveEdit(c)} disabled={busy === c.id} className="text-[#37b24d]"><Check size={14} /></button>
-              <button onClick={() => setEditingId(null)} className="text-[#8A8580]"><X size={14} /></button>
+              <button onClick={() => setEditingId(null)} className="text-[#94a3b8]"><X size={14} /></button>
             </div>
           ) : (
-            <div key={c.id} className="group flex items-center gap-1 rounded-full border border-[#E8E2D8] bg-[#FBFAF7] px-3 py-1.5 text-xs font-bold capitalize text-[#5C5953]">
+            <div key={c.id} className="group flex items-center gap-1 rounded-full border border-[#e2e8f0] bg-[#FBFAF7] px-3 py-1.5 text-xs font-bold capitalize text-[#475569]">
               <span>{c.name}</span>
-              <button onClick={() => { setEditingId(c.id); setEditName(c.name); }} className="text-[#8A8580] opacity-0 transition group-hover:opacity-100 hover:text-[#228be6]"><Pencil size={12} /></button>
-              <button onClick={() => del(c)} disabled={busy === c.id} className="text-[#8A8580] opacity-0 transition group-hover:opacity-100 hover:text-[#DC2626]"><Trash2 size={12} /></button>
+              <button onClick={() => { setEditingId(c.id); setEditName(c.name); }} className="text-[#94a3b8] opacity-0 transition group-hover:opacity-100 hover:text-[#228be6]"><Pencil size={12} /></button>
+              <button onClick={() => del(c)} disabled={busy === c.id} className="text-[#94a3b8] opacity-0 transition group-hover:opacity-100 hover:text-[#DC2626]"><Trash2 size={12} /></button>
             </div>
           )
         )}
-        {categories.length === 0 && !adding && <p className="text-xs text-[#8A8580]">No categories yet.</p>}
+        {categories.length === 0 && !adding && <p className="text-xs text-[#94a3b8]">No categories yet.</p>}
       </div>
 
       {adding && (
         <div className="mt-3 flex items-center gap-2">
           <input autoFocus value={draft} onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => e.key === "Enter" && add()} placeholder="New category name" className="input" />
           <button onClick={add} disabled={busy === "new" || !draft.trim()} className="rounded-full bg-[#228be6] px-3 py-1.5 text-xs font-bold text-white disabled:opacity-50">Add</button>
-          <button onClick={() => setAdding(false)} className="rounded-full border border-[#E8E2D8] px-3 py-1.5 text-xs font-bold text-[#5C5953]">Cancel</button>
+          <button onClick={() => setAdding(false)} className="rounded-full border border-[#e2e8f0] px-3 py-1.5 text-xs font-bold text-[#475569]">Cancel</button>
         </div>
       )}
     </div>

@@ -92,13 +92,13 @@ export default function PrintShop() {
   if (done) {
     return (
       <div className="mx-auto max-w-md">
-        <div className="relative isolate mt-6 overflow-hidden rounded-[22px] border border-[#E8E2D8] bg-[#ebfbee] p-8 text-center">
+        <div className="relative isolate mt-6 overflow-hidden rounded-[22px] border border-[#e2e8f0] bg-[#ebfbee] p-8 text-center">
           <PolkaDots />
           <FaceDoodles variant="success" />
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white text-[#37b24d]"><Check size={28} /></div>
-          <h1 className="font-heading text-2xl font-extrabold text-[#2D2D2D]">Order confirmed!</h1>
-          <p className="mt-2 text-sm text-[#5C5953]">Your Print Club bundle is being prepared. We'll update you when it ships.</p>
-          <Link to="/orders" className="mt-6 inline-block rounded-full bg-[#f06595] px-6 py-3 text-sm font-bold text-white hover:bg-[#e64980]">View my orders</Link>
+          <h1 className="font-heading text-2xl font-extrabold text-[#1e1b4b]">Order confirmed!</h1>
+          <p className="mt-2 text-sm text-[#475569]">Your Print Club bundle is being prepared. We'll update you when it ships.</p>
+          <Link to="/orders" className="mt-6 inline-block rounded-full bg-[#5080da] px-6 py-3 text-sm font-bold text-white hover:bg-[#3a6cbf]">View my orders</Link>
           <button onClick={() => setDone(null)} className="mt-3 block w-full text-sm font-bold text-[#228be6]">Order another bundle</button>
         </div>
       </div>);
@@ -113,13 +113,13 @@ export default function PrintShop() {
       <div className="mt-6"><PrintShopInfo /></div>
 
       {strips.length === 0 ?
-      <div className="relative isolate mt-6 overflow-hidden rounded-[18px] border border-dashed border-[#AEB0B5] bg-[#fff0f6] px-6 py-14 text-center">
+      <div className="relative isolate mt-6 overflow-hidden rounded-[18px] border border-dashed border-[#AEB0B5] bg-[#eaf2fd] px-6 py-14 text-center">
           <PolkaDots />
           <FaceDoodles variant="empty" />
-          <Package className="relative mx-auto text-[#e64980]" />
+          <Package className="relative mx-auto text-[#3a6cbf]" />
           <p className="relative mt-3 font-heading text-xl font-bold">No strips to print yet</p>
           <p className="relative mt-1 text-sm text-[#8B8D93]">Create a few strips first, then come back to order prints.</p>
-          <Link to="/booth" className="relative mt-5 inline-block rounded-full bg-[#f06595] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#e64980]">Start a booth</Link>
+          <Link to="/booth" className="relative mt-5 inline-block rounded-full bg-[#5080da] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#3a6cbf]">Start a booth</Link>
         </div> :
 
       <>
@@ -128,43 +128,43 @@ export default function PrintShop() {
               {BUNDLES.map((b) => {
               const active = bundle === b.id;
               return (
-                <div key={b.id} className={`rounded-2xl border p-4 transition ${active ? "border-[#e64980] bg-[#fff0f6]" : "border-[#E8E2D8] bg-white hover:border-[#e64980]"}`}>
+                <div key={b.id} className={`rounded-2xl border p-4 transition ${active ? "border-[#3a6cbf] bg-[#eaf2fd]" : "border-[#e2e8f0] bg-white hover:border-[#3a6cbf]"}`}>
                   <button onClick={() => {setBundle(b.id);setSelected({});}} className="block w-full text-left">
-                    <p className="font-heading text-base font-extrabold text-[#2D2D2D]">{b.name}</p>
-                    <p className="mt-0.5 text-xs text-[#8A8580]">{b.strips} strip{b.strips > 1 ? "s" : ""}</p>
-                    <p className="mt-2 font-bold text-[#e64980]">{formatPrice(b.price)}</p>
+                    <p className="font-heading text-base font-extrabold text-[#1e1b4b]">{b.name}</p>
+                    <p className="mt-0.5 text-xs text-[#94a3b8]">{b.strips} strip{b.strips > 1 ? "s" : ""}</p>
+                    <p className="mt-2 font-bold text-[#3a6cbf]">{formatPrice(b.price)}</p>
                   </button>
                   {active && (
                     <div className="mt-3 flex items-center justify-between border-t border-[#f3d6e4] pt-3">
                       <div className="flex items-center gap-2">
-                        <button onClick={() => setQuantity((q) => Math.max(1, q - 1))} className="h-8 w-8 rounded-full border border-[#E8E2D8] bg-white text-lg font-bold text-[#2D2D2D] hover:bg-[#F5F0EA]">−</button>
+                        <button onClick={() => setQuantity((q) => Math.max(1, q - 1))} className="h-8 w-8 rounded-full border border-[#e2e8f0] bg-white text-lg font-bold text-[#1e1b4b] hover:bg-[#f1f5fb]">−</button>
                         <span className="w-6 text-center font-bold">{quantity}</span>
-                        <button onClick={() => setQuantity((q) => q + 1)} className="h-8 w-8 rounded-full border border-[#E8E2D8] bg-white text-lg font-bold text-[#2D2D2D] hover:bg-[#F5F0EA]">+</button>
+                        <button onClick={() => setQuantity((q) => q + 1)} className="h-8 w-8 rounded-full border border-[#e2e8f0] bg-white text-lg font-bold text-[#1e1b4b] hover:bg-[#f1f5fb]">+</button>
                       </div>
-                      <span className="text-sm font-extrabold text-[#2D2D2D]">{formatPrice(b.price * quantity)}</span>
+                      <span className="text-sm font-extrabold text-[#1e1b4b]">{formatPrice(b.price * quantity)}</span>
                     </div>
                   )}
                 </div>);
 
             })}
             </div>
-            <p className="mt-3 text-xs text-[#8A8580]">Every bundle includes a sticker sheet and a handwritten letter card.</p>
+            <p className="mt-3 text-xs text-[#94a3b8]">Every bundle includes a sticker sheet and a handwritten letter card.</p>
           </Section>
 
           <Section title={`2. Select your strips (${totalSelected}/${bundleDef.strips})`} icon={Printer}>
             {totalSelected === bundleDef.strips ?
               <p className="mb-3 text-xs font-bold text-[#37b24d]">✓ Bundle complete — use − to remove a copy, or remove all to swap a strip.</p> :
-              <p className="mb-3 text-xs text-[#8A8580]">Tap a strip to add it — tap again for more copies. Use − to remove a copy.</p>}
+              <p className="mb-3 text-xs text-[#94a3b8]">Tap a strip to add it — tap again for more copies. Use − to remove a copy.</p>}
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
               {strips.map((s) => {
               const qty = selected[s.id] || 0;
               const disabled = !qty && totalSelected >= bundleDef.strips;
               return (
-                <button key={s.id} onClick={() => addStrip(s.id)} disabled={disabled} className={`relative rounded-xl border p-2 transition ${qty ? "border-[#e64980] bg-[#fff0f6]" : "border-[#E8E2D8] bg-white hover:border-[#e64980]"} disabled:cursor-not-allowed disabled:opacity-50`}>
+                <button key={s.id} onClick={() => addStrip(s.id)} disabled={disabled} className={`relative rounded-xl border p-2 transition ${qty ? "border-[#3a6cbf] bg-[#eaf2fd]" : "border-[#e2e8f0] bg-white hover:border-[#3a6cbf]"} disabled:cursor-not-allowed disabled:opacity-50`}>
                     <StripPreview template={templates[s.template_id]} photos={s.photo_urls} className="mx-auto w-full max-w-[100px]" />
                     {qty > 0 && <>
-                      <span onClick={(e) => {e.stopPropagation();decStrip(s.id);}} className="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full border border-[#e64980] bg-white text-[#e64980] hover:bg-[#fff0f6]"><Minus size={12} /></span>
-                      <span className="absolute right-1 top-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-[#e64980] px-1 text-xs font-bold text-white">×{qty}</span>
+                      <span onClick={(e) => {e.stopPropagation();decStrip(s.id);}} className="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full border border-[#3a6cbf] bg-white text-[#3a6cbf] hover:bg-[#eaf2fd]"><Minus size={12} /></span>
+                      <span className="absolute right-1 top-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-[#3a6cbf] px-1 text-xs font-bold text-white">×{qty}</span>
                     </>}
                   </button>);
 
@@ -175,7 +175,7 @@ export default function PrintShop() {
           <Section title="3. Paper type" icon={Printer}>
             <div className="flex gap-2">
               {["matte", "glossy"].map((p) =>
-            <button key={p} onClick={() => setPaper(p)} className={`rounded-full border px-4 py-2 text-sm font-bold capitalize transition ${paper === p ? "border-[#228be6] bg-[#e7f5ff] text-[#228be6]" : "border-[#E8E2D8] bg-white text-[#5C5953] hover:border-[#228be6]"}`}>{p}</button>
+            <button key={p} onClick={() => setPaper(p)} className={`rounded-full border px-4 py-2 text-sm font-bold capitalize transition ${paper === p ? "border-[#228be6] bg-[#e7f5ff] text-[#228be6]" : "border-[#e2e8f0] bg-white text-[#475569] hover:border-[#228be6]"}`}>{p}</button>
             )}
             </div>
           </Section>
@@ -190,15 +190,15 @@ export default function PrintShop() {
             </div>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               <div className="sm:col-span-2">
-                <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-[#8A8580]">Detailed Address</span>
+                <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-[#94a3b8]">Detailed Address</span>
                 <textarea value={ship.street} onChange={(e) => setShip({ ...ship, street: e.target.value })} rows={2} placeholder="House no., street, block, lot" className="input resize-none" />
               </div>
               <ShipField label="Postal Code" value={ship.postal} onChange={(v) => setShip({ ...ship, postal: v })} placeholder="Postal code" />
             </div>
-            <p className="mt-3 text-xs text-[#8A8580]">J&T Express (under 1kg): Manila ₱95 · Luzon ₱85 · Visayas ₱100 · Mindanao ₱105 · Island ₱115 · Free on orders {formatPrice(FREE_SHIP_THRESHOLD)}+</p>
+            <p className="mt-3 text-xs text-[#94a3b8]">J&T Express (under 1kg): Manila ₱95 · Luzon ₱85 · Visayas ₱100 · Mindanao ₱105 · Island ₱115 · Free on orders {formatPrice(FREE_SHIP_THRESHOLD)}+</p>
           </Section>
 
-          <div className="sticky bottom-3 z-10 mt-6 rounded-2xl border border-[#E8E2D8] bg-white p-4 shadow-sm">
+          <div className="sticky bottom-3 z-10 mt-6 rounded-2xl border border-[#e2e8f0] bg-white p-4 shadow-sm">
             <div className="space-y-1 text-sm">
               <Row label={`Bundle × ${quantity}`} value={formatPrice(pricing.subtotal)} />
               <Row label="Shipping" value={pricing.shipping == null ? "Select region" : pricing.shipping === 0 ? "FREE" : formatPrice(pricing.shipping)} />
@@ -206,7 +206,7 @@ export default function PrintShop() {
               <Row label="Total" value={formatPrice(pricing.total)} bold />
             </div>
             {error && <p className="mt-2 text-sm font-bold text-[#DC2626]">{error}</p>}
-            <button onClick={checkout} disabled={busy} className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-[#f06595] px-5 py-4 text-sm font-bold text-white transition hover:bg-[#e64980] disabled:bg-[#E8E2D8]">
+            <button onClick={checkout} disabled={busy} className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-[#5080da] px-5 py-4 text-sm font-bold text-white transition hover:bg-[#3a6cbf] disabled:bg-[#e2e8f0]">
               {busy ? <><Loader2 size={16} className="animate-spin" /> Preparing checkout…</> : <><Printer size={16} /> Checkout · {formatPrice(pricing.total)}</>}
             </button>
           </div>
@@ -219,7 +219,7 @@ export default function PrintShop() {
 function Section({ title, icon: Icon, children }) {
   return (
     <section className="mt-6">
-      <h2 className="mb-3 flex items-center gap-2 font-heading text-lg font-extrabold text-[#2D2D2D]"><Icon size={18} className="text-[#e64980]" /> {title}</h2>
+      <h2 className="mb-3 flex items-center gap-2 font-heading text-lg font-extrabold text-[#1e1b4b]"><Icon size={18} className="text-[#3a6cbf]" /> {title}</h2>
       {children}
     </section>);
 
@@ -228,8 +228,8 @@ function Section({ title, icon: Icon, children }) {
 function Row({ label, value, bold }) {
   return (
     <div className="flex items-center justify-between">
-      <span className={bold ? "font-bold text-[#2D2D2D]" : "text-[#5C5953]"}>{label}</span>
-      <span className={bold ? "font-heading text-lg font-extrabold text-[#e64980]" : "font-medium text-[#2D2D2D]"}>{value}</span>
+      <span className={bold ? "font-bold text-[#1e1b4b]" : "text-[#475569]"}>{label}</span>
+      <span className={bold ? "font-heading text-lg font-extrabold text-[#3a6cbf]" : "font-medium text-[#1e1b4b]"}>{value}</span>
     </div>);
 
 }
@@ -237,7 +237,7 @@ function Row({ label, value, bold }) {
 function ShipField({ label, value, onChange, placeholder, type = "text" }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-[#8A8580]">{label}</span>
+      <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-[#94a3b8]">{label}</span>
       <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="input" />
     </label>
   );

@@ -153,7 +153,7 @@ export default function Booth() {
     <div className="mx-auto max-w-4xl pb-32 md:pb-28">
       <div className="mb-6">
         {step > 1 && step < 4 &&
-        <button onClick={goBack} className="mb-4 flex items-center gap-1.5 text-sm font-bold text-[#2D2D2D] hover:text-[#228be6]">
+        <button onClick={goBack} className="mb-4 flex items-center gap-1.5 text-sm font-bold text-[#1e1b4b] hover:text-[#228be6]">
             <ArrowLeft size={16} />Back
           </button>
         }
@@ -164,15 +164,15 @@ export default function Booth() {
       {/* STEP 1 — Design */}
       {step === 1 &&
       <>
-          <h1 className="font-heading text-3xl font-extrabold text-[#2D2D2D]">Choose your design</h1>
+          <h1 className="font-heading text-3xl font-extrabold text-[#1e1b4b]">Choose your design</h1>
           
           {limitReached ?
-        <div className="relative isolate mt-7 overflow-hidden rounded-[18px] border border-dashed border-[#AEB0B5] bg-[#fff0f6] px-6 py-14 text-center">
+        <div className="relative isolate mt-7 overflow-hidden rounded-[18px] border border-dashed border-[#AEB0B5] bg-[#eaf2fd] px-6 py-14 text-center">
               <PolkaDots />
               <FaceDoodles variant="empty" />
               <p className="relative font-heading text-xl font-bold">You've used all 10 booth sessions this month</p>
               <p className="relative mt-1 text-sm text-[#8B8D93]">Continue creating memories anytime with the Lifetime Pass.</p>
-              <button onClick={() => setUpgradeOpen(true)} className="relative mt-5 inline-block rounded-full bg-[#f06595] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#e64980]">Get Lifetime Pass</button>
+              <button onClick={() => setUpgradeOpen(true)} className="relative mt-5 inline-block rounded-full bg-[#5080da] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#3a6cbf]">Get Lifetime Pass</button>
             </div> :
 
         <>
@@ -182,15 +182,15 @@ export default function Booth() {
             <TemplateCard key={t.id} template={t} selected={selected?.id === t.id} locked={!canUseTemplate(user, t)} onSelect={choose} />
             )}
                 {filteredTemplates.length === 0 &&
-            <p className="col-span-4 py-10 text-center text-sm text-[#8A8580]">No templates found.</p>
+            <p className="col-span-4 py-10 text-center text-sm text-[#94a3b8]">No templates found.</p>
             }
               </div>
             </>
         }
           <StickyAction>
             <div className="flex items-center justify-between gap-3">
-              <span className="text-xs text-[#8A8580]">{selected ? `${selected.name} selected` : "Choose a design"}</span>
-              <button disabled={!selected || limitReached} onClick={() => setStep(2)} className="rounded-full bg-[#f06595] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#e64980] disabled:bg-[#E8E2D8] disabled:text-[#8A8580]">Continue</button>
+              <span className="text-xs text-[#94a3b8]">{selected ? `${selected.name} selected` : "Choose a design"}</span>
+              <button disabled={!selected || limitReached} onClick={() => setStep(2)} className="rounded-full bg-[#5080da] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#3a6cbf] disabled:bg-[#e2e8f0] disabled:text-[#94a3b8]">Continue</button>
             </div>
           </StickyAction>
         </>
@@ -199,17 +199,17 @@ export default function Booth() {
       {/* STEP 2 — Mode */}
       {step === 2 &&
       <>
-          <h1 className="font-heading text-2xl font-extrabold text-[#2D2D2D]">How would you like to add your photos?</h1>
+          <h1 className="font-heading text-2xl font-extrabold text-[#1e1b4b]">How would you like to add your photos?</h1>
           <div className="mt-7 grid grid-cols-2 gap-4">
-            <button onClick={() => {setMode("camera");setStep(3);}} className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-[18px] border border-[#E8E2D8] bg-white p-8 text-center transition hover:border-[#228be6] hover:bg-[#e7f5ff]">
+            <button onClick={() => {setMode("camera");setStep(3);}} className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-[18px] border border-[#e2e8f0] bg-white p-8 text-center transition hover:border-[#228be6] hover:bg-[#e7f5ff]">
               <ModeCardDecor variant="camera" />
               <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-[#e7f5ff]"><Camera size={22} className="text-[#228be6]" /></div>
-              <div className="relative z-10"><b className="block text-sm text-[#2D2D2D]">Take Photos</b><small className="text-[#8A8580]">Use your camera</small></div>
+              <div className="relative z-10"><b className="block text-sm text-[#1e1b4b]">Take Photos</b><small className="text-[#94a3b8]">Use your camera</small></div>
             </button>
-            <button onClick={() => {setMode("upload");setStep(3);}} className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-[18px] border border-[#E8E2D8] bg-white p-8 text-center transition hover:border-[#228be6] hover:bg-[#e7f5ff]">
+            <button onClick={() => {setMode("upload");setStep(3);}} className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-[18px] border border-[#e2e8f0] bg-white p-8 text-center transition hover:border-[#228be6] hover:bg-[#e7f5ff]">
               <ModeCardDecor variant="upload" />
               <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-[#e7f5ff]"><ImageUp size={22} className="text-[#228be6]" /></div>
-              <div className="relative z-10"><b className="block text-sm text-[#2D2D2D]">Upload Photos</b><small className="text-[#8A8580]">Choose from gallery</small></div>
+              <div className="relative z-10"><b className="block text-sm text-[#1e1b4b]">Upload Photos</b><small className="text-[#94a3b8]">Choose from gallery</small></div>
             </button>
           </div>
         </>
@@ -218,28 +218,28 @@ export default function Booth() {
       {/* STEP 3 — Capture */}
       {step === 3 &&
       <>
-          <h1 className="mb-5 font-heading text-2xl font-extrabold text-[#2D2D2D]">{mode === "camera" ? "Ready when you are" : "Pick three photos"}</h1>
+          <h1 className="mb-5 font-heading text-2xl font-extrabold text-[#1e1b4b]">{mode === "camera" ? "Ready when you are" : "Pick three photos"}</h1>
           {mode === "camera" ?
         <CameraCapture ref={captureRef} selected={selected} photos={cameraPhotos} onPhotosChange={setCameraPhotos} filter={filter} onFilterChange={setFilter} onComplete={finish} onCapturingChange={setCapturing} /> :
 
         <div className="space-y-4">
               <div className="grid gap-4 lg:grid-cols-[1fr_220px]">
-                <div className="flex flex-col rounded-2xl border border-[#E8E2D8] bg-white p-4">
-                  <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#8A8580]">Live Preview</p>
+                <div className="flex flex-col rounded-2xl border border-[#e2e8f0] bg-white p-4">
+                  <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#94a3b8]">Live Preview</p>
                   <button
                 type="button"
                 onClick={() => {if (uploadPhotos.length < 3) fileInput.current.click();}}
                 className="flex w-full flex-1 min-h-[200px] flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#228be6] bg-[#e7f5ff] text-center transition hover:border-[#228be6]">
                 
                     <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#228be6]"><ImageUp size={24} /></span>
-                    <span className="mt-4 block font-bold text-[#2D2D2D]">Tap to choose a photo</span>
-                    <span className="mt-1 block text-sm text-[#8A8580]">or drag and drop here</span>
+                    <span className="mt-4 block font-bold text-[#1e1b4b]">Tap to choose a photo</span>
+                    <span className="mt-1 block text-sm text-[#94a3b8]">or drag and drop here</span>
                     <span className="mt-3 block text-xs font-bold text-[#228be6]">{uploadPhotos.length} / 3 uploaded</span>
                   </button>
                   <input ref={fileInput} className="hidden" type="file" accept="image/*" multiple onChange={(e) => addFiles(e.target.files)} />
                   <div className="mt-4 flex gap-2">
                     {[0, 1, 2].map((i) =>
-                <div key={i} className={`relative h-16 w-16 overflow-hidden rounded-lg border-2 ${i < uploadPhotos.length ? "border-[#228be6]" : "border-dashed border-[#E8E2D8]"} bg-[#F5F0EA]`}>
+                <div key={i} className={`relative h-16 w-16 overflow-hidden rounded-lg border-2 ${i < uploadPhotos.length ? "border-[#228be6]" : "border-dashed border-[#e2e8f0]"} bg-[#f1f5fb]`}>
                     {uploadPhotos[i] &&
                   <>
                             <img src={photos[i]} alt="" className="h-full w-full object-cover" style={{ filter: uploadFilterCss }} />
@@ -250,8 +250,8 @@ export default function Booth() {
                 )}
                   </div>
                 </div>
-                <div className="mx-auto w-full max-w-[180px] flex flex-col rounded-2xl border border-[#E8E2D8] bg-white p-4 lg:max-w-none">
-                  <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#8A8580]">Your Strip</p>
+                <div className="mx-auto w-full max-w-[180px] flex flex-col rounded-2xl border border-[#e2e8f0] bg-white p-4 lg:max-w-none">
+                  <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#94a3b8]">Your Strip</p>
                   <StripPreview template={selected} photos={uploadPhotos} imgFilter={uploadFilterCss} />
                 </div>
               </div>
@@ -260,17 +260,17 @@ export default function Booth() {
         }
           <StickyAction>
             <div className="flex items-center justify-between gap-3">
-              <span className="text-xs text-[#5C5953]">
+              <span className="text-xs text-[#475569]">
                 {mode === "camera" ?
               (capturing ? "Capturing your photos…" : (saving || photos.length >= 3) ? "Developing your strip…" : <>Ready to start — take <span className="font-bold text-[#228be6]">3 photos</span></>) :
               (photos.length < 3 ? <>Upload <span className="font-bold text-[#228be6]">3 photos</span> from your device</> : "All 3 photos ready!")}
               </span>
               {mode === "camera" ?
-            <button disabled={capturing || saving || photos.length >= 3} onClick={() => captureRef.current?.capture()} className="flex items-center gap-2 rounded-full bg-[#f06595] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#e64980] disabled:bg-[#E8E2D8] disabled:text-[#8A8580]">
+            <button disabled={capturing || saving || photos.length >= 3} onClick={() => captureRef.current?.capture()} className="flex items-center gap-2 rounded-full bg-[#5080da] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#3a6cbf] disabled:bg-[#e2e8f0] disabled:text-[#94a3b8]">
                     <Camera size={16} />{capturing ? "Capturing…" : (saving || photos.length >= 3) ? "Developing…" : "Start"}
                   </button> :
 
-            <button disabled={photos.length !== 3 || saving} onClick={finish} className="rounded-full bg-[#f06595] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#e64980] disabled:bg-[#E8E2D8] disabled:text-[#8A8580]">
+            <button disabled={photos.length !== 3 || saving} onClick={finish} className="rounded-full bg-[#5080da] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#3a6cbf] disabled:bg-[#e2e8f0] disabled:text-[#94a3b8]">
                   {saving ? "Making your strip…" : "Continue"}
                 </button>}
             </div>
@@ -286,7 +286,7 @@ export default function Booth() {
       {/* STEP 5 — Download */}
       {step === 5 &&
       <div className="mx-auto max-w-sm text-center">
-          <div className="animate-pop relative isolate mt-4 overflow-hidden rounded-[18px] bg-[#f06595] p-6 text-white">
+          <div className="animate-pop relative isolate mt-4 overflow-hidden rounded-[18px] bg-[#5080da] p-6 text-white">
             <HeroFaceScatter />
             <div className="mx-auto w-[180px]">
               <StripPreview template={selected} photos={finalPhotos} />
@@ -296,7 +296,7 @@ export default function Booth() {
           <p className="mt-2 text-sm text-white/85">Your oldest strip was replaced — download it to keep it.</p>
           }
             <div className="mt-6 space-y-3">
-              <button onClick={download} className="flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-4 text-sm font-bold text-[#e64980] transition hover:bg-white/90">
+              <button onClick={download} className="flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-4 text-sm font-bold text-[#3a6cbf] transition hover:bg-white/90">
                 <Download size={16} />Download Strip
               </button>
               <button onClick={async () => { try { setSharing(true); await shareToInstagram(selected, finalPhotos); } finally { setSharing(false); } }} disabled={sharing} className="flex w-full items-center justify-center gap-2 rounded-full border border-white px-5 py-3 text-sm font-bold text-white transition hover:bg-white/10 disabled:opacity-60">

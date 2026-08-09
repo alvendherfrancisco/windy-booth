@@ -21,7 +21,7 @@ const VARIANTS = {
     ],
   },
   empty: {
-    tone: "text-[#e64980]",
+    tone: "text-[#3a6cbf]",
     opacity: 0.32,
     faces: [
       { face: 1, top: "6%", left: "6%", size: 46, rotate: -12 },
@@ -31,7 +31,7 @@ const VARIANTS = {
     ],
   },
   success: {
-    tone: "text-[#e64980]",
+    tone: "text-[#3a6cbf]",
     opacity: 0.32,
     faces: [
       { face: 0, top: "6%", left: "6%", size: 46, rotate: -10 },

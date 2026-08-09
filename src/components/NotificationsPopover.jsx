@@ -9,7 +9,7 @@ const SYSTEM_TYPES = ["order_update", "payment", "subscription", "usage_limit", 
 function RowAvatar({ item, user }) {
   if (SYSTEM_TYPES.includes(item.type)) {
     return (
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f06595]">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#5080da]">
         <Flower2 size={16} className="text-white" />
       </div>
     );
@@ -55,7 +55,7 @@ export default function NotificationsPopover({ open, onClose, notifs, onToggleRe
         }`}
       >
         <div className="flex items-center justify-between px-4 py-3">
-          <p className="font-heading text-base font-extrabold text-[#2D2D2D]">Notifications</p>
+          <p className="font-heading text-base font-extrabold text-[#1e1b4b]">Notifications</p>
           {hasUnread && (
             <button onClick={onMarkAll} className="text-xs font-medium text-[#8B8D93] hover:text-[#228be6]">
               Mark all as read
@@ -73,21 +73,21 @@ export default function NotificationsPopover({ open, onClose, notifs, onToggleRe
                 >
                   <RowAvatar item={item} user={user} />
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium leading-snug text-[#2D2D2D]">{item.message}</p>
+                    <p className="text-sm font-medium leading-snug text-[#1e1b4b]">{item.message}</p>
                     <p className="mt-1 text-xs text-[#9AA0A6]">
                       {format(new Date(item.created_at), "h:mm a, MMM d, yyyy")}
                     </p>
                   </div>
                   <div className="absolute right-3.5 top-1/2 h-7 w-7 -translate-y-1/2">
                     {!item.read && (
-                      <span className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f06595] transition-opacity group-hover:opacity-0" />
+                      <span className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#5080da] transition-opacity group-hover:opacity-0" />
                     )}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         onToggleRead(item);
                       }}
-                      className="group/btn absolute inset-0 flex items-center justify-center rounded-lg border border-[#E8E2D8] bg-white opacity-0 transition-opacity duration-150 hover:border-[#D8D9DC] hover:bg-[#F5F0EA] group-hover:opacity-100"
+                      className="group/btn absolute inset-0 flex items-center justify-center rounded-lg border border-[#e2e8f0] bg-white opacity-0 transition-opacity duration-150 hover:border-[#D8D9DC] hover:bg-[#f1f5fb] group-hover:opacity-100"
                     >
                       {item.read ? (
                         <Bell size={14} className="text-[#228be6]" />

@@ -59,7 +59,7 @@ export default function LocationSelects({ value, onChange }) {
         </select>
       </Field>
       <Field label="City / Municipality" loading={loading === "cities"}>
-        <select value={value.cityCode || ""} onChange={(e) => pickCity(e.target.value)} disabled={!value.regionCode} className="input disabled:bg-[#F5F0EA]">
+        <select value={value.cityCode || ""} onChange={(e) => pickCity(e.target.value)} disabled={!value.regionCode} className="input disabled:bg-[#f1f5fb]">
           <option value="">Select city…</option>
           {cities.map((c) => (
             <option key={c.code} value={c.code}>{c.province ? `${c.province} - ${c.name}` : c.name}</option>
@@ -67,7 +67,7 @@ export default function LocationSelects({ value, onChange }) {
         </select>
       </Field>
       <Field label="Barangay" loading={loading === "barangays"}>
-        <select value={value.barangayCode || ""} onChange={(e) => pickBarangay(e.target.value)} disabled={!value.cityCode} className="input disabled:bg-[#F5F0EA]">
+        <select value={value.barangayCode || ""} onChange={(e) => pickBarangay(e.target.value)} disabled={!value.cityCode} className="input disabled:bg-[#f1f5fb]">
           <option value="">Select barangay…</option>
           {barangays.map((b) => <option key={b.code} value={b.code}>{b.name}</option>)}
         </select>
@@ -79,8 +79,8 @@ export default function LocationSelects({ value, onChange }) {
 function Field({ label, loading, children }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-[#8A8580]">
-        {label} {loading && <span className="text-[10px] font-medium text-[#8A8580]">loading…</span>}
+      <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-[#94a3b8]">
+        {label} {loading && <span className="text-[10px] font-medium text-[#94a3b8]">loading…</span>}
       </span>
       {children}
     </label>

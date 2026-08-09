@@ -92,23 +92,23 @@ export default function Admin() {
   const printOn = printSetting ? printSetting.value !== false : true;
 
   return (
-    <div className="min-h-screen bg-[#F7F5F1] text-[#2D2D2D]">
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-[#E8E2D8] bg-white px-4 py-3">
+    <div className="min-h-screen bg-[#F7F5F1] text-[#1e1b4b]">
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-[#e2e8f0] bg-white px-4 py-3">
         <div className="flex items-center gap-2">
-          <span className="font-heading text-lg font-extrabold text-[#e64980]">Admin</span>
+          <span className="font-heading text-lg font-extrabold text-[#3a6cbf]">Admin</span>
           
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={togglePrint} className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ${printOn ? "bg-[#37b24d] text-white" : "border border-[#E8E2D8] bg-white text-[#2D2D2D] hover:bg-[#F5F0EA]"}`}>
+          <button onClick={togglePrint} className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ${printOn ? "bg-[#37b24d] text-white" : "border border-[#e2e8f0] bg-white text-[#1e1b4b] hover:bg-[#f1f5fb]"}`}>
             <Printer size={14} /> Print &amp; Orders: {printOn ? "On" : "Off"}
           </button>
-          <button onClick={refresh} className="inline-flex items-center gap-1.5 rounded-full border border-[#E8E2D8] px-3 py-1.5 text-xs font-bold text-[#2D2D2D] hover:bg-[#F5F0EA]">
+          <button onClick={refresh} className="inline-flex items-center gap-1.5 rounded-full border border-[#e2e8f0] px-3 py-1.5 text-xs font-bold text-[#1e1b4b] hover:bg-[#f1f5fb]">
             <RefreshCw size={14} /> Refresh
           </button>
-          <Link to="/dashboard" className="inline-flex items-center gap-1.5 rounded-full border border-[#E8E2D8] px-3 py-1.5 text-xs font-bold text-[#2D2D2D] hover:bg-[#F5F0EA]">
+          <Link to="/dashboard" className="inline-flex items-center gap-1.5 rounded-full border border-[#e2e8f0] px-3 py-1.5 text-xs font-bold text-[#1e1b4b] hover:bg-[#f1f5fb]">
             <ArrowLeft size={14} /> Back to app
           </Link>
-          <button onClick={() => base44.auth.logout("/login")} className="inline-flex items-center gap-1.5 rounded-full border border-[#E8E2D8] px-3 py-1.5 text-xs font-bold text-[#2D2D2D] hover:bg-[#F5F0EA]">
+          <button onClick={() => base44.auth.logout("/login")} className="inline-flex items-center gap-1.5 rounded-full border border-[#e2e8f0] px-3 py-1.5 text-xs font-bold text-[#1e1b4b] hover:bg-[#f1f5fb]">
             <LogOut size={14} /> Log out
           </button>
         </div>
@@ -124,7 +124,7 @@ export default function Admin() {
                 <button
                   key={n.key}
                   onClick={() => setSection(n.key)}
-                  className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-4 py-2.5 text-sm font-bold md:w-full ${active ? "bg-[#e64980] text-white" : "border border-[#E8E2D8] bg-white text-[#2D2D2D] hover:bg-[#F5F0EA]"}`}>
+                  className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-4 py-2.5 text-sm font-bold md:w-full ${active ? "bg-[#3a6cbf] text-white" : "border border-[#e2e8f0] bg-white text-[#1e1b4b] hover:bg-[#f1f5fb]"}`}>
                   
                   <Icon size={16} /> {n.label}
                 </button>);
@@ -136,10 +136,10 @@ export default function Admin() {
         <main className="min-w-0 flex-1">
           {loading ?
           <div className="flex h-64 items-center justify-center">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#E8E2D8] border-t-[#e64980]" />
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#e2e8f0] border-t-[#3a6cbf]" />
             </div> :
           error ?
-          <div className="rounded-xl border border-[#E8E2D8] bg-white p-6 text-sm text-[#8A8580]">{error}</div> :
+          <div className="rounded-xl border border-[#e2e8f0] bg-white p-6 text-sm text-[#94a3b8]">{error}</div> :
           section === "overview" ?
           <AdminOverview users={users} strips={strips} orders={orders} billing={billing} templates={templates} /> :
           section === "templates" ?

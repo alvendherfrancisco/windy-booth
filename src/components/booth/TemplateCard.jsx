@@ -8,8 +8,8 @@ export default function TemplateCard({ template, selected, onSelect, locked }) {
       onClick={() => onSelect(template)}
       className={`relative rounded-[18px] border p-2 text-left transition ${
         selected
-          ? "border-[#f06595] bg-[#ffdeeb] ring-1 ring-[#f06595]"
-          : "border-[#E8E2D8] bg-white"
+          ? "border-[#5080da] bg-[#e3edfb] ring-1 ring-[#5080da]"
+          : "border-[#e2e8f0] bg-white"
       }`}
     >
       {template.thumbnail_url ? (
@@ -23,11 +23,11 @@ export default function TemplateCard({ template, selected, onSelect, locked }) {
       )}
       <div className="mt-3 flex items-center justify-between px-1">
         <span>
-          <b className="block text-sm text-[#2D2D2D]">{template.name}</b>
-          <small className="text-[#8A8580]">{template.code}</small>
+          <b className="block text-sm text-[#1e1b4b]">{template.name}</b>
+          <small className="text-[#94a3b8]">{template.code}</small>
         </span>
         {locked && (
-          <span className="rounded-full bg-[#2D2D2D] p-1.5 text-white">
+          <span className="rounded-full bg-[#1e1b4b] p-1.5 text-white">
             <LockKeyhole size={12} />
           </span>
         )}

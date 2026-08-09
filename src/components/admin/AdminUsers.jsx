@@ -67,8 +67,8 @@ export default function AdminUsers({ users, strips, templates, meId, onChanged }
   };
 
   const TH = ({ k, children }) => (
-    <th className="px-3 py-2 text-left text-xs font-bold uppercase tracking-wider text-[#8A8580]">
-      <button onClick={() => toggleSort(k)} className="inline-flex items-center gap-1 hover:text-[#2D2D2D]">
+    <th className="px-3 py-2 text-left text-xs font-bold uppercase tracking-wider text-[#94a3b8]">
+      <button onClick={() => toggleSort(k)} className="inline-flex items-center gap-1 hover:text-[#1e1b4b]">
         {children}
         {sort.key === k && (sort.dir === "asc" ? <ChevronUp size={12} /> : <ChevronDown size={12} />)}
       </button>
@@ -80,16 +80,16 @@ export default function AdminUsers({ users, strips, templates, meId, onChanged }
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="font-heading text-xl font-extrabold">Users <span className="text-sm font-medium text-[#8A8580]">({users.length})</span></h2>
+        <h2 className="font-heading text-xl font-extrabold">Users <span className="text-sm font-medium text-[#94a3b8]">({users.length})</span></h2>
         <div className="relative">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8A8580]" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name or email" className="w-64 max-w-[60vw] rounded-full border border-[#E8E2D8] bg-white py-2 pl-9 pr-3 text-sm outline-none focus:border-[#228be6]" />
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94a3b8]" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name or email" className="w-64 max-w-[60vw] rounded-full border border-[#e2e8f0] bg-white py-2 pl-9 pr-3 text-sm outline-none focus:border-[#228be6]" />
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-[#E8E2D8] bg-white">
+      <div className="overflow-x-auto rounded-2xl border border-[#e2e8f0] bg-white">
         <table className="w-full text-sm">
-          <thead className="border-b border-[#E8E2D8] bg-[#FBFAF7]">
+          <thead className="border-b border-[#e2e8f0] bg-[#FBFAF7]">
             <tr>
               <TH k="full_name">Name</TH>
               <TH k="email">Email</TH>
@@ -97,7 +97,7 @@ export default function AdminUsers({ users, strips, templates, meId, onChanged }
               <TH k="plan">Plan</TH>
               <TH k="strips">Strips</TH>
               <TH k="lastActive">Last active</TH>
-              <th className="px-3 py-2 text-right text-xs font-bold uppercase tracking-wider text-[#8A8580]">Actions</th>
+              <th className="px-3 py-2 text-right text-xs font-bold uppercase tracking-wider text-[#94a3b8]">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -106,15 +106,15 @@ export default function AdminUsers({ users, strips, templates, meId, onChanged }
               return (
                 <tr key={u.id} className="border-b border-[#F0EBE2] last:border-0 hover:bg-[#FBFAF7]">
                   <td className="px-3 py-2.5 font-medium">{u.full_name || "—"}</td>
-                  <td className="px-3 py-2.5 text-[#5C5953]">{u.email}</td>
-                  <td className="px-3 py-2.5 text-[#5C5953]">{fmtDate(u.created_date)}</td>
+                  <td className="px-3 py-2.5 text-[#475569]">{u.email}</td>
+                  <td className="px-3 py-2.5 text-[#475569]">{fmtDate(u.created_date)}</td>
                   <td className="px-3 py-2.5">
-                    <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${u.plan === "premium" ? "bg-[#fff0f6] text-[#e64980]" : "bg-[#e7f5ff] text-[#228be6]"}`}>
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${u.plan === "premium" ? "bg-[#eaf2fd] text-[#3a6cbf]" : "bg-[#e7f5ff] text-[#228be6]"}`}>
                       {u.plan === "premium" ? "Premium" : "Free"}
                     </span>
                   </td>
-                  <td className="px-3 py-2.5 text-[#5C5953]">{stripCount[u.id] || 0}</td>
-                  <td className="px-3 py-2.5 text-[#5C5953]">{lastActive[u.id] ? fmtDate(lastActive[u.id]) : fmtDate(u.created_date)}</td>
+                  <td className="px-3 py-2.5 text-[#475569]">{stripCount[u.id] || 0}</td>
+                  <td className="px-3 py-2.5 text-[#475569]">{lastActive[u.id] ? fmtDate(lastActive[u.id]) : fmtDate(u.created_date)}</td>
                   <td className="px-3 py-2.5">
                     <div className="flex items-center justify-end gap-1.5">
                       <button onClick={() => setView(u)} className="rounded-full p-1.5 text-[#228be6] hover:bg-[#e7f5ff]" title="View details"><Eye size={15} /></button>
@@ -122,7 +122,7 @@ export default function AdminUsers({ users, strips, templates, meId, onChanged }
                         value={u.plan || "free"}
                         disabled={busy === u.id || isMe}
                         onChange={(e) => setPlan(u, e.target.value)}
-                        className="rounded-full border border-[#E8E2D8] bg-white px-2 py-1 text-xs font-bold outline-none disabled:opacity-50"
+                        className="rounded-full border border-[#e2e8f0] bg-white px-2 py-1 text-xs font-bold outline-none disabled:opacity-50"
                         title={isMe ? "You can't change your own plan here" : "Change plan"}
                       >
                         <option value="free">Free</option>
@@ -134,7 +134,7 @@ export default function AdminUsers({ users, strips, templates, meId, onChanged }
                 </tr>
               );
             })}
-            {rows.length === 0 && <tr><td colSpan={7} className="px-3 py-10 text-center text-sm text-[#8A8580]">No users found.</td></tr>}
+            {rows.length === 0 && <tr><td colSpan={7} className="px-3 py-10 text-center text-sm text-[#94a3b8]">No users found.</td></tr>}
           </tbody>
         </table>
       </div>
@@ -155,15 +155,15 @@ export default function AdminUsers({ users, strips, templates, meId, onChanged }
                 <Info label="Role" value={view.role || "user"} />
               </div>
               <div>
-                <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#8A8580]">Saved strips</p>
+                <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8]">Saved strips</p>
                 {userStrips.length === 0 ? (
-                  <p className="text-[#8A8580]">No strips yet.</p>
+                  <p className="text-[#94a3b8]">No strips yet.</p>
                 ) : (
                   <div className="flex flex-wrap gap-3">
                     {userStrips.map((s) => (
                       <div key={s.id} className="w-20">
                         <StripPreview template={templates[s.template_id]} photos={s.photo_urls} className="w-20" />
-                        <p className="mt-1 text-center text-[10px] text-[#8A8580]">{fmtDate(s.created_at)}</p>
+                        <p className="mt-1 text-center text-[10px] text-[#94a3b8]">{fmtDate(s.created_at)}</p>
                       </div>
                     ))}
                   </div>
@@ -182,8 +182,8 @@ export default function AdminUsers({ users, strips, templates, meId, onChanged }
 
 function Info({ label, value }) {
   return (
-    <div className="rounded-lg border border-[#E8E2D8] bg-[#FBFAF7] px-3 py-2">
-      <p className="text-xs font-bold uppercase tracking-wider text-[#8A8580]">{label}</p>
+    <div className="rounded-lg border border-[#e2e8f0] bg-[#FBFAF7] px-3 py-2">
+      <p className="text-xs font-bold uppercase tracking-wider text-[#94a3b8]">{label}</p>
       <p className="truncate font-medium">{value}</p>
     </div>
   );

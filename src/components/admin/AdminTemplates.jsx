@@ -83,13 +83,13 @@ export default function AdminTemplates({ templates, onChanged }) {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="font-heading text-xl font-extrabold">Templates <span className="text-sm font-medium text-[#8A8580]">({list.length})</span></h2>
+        <h2 className="font-heading text-xl font-extrabold">Templates <span className="text-sm font-medium text-[#94a3b8]">({list.length})</span></h2>
         <div className="flex items-center gap-2">
           <div className="relative">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8A8580]" />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name or code" className="w-56 max-w-[50vw] rounded-full border border-[#E8E2D8] bg-white py-2 pl-9 pr-3 text-sm outline-none focus:border-[#228be6]" />
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94a3b8]" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name or code" className="w-56 max-w-[50vw] rounded-full border border-[#e2e8f0] bg-white py-2 pl-9 pr-3 text-sm outline-none focus:border-[#228be6]" />
           </div>
-          <button onClick={openNew} className="inline-flex items-center gap-1.5 rounded-full bg-[#e64980] px-4 py-2 text-sm font-bold text-white hover:bg-[#d04072]">
+          <button onClick={openNew} className="inline-flex items-center gap-1.5 rounded-full bg-[#3a6cbf] px-4 py-2 text-sm font-bold text-white hover:bg-[#d04072]">
             <Plus size={15} /> New template
           </button>
         </div>
@@ -99,38 +99,38 @@ export default function AdminTemplates({ templates, onChanged }) {
 
       <div className="flex gap-2 overflow-x-auto pb-1">
         {cats.map((c) => (
-          <button key={c} onClick={() => setCat(c)} className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-bold capitalize transition ${cat === c ? "border-[#e64980] bg-[#fff0f6] text-[#e64980]" : "border-[#E8E2D8] bg-white text-[#5C5953] hover:border-[#e64980]"}`}>
+          <button key={c} onClick={() => setCat(c)} className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-bold capitalize transition ${cat === c ? "border-[#3a6cbf] bg-[#eaf2fd] text-[#3a6cbf]" : "border-[#e2e8f0] bg-white text-[#475569] hover:border-[#3a6cbf]"}`}>
             {c}
           </button>
         ))}
       </div>
 
       {rows.length === 0 ? (
-        <p className="rounded-2xl border border-[#E8E2D8] bg-white p-10 text-center text-sm text-[#8A8580]">No templates found.</p>
+        <p className="rounded-2xl border border-[#e2e8f0] bg-white p-10 text-center text-sm text-[#94a3b8]">No templates found.</p>
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {rows.map((t) => (
-            <div key={t.id} className="flex flex-col rounded-2xl border border-[#E8E2D8] bg-white p-3">
+            <div key={t.id} className="flex flex-col rounded-2xl border border-[#e2e8f0] bg-white p-3">
               <div className="mx-auto w-full max-w-[120px]">
                 <StripPreview template={t} photos={[]} />
               </div>
               <div className="mt-2 flex-1 text-xs">
                 <div className="flex items-center justify-between gap-1">
-                  <p className="truncate font-bold text-[#2D2D2D]">{t.name}</p>
+                  <p className="truncate font-bold text-[#1e1b4b]">{t.name}</p>
                   <button onClick={() => toggleActive(t)} title={t.active ? "Active" : "Hidden"} className="shrink-0 text-[#37b24d]">
-                    {t.active ? <CheckCircle2 size={15} /> : <Circle size={15} className="text-[#8A8580]" />}
+                    {t.active ? <CheckCircle2 size={15} /> : <Circle size={15} className="text-[#94a3b8]" />}
                   </button>
                 </div>
-                <p className="truncate text-[#8A8580]">{t.code}</p>
+                <p className="truncate text-[#94a3b8]">{t.code}</p>
                 <div className="mt-1.5 flex flex-wrap gap-1">
-                  <span className="rounded-full bg-[#F5F0EA] px-2 py-0.5 text-[10px] font-bold capitalize text-[#5C5953]">{t.category || "—"}</span>
-                  <button onClick={() => toggleTier(t)} className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${t.tier === "premium" ? "bg-[#fff0f6] text-[#e64980]" : "bg-[#e7f5ff] text-[#228be6]"}`}>
+                  <span className="rounded-full bg-[#f1f5fb] px-2 py-0.5 text-[10px] font-bold capitalize text-[#475569]">{t.category || "—"}</span>
+                  <button onClick={() => toggleTier(t)} className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${t.tier === "premium" ? "bg-[#eaf2fd] text-[#3a6cbf]" : "bg-[#e7f5ff] text-[#228be6]"}`}>
                     <Star size={10} className="mr-0.5 inline" />{t.tier}
                   </button>
                 </div>
               </div>
               <div className="mt-2 flex items-center gap-1.5">
-                <button onClick={() => openEdit(t)} className="flex-1 rounded-full border border-[#E8E2D8] px-2 py-1.5 text-xs font-bold text-[#228be6] hover:bg-[#e7f5ff]"><Pencil size={12} className="mr-1 inline" />Edit</button>
+                <button onClick={() => openEdit(t)} className="flex-1 rounded-full border border-[#e2e8f0] px-2 py-1.5 text-xs font-bold text-[#228be6] hover:bg-[#e7f5ff]"><Pencil size={12} className="mr-1 inline" />Edit</button>
                 <button onClick={() => del(t)} disabled={delBusy === t.id} className="rounded-full bg-[#ffe3e3] p-1.5 text-[#DC2626] hover:bg-[#ffcccc] disabled:opacity-50"><Trash2 size={13} /></button>
               </div>
             </div>
@@ -168,7 +168,7 @@ export default function AdminTemplates({ templates, onChanged }) {
                 <input type="date" value={form.released_at} onChange={(e) => setForm({ ...form, released_at: e.target.value })} className="input" />
               </Field>
               <Field label="Active">
-                <button type="button" onClick={() => setForm({ ...form, active: !form.active })} className={`input flex items-center justify-center font-bold ${form.active ? "text-[#37b24d]" : "text-[#8A8580]"}`}>
+                <button type="button" onClick={() => setForm({ ...form, active: !form.active })} className={`input flex items-center justify-center font-bold ${form.active ? "text-[#37b24d]" : "text-[#94a3b8]"}`}>
                   {form.active ? "Active" : "Hidden"}
                 </button>
               </Field>
@@ -182,8 +182,8 @@ export default function AdminTemplates({ templates, onChanged }) {
             <input ref={thumbRef} type="file" accept="image/*" className="hidden" onChange={(e) => doUpload("thumb", e.target.files?.[0])} />
 
             <div className="flex justify-end gap-2 pt-1">
-              <button onClick={() => setOpen(false)} className="rounded-full border border-[#E8E2D8] px-4 py-2 text-sm font-bold text-[#5C5953] hover:bg-[#F5F0EA]">Cancel</button>
-              <button onClick={save} disabled={busy || !form.name.trim() || !form.code.trim() || !form.canvas_asset_url} className="rounded-full bg-[#e64980] px-5 py-2 text-sm font-bold text-white hover:bg-[#d04072] disabled:bg-[#E8E2D8] disabled:text-[#8A8580]">
+              <button onClick={() => setOpen(false)} className="rounded-full border border-[#e2e8f0] px-4 py-2 text-sm font-bold text-[#475569] hover:bg-[#f1f5fb]">Cancel</button>
+              <button onClick={save} disabled={busy || !form.name.trim() || !form.code.trim() || !form.canvas_asset_url} className="rounded-full bg-[#3a6cbf] px-5 py-2 text-sm font-bold text-white hover:bg-[#d04072] disabled:bg-[#e2e8f0] disabled:text-[#94a3b8]">
                 {busy ? "Saving…" : editing ? "Save changes" : "Create template"}
               </button>
             </div>
@@ -197,7 +197,7 @@ export default function AdminTemplates({ templates, onChanged }) {
 function Field({ label, children }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-[#8A8580]">{label}</span>
+      <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-[#94a3b8]">{label}</span>
       {children}
     </label>
   );
@@ -206,10 +206,10 @@ function Field({ label, children }) {
 function UploadBox({ label, hint, url, loading, onPick }) {
   return (
     <div>
-      <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-[#8A8580]">{label}</span>
-      <button type="button" onClick={onPick} className="flex w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#E8E2D8] bg-[#FBFAF7] p-3 text-center hover:border-[#e64980]">
+      <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-[#94a3b8]">{label}</span>
+      <button type="button" onClick={onPick} className="flex w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#e2e8f0] bg-[#FBFAF7] p-3 text-center hover:border-[#3a6cbf]">
         {loading ? (
-          <span className="text-xs font-bold text-[#8A8580]">Uploading…</span>
+          <span className="text-xs font-bold text-[#94a3b8]">Uploading…</span>
         ) : url ? (
           <span className="w-full">
             <StripPreview template={{ thumbnail_url: url }} photos={[]} />
@@ -217,9 +217,9 @@ function UploadBox({ label, hint, url, loading, onPick }) {
           </span>
         ) : (
           <>
-            <Upload size={20} className="text-[#8A8580]" />
-            <span className="mt-1 text-xs font-bold text-[#5C5953]">Click to upload</span>
-            <span className="text-[10px] text-[#8A8580]">{hint}</span>
+            <Upload size={20} className="text-[#94a3b8]" />
+            <span className="mt-1 text-xs font-bold text-[#475569]">Click to upload</span>
+            <span className="text-[10px] text-[#94a3b8]">{hint}</span>
           </>
         )}
       </button>
