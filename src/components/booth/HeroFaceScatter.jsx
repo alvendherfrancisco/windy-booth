@@ -25,10 +25,10 @@ const SCATTER = [
 // confined to a safe strip on the right edge, clear of all text and the
 // "Begin" button (bottom-left).
 const MOBILE_SCATTER = [
-  { face: 6, left: "78%", top: "10%", rotate: -4 },
-  { face: 2, left: "95%", top: "34%", rotate: 6 },
-  { face: 8, left: "80%", top: "58%", rotate: -8 },
-  { face: 3, left: "96%", top: "86%", rotate: 10 },
+  { face: 6, left: "89%", top: "9%", rotate: -4 },
+  { face: 2, left: "91%", top: "50%", rotate: 6 },
+  { face: 8, left: "72%", top: "74%", rotate: -8 },
+  { face: 3, left: "95%", top: "92%", rotate: 10 },
 ];
 
 export default function HeroFaceScatter() {
@@ -58,8 +58,8 @@ export default function HeroFaceScatter() {
             style={{
               left: p.left,
               top: p.top,
-              width: 56,
-              height: 56,
+              width: 44,
+              height: 44,
               transform: `translate(-50%, -50%) rotate(${p.rotate}deg)`,
             }}
             dangerouslySetInnerHTML={{ __html: FACE_SVG[p.face] }}

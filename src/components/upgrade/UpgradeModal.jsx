@@ -6,9 +6,8 @@ import PaymentStep from "@/components/upgrade/PaymentStep";
 
 const INCLUDED = [
 "Unlimited booth sessions",
-"All current artist-designed collections",
-"All future collections",
-"Unlimited saved photo strips",
+"All current photo strip collections",
+"All future collection drops",
 "Lifetime access"];
 
 

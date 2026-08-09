@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import { Bell, Check, Flower2 } from "lucide-react";
+import { Bell, Check, Flower2, X } from "lucide-react";
 import UserAvatar from "@/components/UserAvatar";
 
 const SYSTEM_TYPES = ["order_update", "payment", "subscription", "usage_limit", "storage_expiry", "storage_eviction"];
@@ -56,11 +56,16 @@ export default function NotificationsPopover({ open, onClose, notifs, onToggleRe
       >
         <div className="flex items-center justify-between px-4 py-3">
           <p className="font-heading text-base font-extrabold text-[#1e1b4b]">Notifications</p>
-          {hasUnread && (
-            <button onClick={onMarkAll} className="text-xs font-medium text-[#8B8D93] hover:text-[#228be6]">
-              Mark all as read
+          <div className="flex items-center gap-3">
+            {hasUnread && (
+              <button onClick={onMarkAll} className="text-xs font-medium text-[#8B8D93] hover:text-[#228be6]">
+                Mark all as read
+              </button>
+            )}
+            <button onClick={onClose} className="flex h-7 w-7 items-center justify-center rounded-full text-[#8B8D93] hover:bg-[#f1f5fb] hover:text-[#1e1b4b]" aria-label="Close notifications">
+              <X size={16} />
             </button>
-          )}
+          </div>
         </div>
         <div className="border-b border-[#EEEBE4]" />
         <div className="notifications-scroll max-h-[60vh] overflow-y-auto">
