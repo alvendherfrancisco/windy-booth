@@ -20,7 +20,7 @@ import HeroFaceScatter from "@/components/booth/HeroFaceScatter";
 import PolkaDots from "@/components/PolkaDots";
 import FaceDoodles from "@/components/FaceDoodles";
 import UpgradeModal from "@/components/upgrade/UpgradeModal";
-import { canUseTemplate, currentPeriod, isLifetime, sessionLimitReached } from "@/lib/plans";
+import { canUseTemplate, currentPeriod, hasAnyUnlock, isLifetime, sessionLimitReached } from "@/lib/plans";
 
 export default function Booth() {
   const { user, updateUser } = useAuth();
@@ -123,7 +123,7 @@ export default function Booth() {
         user_id: user.id, template_id: selected.id, photo_urls: finalUrls,
         created_at: now.toISOString(), expires_at: expires, saved: true, filter_applied: filter
       });
-      if (!lifetime && current.length >= 10) {
+      if (!hasAnyUnlock(user) && current.length >= 10) {
         await base44.entities.Strip.delete(current[0].id);
         await base44.entities.Notification.create({ user_id: user.id, type: "storage_eviction", message: "Your oldest strip was removed to make room for your new one.", link: "/my-booths", read: false, created_at: now.toISOString() });
       }

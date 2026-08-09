@@ -10,6 +10,7 @@ import AdminTemplates from "@/components/admin/AdminTemplates";
 import AdminOrders from "@/components/admin/AdminOrders";
 import AdminBilling from "@/components/admin/AdminBilling";
 import AdminNotifications from "@/components/admin/AdminNotifications";
+import AdminUnlockRequests from "@/components/admin/AdminUnlockRequests";
 
 // Hard-gated by exact email — no role flag, no link in the main nav.
 const ADMIN_EMAIL = "alvendherfrancisco01@gmail.com";
@@ -21,6 +22,7 @@ const NAV = [
 { key: "strips", label: "Strips", icon: Images },
 { key: "orders", label: "Orders", icon: ShoppingBag },
 { key: "billing", label: "Billing", icon: Receipt },
+{ key: "unlocks", label: "Unlock Requests", icon: Receipt },
 { key: "broadcast", label: "Broadcast", icon: Megaphone }];
 
 
@@ -32,6 +34,7 @@ export default function Admin() {
   const [templates, setTemplates] = useState({});
   const [orders, setOrders] = useState([]);
   const [billing, setBilling] = useState([]);
+  const [unlockRequests, setUnlockRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [printSetting, setPrintSetting] = useState(null);
@@ -39,12 +42,13 @@ export default function Admin() {
   const refresh = async () => {
     setLoading(true);
     try {
-      const [u, s, t, o, b, ps] = await Promise.all([
+      const [u, s, t, o, b, ur, ps] = await Promise.all([
       base44.entities.User.list("-created_date", 1000),
       base44.entities.Strip.list("-created_at", 1000),
       base44.entities.Template.list(),
       base44.entities.Order.list("-created_date", 1000),
       base44.entities.BillingRecord.list("-created_at", 1000),
+      base44.entities.UnlockRequest.list("-created_date", 1000),
       base44.entities.AppSetting.filter({ key: "print_shop_enabled" })]
       );
       setUsers(u);
@@ -54,6 +58,7 @@ export default function Admin() {
       setTemplates(tm);
       setOrders(o);
       setBilling(b);
+      setUnlockRequests(ur);
       setPrintSetting(ps[0] || null);
       setError("");
     } catch (e) {
@@ -152,6 +157,8 @@ export default function Admin() {
           <AdminOrders orders={orders} users={users} strips={strips} templates={templates} onChanged={refresh} /> :
           section === "billing" ?
           <AdminBilling billing={billing} users={users} /> :
+          section === "unlocks" ?
+          <AdminUnlockRequests requests={unlockRequests} users={users} onChanged={refresh} /> :
 
           <AdminNotifications users={users} onChanged={refresh} />
           }

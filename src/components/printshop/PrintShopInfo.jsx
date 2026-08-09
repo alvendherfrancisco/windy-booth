@@ -5,8 +5,8 @@ import { formatPrice, FREE_SHIP_THRESHOLD } from "@/lib/printPricing";
 
 const PLANS = [
 { icon: Sparkles, color: "#228be6", title: "Free", tag: "Try the product", desc: 'The "Rolling 10" model — perfect for trying windy the pooh\'s Booth.' },
-{ icon: Crown, color: "#3a6cbf", title: "Single Collection", tag: "₱49 one-time", desc: "Lifetime access to one exclusive artist-designed collection, with unlimited use of it." },
-{ icon: Printer, color: "#37b24d", title: "Lifetime Pass", tag: "₱299 one-time", desc: "Unlimited booth sessions, every current and future collection, and unlimited saved strips." }];
+{ icon: Crown, color: "#3a6cbf", title: "Single Collection", tag: "$1 one-time", desc: "Lifetime access to one exclusive artist-designed collection, plus unlimited booth sessions." },
+{ icon: Printer, color: "#37b24d", title: "Lifetime Pass", tag: "$3.99 one-time", desc: "Unlimited booth sessions, every current and future collection, and unlimited saved strips." }];
 
 
 const FREE_INCLUDES = [
