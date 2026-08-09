@@ -261,7 +261,7 @@ export default function Booth() {
 
           {/* Filter — below the live preview, available before and after photos */}
           <div className="mt-4">
-            <FilterCard filter={filter} onFilterChange={setFilter} />
+            <FilterCard filter={filter} onFilterChange={setFilter} disabled={capturing} />
           </div>
 
           {/* Dynamic bottom navigation */}

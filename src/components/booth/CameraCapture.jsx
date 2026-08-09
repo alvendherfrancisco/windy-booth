@@ -131,7 +131,7 @@ const CameraCapture = forwardRef(function CameraCapture(
                 playsInline
                 muted
                 className="h-full w-full object-cover"
-                style={{ transform: "scaleX(-1)" }}
+                style={{ transform: "scaleX(-1)", filter: imgFilter }}
               />
               {countdown !== null && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/30">
