@@ -59,7 +59,7 @@ export default function Profile() {
         <PolkaDots />
         <VendiLogo size={36} color="#f59f00" />
         <p className="mt-6 text-sm text-[#475569]">Status</p>
-        <h2 className="font-heading text-2xl font-extrabold">{lifetime ? "Lifetime Pass Owner ✨" : planLabel(user)}</h2>
+        <h2 className="font-heading text-2xl font-extrabold">{lifetime ? "Lifetime Pass Owner 🌼" : planLabel(user)}</h2>
         {lifetime ?
         <p className="mt-2 text-sm text-[#475569]">Unlimited booth sessions, every artist-designed collection, and unlimited saved strips — for life.</p> :
 
