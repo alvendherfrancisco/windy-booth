@@ -84,7 +84,7 @@ export async function generateReceiptPdf({ user, request, billingId }) {
   doc.setFont("helvetica", "italic");
   doc.setFontSize(10);
   doc.text("Thank you for your purchase! Your access has been activated.", 105, y + 15, { align: "center" });
-  doc.text("windy the pooh — Capture memories, create forever.", 105, y + 22, { align: "center" });
+  doc.text("windy the pooh — a little strip of your day.", 105, y + 22, { align: "center" });
 
   return doc;
 }

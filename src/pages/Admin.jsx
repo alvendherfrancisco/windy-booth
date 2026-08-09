@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, Link } from "react-router-dom";
-import { LayoutDashboard, Users as UsersIcon, Images, LayoutTemplate, ShoppingBag, Receipt, Megaphone, ArrowLeft, LogOut, RefreshCw, Printer } from "lucide-react";
+import { LayoutDashboard, Users as UsersIcon, Images, LayoutTemplate, ShoppingBag, Receipt, Megaphone, ArrowLeft, LogOut, RefreshCw, Printer, KeyRound } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import AdminOverview from "@/components/admin/AdminOverview";
@@ -22,7 +22,7 @@ const NAV = [
 { key: "strips", label: "Strips", icon: Images },
 { key: "orders", label: "Orders", icon: ShoppingBag },
 { key: "billing", label: "Billing", icon: Receipt },
-{ key: "unlocks", label: "Unlock Requests", icon: Receipt },
+{ key: "unlocks", label: "Unlock Requests", icon: KeyRound },
 { key: "broadcast", label: "Broadcast", icon: Megaphone }];
 
 
