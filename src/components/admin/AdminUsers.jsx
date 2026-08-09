@@ -3,6 +3,7 @@ import { Search, Eye, Trash2, ChevronUp, ChevronDown } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import StripPreview from "@/components/booth/StripPreview";
+import { planLabel } from "@/lib/plans";
 
 const fmtDate = (v) => (v ? new Date(v).toLocaleDateString() : "—");
 
@@ -11,6 +12,7 @@ export default function AdminUsers({ users, strips, templates, meId, onChanged }
   const [sort, setSort] = useState({ key: "created_date", dir: "desc" });
   const [view, setView] = useState(null);
   const [busy, setBusy] = useState(null);
+  const [grantCat, setGrantCat] = useState("");
 
   const stripCount = useMemo(() => {
     const m = {};
@@ -51,8 +53,42 @@ export default function AdminUsers({ users, strips, templates, meId, onChanged }
 
   const setPlan = async (u, plan) => {
     setBusy(u.id);
-    try { await base44.entities.User.update(u.id, { plan }); await onChanged(); }
-    finally { setBusy(null); }
+    try {
+      const payload = { plan };
+      if (plan === "lifetime") payload.plan_renewed_at = new Date().toISOString();
+      await base44.entities.User.update(u.id, payload);
+      await onChanged();
+    } finally { setBusy(null); }
+  };
+
+  const premiumCategories = useMemo(() => {
+    const set = new Set();
+    Object.values(templates).forEach((t) => { if (t.tier === "premium" && t.category) set.add(t.category); });
+    return [...set].sort();
+  }, [templates]);
+
+  const grantCollection = async (u, category) => {
+    if (!category) return;
+    setBusy(u.id);
+    try {
+      const owned = u.owned_collections || [];
+      if (!owned.includes(category)) {
+        const newOwned = [...owned, category];
+        await base44.entities.User.update(u.id, { owned_collections: newOwned });
+        setView({ ...u, owned_collections: newOwned });
+        await onChanged();
+      }
+    } finally { setBusy(null); }
+  };
+
+  const revokeCollection = async (u, category) => {
+    setBusy(u.id);
+    try {
+      const newOwned = (u.owned_collections || []).filter((c) => c !== category);
+      await base44.entities.User.update(u.id, { owned_collections: newOwned });
+      setView({ ...u, owned_collections: newOwned });
+      await onChanged();
+    } finally { setBusy(null); }
   };
 
   const deleteUser = async (u) => {
@@ -109,8 +145,8 @@ export default function AdminUsers({ users, strips, templates, meId, onChanged }
                   <td className="px-3 py-2.5 text-[#475569]">{u.email}</td>
                   <td className="px-3 py-2.5 text-[#475569]">{fmtDate(u.created_date)}</td>
                   <td className="px-3 py-2.5">
-                    <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${u.plan === "premium" ? "bg-[#eaf2fd] text-[#3a6cbf]" : "bg-[#e7f5ff] text-[#228be6]"}`}>
-                      {u.plan === "premium" ? "Premium" : "Free"}
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${u.plan === "lifetime" ? "bg-[#eaf2fd] text-[#3a6cbf]" : (u.owned_collections?.length ? "bg-[#fef3c7] text-[#b45309]" : "bg-[#e7f5ff] text-[#228be6]")}`}>
+                      {planLabel(u)}
                     </span>
                   </td>
                   <td className="px-3 py-2.5 text-[#475569]">{stripCount[u.id] || 0}</td>
@@ -126,7 +162,7 @@ export default function AdminUsers({ users, strips, templates, meId, onChanged }
                         title={isMe ? "You can't change your own plan here" : "Change plan"}
                       >
                         <option value="free">Free</option>
-                        <option value="premium">Premium</option>
+                        <option value="lifetime">Lifetime</option>
                       </select>
                       <button onClick={() => deleteUser(u)} disabled={busy === u.id || isMe} className="rounded-full p-1.5 text-[#DC2626] hover:bg-[#ffe3e3] disabled:opacity-40" title={isMe ? "You can't delete your own account" : "Delete account"}><Trash2 size={15} /></button>
                     </div>
@@ -148,11 +184,32 @@ export default function AdminUsers({ users, strips, templates, meId, onChanged }
             <div className="space-y-3 text-sm">
               <div className="grid grid-cols-2 gap-2">
                 <Info label="Email" value={view.email} />
-                <Info label="Plan" value={view.plan === "premium" ? "Premium" : "Free"} />
+                <Info label="Plan" value={planLabel(view)} />
                 <Info label="Joined" value={fmtDate(view.created_date)} />
                 <Info label="Strips" value={String(stripCount[view.id] || 0)} />
                 <Info label="Last active" value={lastActive[view.id] ? fmtDate(lastActive[view.id]) : fmtDate(view.created_date)} />
                 <Info label="Role" value={view.role || "user"} />
+              </div>
+              <div>
+                <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8]">Owned collections</p>
+                <div className="flex flex-wrap gap-2">
+                  {(view.owned_collections || []).length === 0 && <p className="text-xs text-[#94a3b8]">No collections unlocked.</p>}
+                  {(view.owned_collections || []).map((c) => (
+                    <span key={c} className="inline-flex items-center gap-1.5 rounded-full bg-[#fef3c7] px-3 py-1 text-xs font-bold text-[#b45309]">
+                      {c}
+                      <button onClick={() => revokeCollection(view, c)} disabled={busy === view.id} className="text-[#b45309] hover:text-[#DC2626] disabled:opacity-50">×</button>
+                    </span>
+                  ))}
+                </div>
+                {premiumCategories.length > 0 && (
+                  <div className="mt-2 flex items-center gap-2">
+                    <select value={grantCat} onChange={(e) => setGrantCat(e.target.value)} disabled={busy === view.id} className="flex-1 rounded-full border border-[#e2e8f0] bg-white px-3 py-1.5 text-xs font-bold outline-none disabled:opacity-50">
+                      <option value="" disabled>Grant a collection…</option>
+                      {premiumCategories.filter((c) => !(view.owned_collections || []).includes(c)).map((c) => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                    <button onClick={() => { grantCollection(view, grantCat); setGrantCat(""); }} disabled={busy === view.id || !grantCat} className="rounded-full bg-[#3a6cbf] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#2f5fbf] disabled:opacity-50">Grant</button>
+                  </div>
+                )}
               </div>
               <div>
                 <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8]">Saved strips</p>

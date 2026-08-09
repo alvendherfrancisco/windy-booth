@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/dialog";
 import { PRIVACY_POLICY, TERMS_AND_CONDITIONS } from "@/lib/legalContent";
 
-const FLOWER_URL = "https://media.base44.com/images/public/6a60bb3456cf14775962b360/85fbbf227_flower.svg";
 const GREETING_LOGO_URL = "https://media.base44.com/images/public/6a60bb3456cf14775962b360/1b90c0fb5_windylogo.svg";
 
 const HOW_IT_WORKS = [
@@ -46,8 +45,6 @@ export default function OnboardingModal() {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4">
       <div className="relative w-full max-w-sm overflow-hidden rounded-[22px] border border-[#e2e8f0] bg-white p-6 text-center animate-modal-in">
-        <Image src={FLOWER_URL} alt="" fittingType="fit" className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 opacity-15" />
-        <Image src={FLOWER_URL} alt="" fittingType="fit" className="pointer-events-none absolute -bottom-12 -left-12 h-40 w-40 rotate-180 opacity-15" />
         <div className="relative mb-5 flex justify-center gap-1.5">
           {[0, 1, 2].map((i) => (
             <span key={i} className={`h-1.5 rounded-full transition-all ${i === step ? "w-6 bg-[#5080da]" : "w-1.5 bg-[#e2e8f0]"}`} />
@@ -105,7 +102,7 @@ export default function OnboardingModal() {
       </div>
 
       <Dialog open={legalOpen === "privacy"} onOpenChange={(v) => !v && setLegalOpen(null)}>
-        <DialogContent className="max-h-[80vh] overflow-y-auto">
+        <DialogContent className="h-[100dvh] max-h-none max-w-none rounded-none p-4 sm:h-auto sm:max-h-[80vh] sm:max-w-lg sm:rounded-lg sm:p-6 overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Privacy Policy</DialogTitle>
             <DialogDescription>How windy the pooh handles your data.</DialogDescription>
@@ -115,7 +112,7 @@ export default function OnboardingModal() {
       </Dialog>
 
       <Dialog open={legalOpen === "terms"} onOpenChange={(v) => !v && setLegalOpen(null)}>
-        <DialogContent className="max-h-[80vh] overflow-y-auto">
+        <DialogContent className="h-[100dvh] max-h-none max-w-none rounded-none p-4 sm:h-auto sm:max-h-[80vh] sm:max-w-lg sm:rounded-lg sm:p-6 overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Terms &amp; Conditions</DialogTitle>
             <DialogDescription>The rules for using windy the pooh.</DialogDescription>

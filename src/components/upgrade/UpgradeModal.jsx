@@ -24,7 +24,7 @@ export default function UpgradeModal({ open, onClose, variant = "lifetime", coll
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={close}>
-      <div className="relative w-full max-w-sm overflow-hidden rounded-[22px] border border-[#e2e8f0] bg-white p-6 text-center animate-modal-in" onClick={(e) => e.stopPropagation()}>
+      <div className="relative w-full max-w-sm max-h-[90dvh] overflow-hidden overflow-y-auto rounded-[22px] border border-[#e2e8f0] bg-white p-5 sm:p-6 text-center animate-modal-in" onClick={(e) => e.stopPropagation()}>
         <button onClick={close} className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full text-[#94a3b8] hover:bg-[#f1f5fb]"><X size={18} /></button>
 
         {stage === "payment" && chosenType &&

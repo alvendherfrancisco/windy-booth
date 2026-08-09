@@ -10,15 +10,15 @@ const LOGO_URL =
 export default function VendiLogo({ className = "", size = 42, color }) {
   return (
     <span
-      className={`inline-flex items-center justify-center ${className}`}
+      className={`inline-flex items-center justify-center overflow-hidden rounded-full ${className}`}
       style={{ width: size, height: size }}
       aria-hidden="true"
     >
       <Image
         src={LOGO_URL}
         alt="windy the pooh"
-        fittingType="fit"
-        className="h-full w-full object-contain"
+        fittingType="fill"
+        className="h-full w-full scale-105"
       />
     </span>
   );
