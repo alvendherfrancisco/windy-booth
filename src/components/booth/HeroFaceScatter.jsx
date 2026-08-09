@@ -21,17 +21,25 @@ const SCATTER = [
 
 // On mobile the card is nearly full viewport width, so the desktop percentage
 // layout (tuned for a wide two-column card) lands several faces directly over
-// the headline/description text. This mobile-only set keeps all six faces but
-// confines them to a right-side column, clear of the heading, the wrapped
-// description line, and the "Begin" button (bottom-left).
+// the headline/description text. This mobile-only set reserves the left ~60%
+// of the card for text and confines all six faces to a right-side column
+// (~64%-92% left, well clear of the "take it with you" line and the "Begin"
+// link), staggered vertically with generous gaps so none overlap each other.
+// Top/left values leave enough margin from every edge that, combined with the
+// responsive clamp() size below, faces never bleed past the card boundary.
 const MOBILE_SCATTER = [
-  { face: 6, left: "90%", top: "8%", rotate: -4 },
-  { face: 2, left: "90%", top: "42%", rotate: 6 },
-  { face: 8, left: "65%", top: "55%", rotate: -8 },
-  { face: 3, left: "90%", top: "68%", rotate: 10 },
-  { face: 5, left: "75%", top: "84%", rotate: -6 },
-  { face: 7, left: "96%", top: "95%", rotate: 8 },
+  { face: 6, left: "78%", top: "12%", rotate: -4 },
+  { face: 2, left: "92%", top: "26%", rotate: 6 },
+  { face: 8, left: "68%", top: "40%", rotate: -8 },
+  { face: 3, left: "88%", top: "54%", rotate: 10 },
+  { face: 5, left: "74%", top: "68%", rotate: -6 },
+  { face: 7, left: "92%", top: "84%", rotate: 8 },
 ];
+
+// Scales with viewport width (a close proxy for card width, since the card is
+// nearly full-bleed on mobile) so faces stay legible on narrow phones
+// (~375px) without growing too large on wider ones (~430px) or tablets.
+const MOBILE_FACE_SIZE = "clamp(30px, 9vw, 42px)";
 
 export default function HeroFaceScatter() {
   return (
@@ -60,8 +68,8 @@ export default function HeroFaceScatter() {
             style={{
               left: p.left,
               top: p.top,
-              width: 40,
-              height: 40,
+              width: MOBILE_FACE_SIZE,
+              height: MOBILE_FACE_SIZE,
               transform: `translate(-50%, -50%) rotate(${p.rotate}deg)`,
             }}
             dangerouslySetInnerHTML={{ __html: FACE_SVG[p.face] }}
