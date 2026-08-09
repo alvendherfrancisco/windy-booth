@@ -25,3 +25,18 @@ export function buildPaymentConfirmationEmail({ userName, planDesc, receiptId, d
     <p style="margin-top: 24px; font-size: 12px; color: #94a3b8;">For questions and concerns, contact the developer at alvendherfrancisco01@gmail.com.</p>
   </div>`;
 }
+
+// Builds the HTML body for the admin notification sent when a user submits a new unlock request.
+export function buildNewUnlockRequestEmail({ userName, userEmail, planDesc, amount, paymentMethod }) {
+  return `
+  <div style="font-family: Arial, Helvetica, sans-serif; color: #1e1b4b; max-width: 560px; margin: 0 auto; line-height: 1.6;">
+    <p>🌼 A new unlock request just came in.</p>
+    <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+      <tr><td style="padding: 4px 0; color: #64748b;">User</td><td style="padding: 4px 0; text-align: right;">${userName} (${userEmail})</td></tr>
+      <tr><td style="padding: 4px 0; color: #64748b;">Plan</td><td style="padding: 4px 0; text-align: right;">${planDesc}</td></tr>
+      <tr><td style="padding: 4px 0; color: #64748b;">Amount</td><td style="padding: 4px 0; text-align: right;">$${amount}</td></tr>
+      <tr><td style="padding: 4px 0; color: #64748b;">Payment Method</td><td style="padding: 4px 0; text-align: right;">${paymentMethod}</td></tr>
+    </table>
+    <p style="margin-top: 20px;">Review and approve it in the Admin dashboard under Unlock Requests.</p>
+  </div>`;
+}

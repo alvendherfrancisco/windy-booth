@@ -3,8 +3,11 @@ import { Loader2, Upload } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { LIFETIME_PRICE, COLLECTION_PRICE } from "@/lib/plans";
-import { PAYMENT_METHODS } from "@/lib/paymentMethods";
+import { PAYMENT_METHODS, paymentMethodLabel } from "@/lib/paymentMethods";
 import PaymentMethodPicker from "@/components/upgrade/PaymentMethodPicker";
+import { buildNewUnlockRequestEmail } from "@/lib/emailTemplates";
+
+const ADMIN_EMAIL = "alvendherfrancisco01@gmail.com";
 
 // Manual payment flow: user scans a QR, pays outside the app, then uploads
 // proof of payment here for admin review. No automatic unlock happens.
@@ -33,6 +36,21 @@ export default function PaymentStep({ type, collection, onSubmitted, onBack }) {
         amount,
         status: "pending",
       });
+      try {
+        await base44.integrations.Core.SendEmail({
+          to: ADMIN_EMAIL,
+          subject: `New unlock request — ${title}`,
+          body: buildNewUnlockRequestEmail({
+            userName: user?.full_name || user?.email || "A user",
+            userEmail: user?.email || "—",
+            planDesc: title,
+            amount: amount.toFixed(2),
+            paymentMethod: paymentMethodLabel(method),
+          }),
+        });
+      } catch (_e) {
+        // Admin notification failure should not block the user's submission
+      }
       onSubmitted();
     } catch (e) {
       setErr(e?.message || "Could not submit your payment. Please try again.");
