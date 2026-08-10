@@ -73,7 +73,8 @@ export default function Booth() {
     if (tier === "free" && t.tier !== "free") return false;
     if (tier === "locked" && t.tier !== "premium") return false;
     if (collection !== "all" && t.code !== collection) return false;
-    return t.name.toLowerCase().includes(query.toLowerCase());
+    const q = query.toLowerCase();
+    return t.name.toLowerCase().includes(q) || (t.code || "").toLowerCase().includes(q);
   });
 
   const choose = (t) => {
