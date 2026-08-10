@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, Camera, Download, ImageUp, Instagram } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ArrowLeft, Camera, Download, ImageUp, Instagram, Printer } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { useBoothWizard } from "@/components/booth/BoothWizardContext";
@@ -24,7 +25,7 @@ import { canUseTemplate, currentPeriod, isLifetime, sessionLimitReached } from "
 import { useTemplates } from "@/hooks/useTemplates";
 
 export default function Booth() {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, printShopEnabled } = useAuth();
   const { step, setStep, goBack } = useBoothWizard();
   const fileInput = useRef();
   const captureRef = useRef();
@@ -307,6 +308,11 @@ export default function Booth() {
               <button onClick={async () => { try { setSharing(true); await shareToInstagram(selected, finalPhotos); } finally { setSharing(false); } }} disabled={sharing} className="flex w-full items-center justify-center gap-2 rounded-full border border-white px-5 py-3 text-sm font-bold text-white transition hover:bg-white/10 disabled:opacity-60">
                 <Instagram size={16} />{sharing ? "Opening share…" : "Share to Instagram"}
               </button>
+              {printShopEnabled &&
+          <Link to="/print-shop" className="flex w-full items-center justify-center gap-2 rounded-full border border-white px-5 py-3 text-sm font-bold text-white transition hover:bg-white/10">
+                  <Printer size={16} />Order a Physical Print
+                </Link>
+          }
               <button onClick={resetAll} className="block w-full text-sm font-bold text-white/90 hover:text-white">Start over with a new design →</button>
             </div>
           </div>
