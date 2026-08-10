@@ -139,7 +139,7 @@ export default function Booth() {
     }
   };
 
-  const download = () => downloadStrip(selected, finalPhotos, "windy-strip.png");
+  const download = () => downloadStrip(selected, finalPhotos, "windy-strip.jpg");
   const previewFilterCss = filterCss(filter);
 
   return (

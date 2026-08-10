@@ -1,20 +1,11 @@
 import { composeStrip } from "@/components/booth/stripCompositor";
 
-function dataUrlToFile(dataUrl, filename) {
-  const [meta, b64] = dataUrl.split(",");
-  const mime = (meta.match(/data:(.*?);/) || [, "image/png"])[1];
-  const bin = atob(b64);
-  const arr = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
-  return new File([arr], filename, { type: mime });
-}
-
 // Shares the finished strip to Instagram (Story/Feed) via the native share
 // sheet when supported. Falls back to saving the image + opening Instagram.
 // The filter is already baked into the uploaded photos.
 export async function shareToInstagram(template, photos) {
-  const dataUrl = await composeStrip(template, photos);
-  const file = dataUrlToFile(dataUrl, "windy-strip.png");
+  const blob = await composeStrip(template, photos);
+  const file = new File([blob], "windy-strip.jpg", { type: blob.type });
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
     try {
       await navigator.share({
@@ -28,10 +19,12 @@ export async function shareToInstagram(template, photos) {
     }
   }
   // Fallback: download the strip and open Instagram so the user can post it.
+  const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = dataUrl;
-  a.download = "windy-strip.png";
+  a.href = url;
+  a.download = "windy-strip.jpg";
   a.click();
+  URL.revokeObjectURL(url);
   window.open("https://www.instagram.com", "_blank");
   return "fallback";
 }

@@ -33,10 +33,16 @@ function drawCover(ctx, img, x, y, w, h) {
   ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
 }
 
+// Returns a Promise<Blob> (JPEG) of the composited strip. Loading the design
+// asset + all photos in parallel (instead of one at a time) and encoding via
+// toBlob/JPEG instead of toDataURL/PNG makes this significantly faster.
 export async function composeStrip(template, photos) {
   const asset = template?.canvas_asset_url || template?.thumbnail_url;
   if (!asset) throw new Error("no_template_asset");
-  const bg = await loadImg(asset);
+  const [bg, ...imgs] = await Promise.all([
+    loadImg(asset),
+    ...[0, 1, 2].map((i) => (photos[i] ? loadImg(photos[i]) : Promise.resolve(null))),
+  ]);
   const canvas = document.createElement("canvas");
   canvas.width = bg.naturalWidth;
   canvas.height = bg.naturalHeight;
@@ -47,12 +53,11 @@ export async function composeStrip(template, photos) {
   // transparent windows let the photos show through while its decorative
   // frame/graphics overlay the edges.
   for (let i = 0; i < 3; i++) {
-    if (!photos[i]) continue;
-    const img = await loadImg(photos[i]);
+    if (!imgs[i]) continue;
     const y = canvas.height * STRIP_SLOTS.tops[i];
     const slotH = canvas.height * STRIP_SLOTS.heights[i];
-    drawCover(ctx, img, slotX, y, slotW, slotH);
+    drawCover(ctx, imgs[i], slotX, y, slotW, slotH);
   }
   ctx.drawImage(bg, 0, 0);
-  return canvas.toDataURL("image/png");
+  return new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.92));
 }
