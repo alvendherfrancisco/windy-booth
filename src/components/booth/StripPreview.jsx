@@ -5,7 +5,7 @@ import { STRIP_SLOTS } from "@/components/booth/stripSlots";
 // overlaid into the three measured photo slots (object-cover, centered).
 // Templates without a design asset fall back to a plain photo stack.
 export default function StripPreview({ template, photos = [], imgFilter = "none", className = "" }) {
-  const thumb = template?.thumbnail_url || template?.canvas_asset_url;
+  const thumb = template?.canvas_asset_url || template?.thumbnail_url;
 
   if (!thumb) {
     return (

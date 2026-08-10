@@ -34,7 +34,7 @@ function drawCover(ctx, img, x, y, w, h) {
 }
 
 export async function composeStrip(template, photos) {
-  const asset = template?.thumbnail_url || template?.canvas_asset_url;
+  const asset = template?.canvas_asset_url || template?.thumbnail_url;
   if (!asset) throw new Error("no_template_asset");
   const bg = await loadImg(asset);
   const canvas = document.createElement("canvas");
