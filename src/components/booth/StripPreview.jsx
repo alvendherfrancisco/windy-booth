@@ -14,7 +14,7 @@ export default function StripPreview({ template, photos = [], imgFilter = "none"
           {[0, 1, 2].map((i) => (
             <div key={i} className="aspect-square overflow-hidden bg-[#EFE9DF]">
               {photos[i] && (
-                <img src={photos[i]} alt="" className="h-full w-full object-cover" style={{ filter: imgFilter }} />
+                <img src={photos[i]} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" style={{ filter: imgFilter }} />
               )}
             </div>
           ))}
@@ -36,10 +36,10 @@ export default function StripPreview({ template, photos = [], imgFilter = "none"
             height: `${STRIP_SLOTS.heights[i] * 100}%`,
           }}
         >
-          <img src={p} alt="" className="h-full w-full object-cover" style={{ filter: imgFilter }} />
+          <img src={p} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" style={{ filter: imgFilter }} />
         </div>
       ))}
-      <img src={thumb} alt={template?.name || "windy the pooh strip"} className="relative z-10 block w-full" />
+      <img src={thumb} alt={template?.name || "windy the pooh strip"} loading="lazy" decoding="async" className="relative z-10 block w-full" />
     </div>
   );
 }
