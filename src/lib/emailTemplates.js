@@ -20,7 +20,7 @@ export function buildPaymentConfirmationEmail({ userName, planDesc, receiptId, d
     <h3 style="margin-bottom: 8px;">A Message from Windy the Pooh</h3>
     <p style="font-style: italic; color: #475569;">"Thank you so much for supporting my work! It means a lot to me. I had so much fun creating these collections, and I hope they bring a little extra joy to your day. Have fun creating your photo strips!"</p>
 
-    <p style="margin-top: 24px;">Warmly,<br/>The Windy the Pooh Team<br/>Capture memories, create forever.</p>
+    <p style="margin-top: 24px;">Warmly,<br/>The Windy the Pooh Team<br/>A little strip of your day.</p>
 
     <p style="margin-top: 24px; font-size: 12px; color: #94a3b8;">For questions and concerns, contact the developer at alvendherfrancisco01@gmail.com.</p>
   </div>`;
@@ -38,10 +38,7 @@ export function buildRejectionEmail({ userName, planDesc, reason }) {
 
     <p style="margin-top: 20px;">Not to worry — you're welcome to submit a new request with updated proof of payment, and we'll be happy to take another look. If you have any questions in the meantime, just reach out and we'll sort it out together.</p>
 
-    <h3 style="margin-bottom: 8px;">A Message from Windy the Pooh</h3>
-    <p style="font-style: italic; color: #475569;">"Thank you for your patience and for being part of our little community. I know this isn't the news you were hoping for, but I'd love to have you unlock these collections soon — let's get it sorted!"</p>
-
-    <p style="margin-top: 24px;">Warmly,<br/>The Windy the Pooh Team<br/>Capture memories, create forever.</p>
+    <p style="margin-top: 24px;">Warmly,<br/>The Windy the Pooh Team<br/>A little strip of your day.</p>
 
     <p style="margin-top: 24px; font-size: 12px; color: #94a3b8;">For questions and concerns, contact the developer at alvendherfrancisco01@gmail.com.</p>
   </div>`;
