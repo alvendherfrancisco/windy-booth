@@ -3,8 +3,8 @@ import { STRIP_SLOTS } from "@/components/booth/stripSlots";
 // Renders a finished strip at the template's full native resolution by
 // compositing the design asset + the user's photos directly onto a canvas.
 // Photos are drawn with object-cover (center-cropped) into each slot, so any
-// source dimensions/aspect ratio fit correctly. The filter CSS is applied
-// to the photos only (not the template frame). Returns a PNG data URL.
+// source dimensions/aspect ratio fit correctly. The filter is already baked
+// into the uploaded photos, so no filter is applied here. Returns a PNG data URL.
 function loadImg(src) {
   return new Promise((res, rej) => {
     const img = new Image();
@@ -33,7 +33,7 @@ function drawCover(ctx, img, x, y, w, h) {
   ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
 }
 
-export async function composeStrip(template, photos, filterCssValue = "none") {
+export async function composeStrip(template, photos) {
   const asset = template?.thumbnail_url || template?.canvas_asset_url;
   if (!asset) throw new Error("no_template_asset");
   const bg = await loadImg(asset);
@@ -43,18 +43,16 @@ export async function composeStrip(template, photos, filterCssValue = "none") {
   const ctx = canvas.getContext("2d");
   const slotW = canvas.width * STRIP_SLOTS.width;
   const slotX = canvas.width * STRIP_SLOTS.left;
-  // Photos first (behind) with the filter applied, then the template frame on
-  // top without filter — the template's transparent windows let the filtered
-  // photos show through while its decorative frame/graphics overlay the edges.
+  // Photos first (behind), then the template frame on top — the template's
+  // transparent windows let the photos show through while its decorative
+  // frame/graphics overlay the edges.
   for (let i = 0; i < 3; i++) {
     if (!photos[i]) continue;
     const img = await loadImg(photos[i]);
     const y = canvas.height * STRIP_SLOTS.tops[i];
     const slotH = canvas.height * STRIP_SLOTS.heights[i];
-    ctx.filter = filterCssValue;
     drawCover(ctx, img, slotX, y, slotW, slotH);
   }
-  ctx.filter = "none";
   ctx.drawImage(bg, 0, 0);
   return canvas.toDataURL("image/png");
 }

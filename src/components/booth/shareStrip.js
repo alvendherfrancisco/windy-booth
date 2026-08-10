@@ -11,8 +11,9 @@ function dataUrlToFile(dataUrl, filename) {
 
 // Shares the finished strip to Instagram (Story/Feed) via the native share
 // sheet when supported. Falls back to saving the image + opening Instagram.
-export async function shareToInstagram(template, photos, filterCssValue = "none") {
-  const dataUrl = await composeStrip(template, photos, filterCssValue);
+// The filter is already baked into the uploaded photos.
+export async function shareToInstagram(template, photos) {
+  const dataUrl = await composeStrip(template, photos);
   const file = dataUrlToFile(dataUrl, "windy-strip.png");
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
     try {

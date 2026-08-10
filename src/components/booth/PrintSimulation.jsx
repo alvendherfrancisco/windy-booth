@@ -14,7 +14,7 @@ const STATUS = [
 const PETAL_COLORS = ["#ffdee8", "#cee289", "#f0758a", "#fff0b3", "#d4f0d4"];
 const PRINT_DURATION = 2200;
 
-export default function PrintSimulation({ template, photos, imgFilter = "none", onDone }) {
+export default function PrintSimulation({ template, photos, onDone }) {
   const paperRef = useRef(null);
   const zoneRef = useRef(null);
   const [status, setStatus] = useState(STATUS[0].text);
@@ -117,7 +117,7 @@ export default function PrintSimulation({ template, photos, imgFilter = "none", 
             className={`w-40 overflow-hidden rounded-b-md bg-[#fffef9] ${done ? "strip-glow" : ""}`}
             style={{ transform: "translateY(0)", boxShadow: "2px 8px 22px rgba(58,44,42,.25)" }}
           >
-            <StripPreview template={template} photos={photos} imgFilter={imgFilter} />
+            <StripPreview template={template} photos={photos} />
           </div>
         </div>
 

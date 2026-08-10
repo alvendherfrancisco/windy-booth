@@ -4,6 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { useBoothWizard } from "@/components/booth/BoothWizardContext";
 import { filterCss } from "@/components/booth/filterPresets";
+import { bakeFilter } from "@/components/booth/bakeFilter";
 import TemplateCard from "@/components/booth/TemplateCard";
 import TemplateFilters from "@/components/booth/TemplateFilters";
 import StripPreview from "@/components/booth/StripPreview";
@@ -100,7 +101,8 @@ export default function Booth() {
     try {
       const finalUrls = [];
       for (let i = 0; i < files.length; i++) {
-        const r = await base44.integrations.Core.UploadFile({ file: files[i] });
+        const baked = await bakeFilter(files[i], filter);
+        const r = await base44.integrations.Core.UploadFile({ file: baked });
         finalUrls.push(r.file_url);
       }
       const now = new Date();
@@ -130,7 +132,7 @@ export default function Booth() {
     }
   };
 
-  const download = () => downloadStrip(selected, finalPhotos, previewFilterCss, "windy-strip.png");
+  const download = () => downloadStrip(selected, finalPhotos, "windy-strip.png");
   const previewFilterCss = filterCss(filter);
 
   return (
@@ -273,7 +275,7 @@ export default function Booth() {
 
       {/* STEP 4 — Print Simulation (auto-redirects to Download on completion) */}
       {step === 4 &&
-        <PrintSimulation template={selected} photos={finalPhotos} imgFilter={previewFilterCss} onDone={() => setStep(5)} />
+        <PrintSimulation template={selected} photos={finalPhotos} onDone={() => setStep(5)} />
       }
 
       {/* STEP 5 — Download */}
@@ -282,7 +284,7 @@ export default function Booth() {
           <div className="animate-pop relative isolate mt-4 overflow-hidden rounded-[18px] bg-[#5080da] p-6 text-white">
           <DownloadFaceScatter />
             <div className="mx-auto w-[180px]">
-              <StripPreview template={selected} photos={finalPhotos} imgFilter={previewFilterCss} />
+              <StripPreview template={selected} photos={finalPhotos} />
             </div>
             <p className="mt-5 font-heading text-xl font-extrabold text-white">Your strip is ready!</p>
             {!lifetime && used >= 10 &&
@@ -292,7 +294,7 @@ export default function Booth() {
               <button onClick={download} className="flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-4 text-sm font-bold text-[#3a6cbf] transition hover:bg-white/90">
                 <Download size={16} />Download Strip
               </button>
-              <button onClick={async () => { try { setSharing(true); await shareToInstagram(selected, finalPhotos, previewFilterCss); } finally { setSharing(false); } }} disabled={sharing} className="flex w-full items-center justify-center gap-2 rounded-full border border-white px-5 py-3 text-sm font-bold text-white transition hover:bg-white/10 disabled:opacity-60">
+              <button onClick={async () => { try { setSharing(true); await shareToInstagram(selected, finalPhotos); } finally { setSharing(false); } }} disabled={sharing} className="flex w-full items-center justify-center gap-2 rounded-full border border-white px-5 py-3 text-sm font-bold text-white transition hover:bg-white/10 disabled:opacity-60">
                 <Instagram size={16} />{sharing ? "Opening share…" : "Share to Instagram"}
               </button>
               <button onClick={resetAll} className="block w-full text-sm font-bold text-white/90 hover:text-white">Start over with a new design →</button>
