@@ -4,15 +4,18 @@ import { base44 } from "@/api/base44Client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Image } from "@/components/ui/image";
 import { generateReceiptPdf } from "@/components/admin/receiptPdf";
-import { buildPaymentConfirmationEmail } from "@/lib/emailTemplates";
+import { buildPaymentConfirmationEmail, buildRejectionEmail } from "@/lib/emailTemplates";
 import { paymentMethodLabel } from "@/lib/paymentMethods";
 import { PESO, toPhp } from "@/lib/currency";
+import { REJECTION_REASONS } from "@/lib/rejectionReasons";
 
 const fmtDate = (v) => (v ? new Date(v).toLocaleString() : "—");
 
 export default function AdminUnlockRequests({ requests, users, onChanged }) {
   const [view, setView] = useState(null);
   const [busy, setBusy] = useState(null);
+  const [rejectTarget, setRejectTarget] = useState(null);
+  const [rejectReason, setRejectReason] = useState(REJECTION_REASONS[0].key);
 
   const userMap = useMemo(() => { const m = {}; users.forEach((u) => (m[u.id] = u)); return m; }, [users]);
   const rows = useMemo(() => [...requests].sort((a, b) => new Date(b.created_date) - new Date(a.created_date)), [requests]);
@@ -91,6 +94,44 @@ export default function AdminUnlockRequests({ requests, users, onChanged }) {
     }
   };
 
+  const openReject = (req) => { setRejectReason(REJECTION_REASONS[0].key); setRejectTarget(req); };
+
+  const submitReject = async () => {
+    const req = rejectTarget;
+    if (!req) return;
+    setBusy(req.id);
+    try {
+      const reasonObj = REJECTION_REASONS.find((r) => r.key === rejectReason) || REJECTION_REASONS[0];
+      await base44.entities.UnlockRequest.update(req.id, { status: "rejected", reviewed_at: new Date().toISOString(), admin_note: reasonObj.label });
+      const u = userMap[req.user_id];
+      const planDesc = req.plan_type === "lifetime" ? "Lifetime Pass" : `Collection: ${req.collection}`;
+      if (u?.email) {
+        try {
+          await base44.integrations.Core.SendEmail({
+            to: u.email,
+            subject: `Update on your ${planDesc} request`,
+            body: buildRejectionEmail({ userName: u.full_name || u.email, planDesc, reason: reasonObj.label }),
+          });
+        } catch (_e) {
+          // Email failure should not block the rejection
+        }
+      }
+      await base44.entities.Notification.create({
+        user_id: req.user_id,
+        type: "payment",
+        message: `Your ${planDesc} request wasn't approved: ${reasonObj.label}`,
+        link: "/profile",
+        read: false,
+        created_at: new Date().toISOString(),
+      });
+      setRejectTarget(null);
+      setView(null);
+      await onChanged();
+    } finally {
+      setBusy(null);
+    }
+  };
+
   const del = async (req) => {
     if (!window.confirm("Delete this unlock request record?")) return;
     setBusy(req.id);
@@ -136,7 +177,7 @@ export default function AdminUnlockRequests({ requests, users, onChanged }) {
                     {r.status === "pending" ? (
                       <div className="flex items-center justify-end gap-1.5">
                         <button onClick={() => decide(r, "approved")} disabled={busy === r.id} className="rounded-full bg-[#ebfbee] p-1.5 text-[#37b24d] hover:bg-[#d3f9d8] disabled:opacity-50">{busy === r.id ? <Loader2 size={15} className="animate-spin" /> : <Check size={15} />}</button>
-                        <button onClick={() => decide(r, "rejected")} disabled={busy === r.id} className="rounded-full bg-[#ffe3e3] p-1.5 text-[#DC2626] hover:bg-[#ffcccc] disabled:opacity-50"><X size={15} /></button>
+                        <button onClick={() => openReject(r)} disabled={busy === r.id} className="rounded-full bg-[#ffe3e3] p-1.5 text-[#DC2626] hover:bg-[#ffcccc] disabled:opacity-50"><X size={15} /></button>
                       </div>
                     ) : (
                     <div className="flex items-center justify-end gap-1.5">
@@ -168,9 +209,32 @@ export default function AdminUnlockRequests({ requests, users, onChanged }) {
               {view.status === "pending" && (
                 <div className="flex gap-2 pt-2">
                   <button onClick={() => decide(view, "approved")} disabled={busy === view.id} className="flex-1 rounded-full bg-[#37b24d] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#2f9e44] disabled:opacity-50">Approve</button>
-                  <button onClick={() => decide(view, "rejected")} disabled={busy === view.id} className="flex-1 rounded-full bg-[#ffe3e3] px-4 py-2.5 text-sm font-bold text-[#DC2626] hover:bg-[#ffcccc] disabled:opacity-50">Reject</button>
+                  <button onClick={() => openReject(view)} disabled={busy === view.id} className="flex-1 rounded-full bg-[#ffe3e3] px-4 py-2.5 text-sm font-bold text-[#DC2626] hover:bg-[#ffcccc] disabled:opacity-50">Reject</button>
                 </div>
               )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!rejectTarget} onOpenChange={(o) => !o && setRejectTarget(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>Reject request</DialogTitle></DialogHeader>
+          {rejectTarget && (
+            <div className="space-y-3 text-sm">
+              <p className="text-[#475569]">Choose a reason — this will be emailed to {userMap[rejectTarget.user_id]?.email || "the user"} and shown in their app notifications.</p>
+              <div className="space-y-2">
+                {REJECTION_REASONS.map((r) => (
+                  <label key={r.key} className={`flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2.5 ${rejectReason === r.key ? "border-[#3a6cbf] bg-[#eaf2fd]" : "border-[#e2e8f0]"}`}>
+                    <input type="radio" name="reject-reason" checked={rejectReason === r.key} onChange={() => setRejectReason(r.key)} />
+                    <span>{r.label}</span>
+                  </label>
+                ))}
+              </div>
+              <div className="flex gap-2 pt-2">
+                <button onClick={() => setRejectTarget(null)} disabled={busy === rejectTarget.id} className="flex-1 rounded-full border border-[#e2e8f0] px-4 py-2.5 text-sm font-bold text-[#475569] hover:bg-[#f1f5fb] disabled:opacity-50">Cancel</button>
+                <button onClick={submitReject} disabled={busy === rejectTarget.id} className="flex-1 rounded-full bg-[#DC2626] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#c92a2a] disabled:opacity-50">{busy === rejectTarget.id ? <Loader2 size={15} className="mx-auto animate-spin" /> : "Confirm Rejection"}</button>
+              </div>
             </div>
           )}
         </DialogContent>

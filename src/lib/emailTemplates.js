@@ -26,6 +26,24 @@ export function buildPaymentConfirmationEmail({ userName, planDesc, receiptId, d
   </div>`;
 }
 
+// Builds the HTML body for the email sent when an admin rejects a user's unlock request.
+export function buildRejectionEmail({ userName, planDesc, reason }) {
+  return `
+  <div style="font-family: Arial, Helvetica, sans-serif; color: #1e1b4b; max-width: 560px; margin: 0 auto; line-height: 1.6;">
+    <p>Hi ${userName},</p>
+    <p>Thanks for your recent request to unlock <b>${planDesc}</b>. Unfortunately, we weren't able to approve it.</p>
+
+    <h3 style="margin-bottom: 8px;">Reason</h3>
+    <p style="background: #fff5f5; border-radius: 8px; padding: 12px; color: #c92a2a;">${reason}</p>
+
+    <p style="margin-top: 20px;">If you believe this is a mistake, or would like to try again with updated proof of payment, please submit a new request from the app.</p>
+
+    <p style="margin-top: 24px;">Warmly,<br/>The Windy the Pooh Team<br/>Capture memories, create forever.</p>
+
+    <p style="margin-top: 24px; font-size: 12px; color: #94a3b8;">For questions and concerns, contact the developer at alvendherfrancisco01@gmail.com.</p>
+  </div>`;
+}
+
 // Builds the HTML body for the admin notification sent when a user submits a contact message or design suggestion.
 export function buildContactMessageEmail({ userName, userEmail, type, message }) {
   const label = type === "suggestion" ? "🌼 New design suggestion" : "🌼 New contact message";
