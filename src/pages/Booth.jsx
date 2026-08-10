@@ -168,7 +168,7 @@ export default function Booth() {
             </div> :
 
         <>
-              <TemplateFilters tier={tier} onTierChange={setTier} collection={collection} onCollectionChange={setCollection} collections={collections} query={query} onQueryChange={setQuery} />
+              <TemplateFilters tier={tier} onTierChange={setTier} collection={collection} onCollectionChange={setCollection} collections={collections} query={query} onQueryChange={setQuery} hideTiers={lifetime} />
               <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
                 {filteredTemplates.map((t) =>
             <TemplateCard key={t.id} template={t} selected={selected?.id === t.id} locked={!canUseTemplate(user, t)} onSelect={choose} />
