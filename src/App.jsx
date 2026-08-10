@@ -1,6 +1,8 @@
+import { useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
+import { base44 } from '@/api/base44Client';
 import { BrowserRouter as Router, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import Login from '@/pages/Login';
@@ -62,6 +64,15 @@ const AuthenticatedApp = () => {
 
 
 function App() {
+  // Prefetch templates as soon as the app boots (public data, no auth needed)
+  // so they're already cached by the time the user reaches the capture page.
+  useEffect(() => {
+    queryClientInstance.prefetchQuery({
+      queryKey: ["templates"],
+      queryFn: () => base44.entities.Template.list(),
+      staleTime: 5 * 60 * 1000,
+    });
+  }, []);
 
   return (
     <AuthProvider>
