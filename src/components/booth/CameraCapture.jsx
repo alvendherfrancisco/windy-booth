@@ -9,7 +9,7 @@ const TIMERS = [3, 5, 10];
 // so capture itself applies no filter. onComplete hands the File[] back to the
 // parent; onPhotosChange receives local object URLs for the live thumbnails.
 const CameraCapture = forwardRef(function CameraCapture(
-  { selected, photos, onPhotosChange, onComplete, onCapturingChange, imgFilter = "none" },
+  { selected, photos, onPhotosChange, onComplete, onCapturingChange, imgFilter = "none", children },
   ref
 ) {
   const videoRef = useRef(null);
@@ -111,63 +111,56 @@ const CameraCapture = forwardRef(function CameraCapture(
   useImperativeHandle(ref, () => ({ capture: runCapture }), [runCapture]);
 
   return (
-    <div className="space-y-4">
-      <div className="grid gap-4 lg:grid-cols-[1fr_220px]">
-        {/* Live Preview card */}
-        <div className="flex flex-col rounded-2xl border border-[#e2e8f0] bg-white p-4">
-          <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#94a3b8]">Live Preview</p>
-          {camError ? (
-            <div className="flex h-64 items-center justify-center rounded-xl bg-[#f1f5fb] p-4 text-center text-sm text-[#94a3b8]">
-              {camError}
-            </div>
-          ) : (
-            <div
-              className="relative w-full overflow-hidden rounded-xl bg-black"
-              style={{ aspectRatio: slotAspect || "4 / 3" }}
-            >
-              <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                muted
-                className="h-full w-full object-cover"
-                style={{ transform: "scaleX(-1)", filter: imgFilter }}
-              />
-              {countdown !== null && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                  <span className="font-heading text-8xl font-extrabold text-white drop-shadow-lg">
-                    {countdown}
-                  </span>
-                </div>
-              )}
-            </div>
-          )}
-          <div className="mt-3 flex gap-2">
-            {[0, 1, 2].map(i => (
-              <div
-                key={i}
-                className={`flex h-14 w-14 items-center justify-center overflow-hidden rounded-lg border-2 ${
-                  i < photos.length ? "border-[#228be6]" : "border-dashed border-[#e2e8f0]"
-                } bg-[#f1f5fb]`}
-              >
-                {photos[i] ? (
-                  <img src={photos[i]} alt="" className="h-full w-full object-cover" style={{ filter: imgFilter }} />
-                ) : uploadingIdx === i ? (
-                  <span className="text-[10px] text-[#94a3b8]">…</span>
-                ) : null}
-              </div>
-            ))}
+    <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[1fr_220px] lg:gap-4">
+      {/* Live Preview card — mobile: first, desktop: col 1 row 1 */}
+      <div className="order-1 lg:col-start-1 lg:row-start-1 flex flex-col rounded-2xl border border-[#e2e8f0] bg-white p-4">
+        <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#94a3b8]">Live Preview</p>
+        {camError ? (
+          <div className="flex h-64 items-center justify-center rounded-xl bg-[#f1f5fb] p-4 text-center text-sm text-[#94a3b8]">
+            {camError}
           </div>
-        </div>
-        {/* Your Strip card */}
-        <div className="mx-auto w-full max-w-[180px] flex flex-col self-start rounded-2xl border border-[#e2e8f0] bg-white p-4 lg:max-w-none">
-          <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#94a3b8]">Your Strip</p>
-          <StripPreview template={selected} photos={photos} imgFilter={imgFilter} />
+        ) : (
+          <div
+            className="relative w-full overflow-hidden rounded-xl bg-black"
+            style={{ aspectRatio: slotAspect || "4 / 3" }}
+          >
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              className="h-full w-full object-cover"
+              style={{ transform: "scaleX(-1)", filter: imgFilter }}
+            />
+            {countdown !== null && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                <span className="font-heading text-8xl font-extrabold text-white drop-shadow-lg">
+                  {countdown}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+        <div className="mt-3 flex gap-2">
+          {[0, 1, 2].map(i => (
+            <div
+              key={i}
+              className={`flex h-14 w-14 items-center justify-center overflow-hidden rounded-lg border-2 ${
+                i < photos.length ? "border-[#228be6]" : "border-dashed border-[#e2e8f0]"
+              } bg-[#f1f5fb]`}
+            >
+              {photos[i] ? (
+                <img src={photos[i]} alt="" className="h-full w-full object-cover" style={{ filter: imgFilter }} />
+              ) : uploadingIdx === i ? (
+                <span className="text-[10px] text-[#94a3b8]">…</span>
+              ) : null}
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Countdown Timer card — locked while a capture sequence is running */}
-      <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4">
+      {/* Countdown Timer — mobile: below camera, desktop: col 1 row 2 */}
+      <div className="order-2 lg:col-start-1 lg:row-start-2 rounded-2xl border border-[#e2e8f0] bg-white p-4">
         <p className="mb-2 text-sm font-bold text-[#1e1b4b]">Countdown Timer</p>
         <div className="flex gap-2">
           {TIMERS.map(t => (
@@ -185,6 +178,15 @@ const CameraCapture = forwardRef(function CameraCapture(
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Filter (passed as children) — mobile: below timer, desktop: col 1 row 3 */}
+      {children && <div className="order-3 lg:col-start-1 lg:row-start-3">{children}</div>}
+
+      {/* Your Strip card — mobile: last, desktop: col 2 spanning all rows */}
+      <div className="order-4 lg:col-start-2 lg:row-start-1 lg:row-span-3 mx-auto w-full max-w-[180px] flex flex-col self-start rounded-2xl border border-[#e2e8f0] bg-white p-4 lg:max-w-none">
+        <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#94a3b8]">Your Strip</p>
+        <StripPreview template={selected} photos={photos} imgFilter={imgFilter} />
       </div>
 
       <canvas ref={canvasRef} className="hidden" />

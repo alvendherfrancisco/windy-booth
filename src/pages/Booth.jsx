@@ -204,7 +204,9 @@ export default function Booth() {
         <>
           <h1 className="mb-5 font-heading text-2xl font-extrabold text-[#1e1b4b]">{mode === "camera" ? "Ready when you are" : "Pick three photos"}</h1>
           {mode === "camera" ? (
-            <CameraCapture ref={captureRef} selected={selected} photos={cameraPhotos} onPhotosChange={setCameraPhotos} onComplete={setCameraFiles} onCapturingChange={setCapturing} imgFilter={previewFilterCss} />
+            <CameraCapture ref={captureRef} selected={selected} photos={cameraPhotos} onPhotosChange={setCameraPhotos} onComplete={setCameraFiles} onCapturingChange={setCapturing} imgFilter={previewFilterCss}>
+              <FilterCard filter={filter} onFilterChange={setFilter} disabled={capturing} />
+            </CameraCapture>
           ) : (
             <div className="grid gap-4 lg:grid-cols-[1fr_220px]">
               <div className="flex flex-col rounded-2xl border border-[#e2e8f0] bg-white p-4">
@@ -239,10 +241,12 @@ export default function Booth() {
             </div>
           )}
 
-          {/* Filter — below the live preview, available before and after photos */}
-          <div className="mt-4">
-            <FilterCard filter={filter} onFilterChange={setFilter} disabled={capturing} />
-          </div>
+          {/* Filter — below the upload grid (camera mode has it inside CameraCapture) */}
+          {mode === "upload" && (
+            <div className="mt-4">
+              <FilterCard filter={filter} onFilterChange={setFilter} disabled={capturing} />
+            </div>
+          )}
 
           {/* Dynamic bottom navigation */}
           <StickyAction>
