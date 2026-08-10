@@ -8,7 +8,7 @@ export const CURRENCY = "$";
 
 // Country-specific pricing: PH users are billed in PHP, everyone else in USD.
 export const PRICING = {
-  PH: { collection: 39, lifetime: 199, currency: "₱" },
+  PH: { collection: 39, lifetime: 99, currency: "₱" },
   INTL: { collection: COLLECTION_PRICE, lifetime: LIFETIME_PRICE, currency: CURRENCY },
 };
 
