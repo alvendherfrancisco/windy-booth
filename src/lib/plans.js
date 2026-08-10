@@ -2,8 +2,8 @@ export const SESSION_LIMIT = 10;
 export const SAVED_STRIP_LIMIT = 10;
 
 // Default (international) pricing, shown until the user's country is detected.
-export const LIFETIME_PRICE = 4.99;
-export const COLLECTION_PRICE = 1;
+export const LIFETIME_PRICE = 1.99;
+export const COLLECTION_PRICE = 0.99;
 export const CURRENCY = "$";
 
 // Country-specific pricing: PH users are billed in PHP, everyone else in USD.
