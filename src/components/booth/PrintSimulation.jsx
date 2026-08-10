@@ -122,15 +122,6 @@ export default function PrintSimulation({ template, photos, imgFilter = "none", 
         </div>
 
         <p className="mt-8 min-h-5 text-sm italic text-[#475569]">{status}</p>
-
-        {done && (
-          <button
-            onClick={onDone}
-            className="mt-6 rounded-full bg-[#5080da] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#3a6cbf]"
-          >
-            Continue →
-          </button>
-        )}
       </div>
 
       {petals.map((p) => (
