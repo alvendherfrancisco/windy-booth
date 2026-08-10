@@ -8,12 +8,13 @@ import { RAINBOW_DOTS_BG } from "@/lib/rainbowDotsBg";
 import HeroFaceScatter from "@/components/booth/HeroFaceScatter";
 import UpgradeModal from "@/components/upgrade/UpgradeModal";
 import { isLifetime, planLabel } from "@/lib/plans";
+import { useTemplatesMap } from "@/hooks/useTemplates";
 
 export default function Dashboard() {
   const { user, printShopEnabled, updateUser } = useAuth();
   const [strips, setStrips] = useState([]);
   const [order, setOrder] = useState(null);
-  const [templates, setTemplates] = useState({});
+  const { templatesMap: templates } = useTemplatesMap();
   const plan = user?.plan || "free";
   const used = user?.sessions_used_this_month || 0;
   const lifetime = isLifetime(user);
@@ -40,7 +41,6 @@ export default function Dashboard() {
     setOrder(orders[0]);
   };
   useEffect(() => {load();const off = base44.entities.Strip.subscribe(load);return off;}, [user?.id]);
-  useEffect(() => {base44.entities.Template.list().then((all) => {const map = {};all.forEach((t) => map[t.id] = t);setTemplates(map);});}, []);
   const orderStrip = strips.find((strip) => order?.strip_ids?.includes(strip.id));
   return <div className="space-y-7"><section><div className="mt-1 flex items-center gap-3"><h1 className="font-heading text-3xl font-extrabold">Your booth</h1><span className="rounded-full bg-[#fff3bf] px-3 py-1 text-xs font-bold text-[#e67700]">{planLabel(user)}</span></div></section>
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(280px,0.8fr)]"><Link to="/booth" className="relative isolate block overflow-hidden rounded-[18px] bg-[#5080da] p-6 text-white transition hover:bg-[#3a6cbf]"><HeroFaceScatter /><Camera size={25} className="hidden" /><h2 className="mt-8 font-heading text-2xl font-extrabold">Start a new booth</h2><p className="mt-1 text-sm text-white/85">Pick a frame, strike a pose, take it with you.</p><span className="mt-5 inline-flex items-center gap-2 text-sm font-bold">Begin <ArrowRight size={16} /></span></Link>

@@ -9,13 +9,14 @@ import FaceDoodles from "@/components/FaceDoodles";
 import { downloadStrip } from "@/components/booth/downloadStrip";
 import { shareToInstagram } from "@/components/booth/shareStrip";
 import UpgradeModal from "@/components/upgrade/UpgradeModal";
+import { useTemplatesMap } from "@/hooks/useTemplates";
 
 const dotted = (v) => { const d = new Date(v); return `${d.getMonth() + 1}.${d.getDate()}.${d.getFullYear()}`; };
 
 export default function MyBooths() {
   const { user, printShopEnabled } = useAuth();
   const [strips, setStrips] = useState([]);
-  const [templates, setTemplates] = useState({});
+  const { templatesMap: templates } = useTemplatesMap();
   const plan = user?.plan || "free";
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [sharingId, setSharingId] = useState(null);
@@ -29,13 +30,6 @@ export default function MyBooths() {
     const off = base44.entities.Strip.subscribe(load);
     return off;
   }, [user?.id]);
-  useEffect(() => {
-    base44.entities.Template.list().then((all) => {
-      const map = {};
-      all.forEach((t) => (map[t.id] = t));
-      setTemplates(map);
-    });
-  }, []);
 
   const remove = async (id) => {
     setStrips((prev) => prev.filter((s) => s.id !== id));

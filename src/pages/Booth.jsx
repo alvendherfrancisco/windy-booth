@@ -21,6 +21,7 @@ import PolkaDots from "@/components/PolkaDots";
 import FaceDoodles from "@/components/FaceDoodles";
 import UpgradeModal from "@/components/upgrade/UpgradeModal";
 import { canUseTemplate, currentPeriod, isLifetime, sessionLimitReached } from "@/lib/plans";
+import { useTemplates } from "@/hooks/useTemplates";
 
 export default function Booth() {
   const { user, updateUser } = useAuth();
@@ -28,7 +29,8 @@ export default function Booth() {
   const fileInput = useRef();
   const captureRef = useRef();
 
-  const [templates, setTemplates] = useState([]);
+  const { templates: allTemplates } = useTemplates();
+  const templates = useMemo(() => allTemplates.filter((t) => t.active), [allTemplates]);
   const [selected, setSelected] = useState(null);
   const [mode, setMode] = useState(null);
   const [cameraPhotos, setCameraPhotos] = useState([]);
@@ -52,7 +54,6 @@ export default function Booth() {
   const photos = mode === "camera" ? cameraPhotos : uploadPhotos;
   const photosComplete = photos.length === 3;
 
-  useEffect(() => {base44.entities.Template.filter({ active: true }).then(setTemplates);}, []);
   // Fresh entry always starts the wizard at Design.
   useEffect(() => {setStep(1); /* eslint-disable-next-line */}, []);
 
