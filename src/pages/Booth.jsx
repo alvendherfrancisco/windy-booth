@@ -208,8 +208,9 @@ export default function Booth() {
               <FilterCard filter={filter} onFilterChange={setFilter} disabled={capturing} />
             </CameraCapture>
           ) : (
-            <div className="grid gap-4 lg:grid-cols-[1fr_220px]">
-              <div className="flex flex-col rounded-2xl border border-[#e2e8f0] bg-white p-4">
+            <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[1fr_220px] lg:gap-4">
+              {/* Upload card — mobile: first, desktop: col 1 row 1 */}
+              <div className="order-1 lg:col-start-1 lg:row-start-1 flex flex-col rounded-2xl border border-[#e2e8f0] bg-white p-4">
                 <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#94a3b8]">Live Preview</p>
                 <button
                   type="button"
@@ -234,17 +235,15 @@ export default function Booth() {
                   ))}
                 </div>
               </div>
-              <div className="mx-auto w-full max-w-[180px] flex flex-col self-start rounded-2xl border border-[#e2e8f0] bg-white p-4 lg:max-w-none">
+              {/* Filter — mobile: below upload area, desktop: col 1 row 2 */}
+              <div className="order-2 lg:col-start-1 lg:row-start-2">
+                <FilterCard filter={filter} onFilterChange={setFilter} disabled={capturing} />
+              </div>
+              {/* Your Strip — mobile: last, desktop: col 2 spanning all rows */}
+              <div className="order-3 lg:col-start-2 lg:row-start-1 lg:row-span-2 mx-auto w-full max-w-[180px] flex flex-col self-start rounded-2xl border border-[#e2e8f0] bg-white p-4 lg:max-w-none">
                 <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#94a3b8]">Your Strip</p>
                 <StripPreview template={selected} photos={uploadPhotos} imgFilter={previewFilterCss} />
               </div>
-            </div>
-          )}
-
-          {/* Filter — below the upload grid (camera mode has it inside CameraCapture) */}
-          {mode === "upload" && (
-            <div className="mt-4">
-              <FilterCard filter={filter} onFilterChange={setFilter} disabled={capturing} />
             </div>
           )}
 
