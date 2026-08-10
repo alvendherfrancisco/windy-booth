@@ -31,12 +31,15 @@ export function buildRejectionEmail({ userName, planDesc, reason }) {
   return `
   <div style="font-family: Arial, Helvetica, sans-serif; color: #1e1b4b; max-width: 560px; margin: 0 auto; line-height: 1.6;">
     <p>Hi ${userName},</p>
-    <p>Thanks for your recent request to unlock <b>${planDesc}</b>. Unfortunately, we weren't able to approve it.</p>
+    <p>Thank you for your recent request to unlock <b>${planDesc}</b>. We've carefully reviewed it, but unfortunately we weren't able to approve it at this time.</p>
 
     <h3 style="margin-bottom: 8px;">Reason</h3>
     <p style="background: #fff5f5; border-radius: 8px; padding: 12px; color: #c92a2a;">${reason}</p>
 
-    <p style="margin-top: 20px;">If you believe this is a mistake, or would like to try again with updated proof of payment, please submit a new request from the app.</p>
+    <p style="margin-top: 20px;">Not to worry — you're welcome to submit a new request with updated proof of payment, and we'll be happy to take another look. If you have any questions in the meantime, just reach out and we'll sort it out together.</p>
+
+    <h3 style="margin-bottom: 8px;">A Message from Windy the Pooh</h3>
+    <p style="font-style: italic; color: #475569;">"Thank you for your patience and for being part of our little community. I know this isn't the news you were hoping for, but I'd love to have you unlock these collections soon — let's get it sorted!"</p>
 
     <p style="margin-top: 24px;">Warmly,<br/>The Windy the Pooh Team<br/>Capture memories, create forever.</p>
 
