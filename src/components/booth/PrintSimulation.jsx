@@ -14,6 +14,22 @@ const STATUS = [
 const PETAL_COLORS = ["#ffdee8", "#cee289", "#f0758a", "#fff0b3", "#d4f0d4"];
 const PRINT_DURATION = 2200;
 
+// Preloads image URLs into the browser cache so the strip is fully rendered
+// before the print-out animation starts sliding it into view.
+function preloadImages(urls) {
+  return Promise.all(
+    urls.filter(Boolean).map(
+      (src) =>
+        new Promise((resolve) => {
+          const img = new Image();
+          img.onload = resolve;
+          img.onerror = resolve;
+          img.src = src;
+        })
+    )
+  );
+}
+
 export default function PrintSimulation({ template, photos, onDone }) {
   const paperRef = useRef(null);
   const zoneRef = useRef(null);
@@ -33,52 +49,60 @@ export default function PrintSimulation({ template, photos, onDone }) {
   }, [done, onDone]);
 
   useEffect(() => {
-    const timers = STATUS.map((s) => setTimeout(() => setStatus(s.text), s.t));
-    const buzzT = setTimeout(() => setPrinting(true), 400);
-    let raf;
-    const start = performance.now();
-    const tick = (now) => {
-      const paper = paperRef.current;
-      const zone = zoneRef.current;
-      if (!paper || !zone || paper.offsetHeight === 0) {
-        raf = requestAnimationFrame(tick);
-        return;
-      }
-      const stripPx = paper.offsetHeight;
-      const elapsed = now - start;
-      const t = Math.min(elapsed / PRINT_DURATION, 1);
-      let eased;
-      if (t < 0.1) eased = (t / 0.1) * (t / 0.1) * 0.05;
-      else if (t < 0.92) eased = 0.05 + ((t - 0.1) / 0.82) * 0.88;
-      else { const tail = (t - 0.92) / 0.08; eased = 0.93 + tail * (1 - tail) * 0.14 + tail * 0.07; }
-      eased = Math.min(eased, 1);
-      const translateY = -stripPx * (1 - eased);
-      const emerged = stripPx * eased;
-      paper.style.transform = `translateY(${translateY.toFixed(1)}px)`;
-      zone.style.height = `${emerged.toFixed(1)}px`;
-      if (t < 1) raf = requestAnimationFrame(tick);
-      else {
-        setPrinting(false);
-        paper.style.transform = "translateY(0)";
-        zone.style.height = `${stripPx}px`;
-        setStatus("Your strip is ready!");
-        setDone(true);
-        setPetals(
-          Array.from({ length: 18 }, (_, i) => ({
-            id: i,
-            left: 10 + Math.random() * 80,
-            color: PETAL_COLORS[i % PETAL_COLORS.length],
-            delay: Math.random() * 0.8,
-            dur: 1.6 + Math.random() * 1.2,
-            rot: Math.random() * 360,
-          }))
-        );
-        setTimeout(() => setPetals([]), 4200);
-      }
-    };
-    raf = requestAnimationFrame(tick);
+    let cancelled = false;
+    let raf, buzzT, timers = [];
+
+    const urls = [template?.canvas_asset_url || template?.thumbnail_url, ...(photos || [])];
+    preloadImages(urls).then(() => {
+      if (cancelled) return;
+      timers = STATUS.map((s) => setTimeout(() => setStatus(s.text), s.t));
+      buzzT = setTimeout(() => setPrinting(true), 400);
+      const start = performance.now();
+      const tick = (now) => {
+        const paper = paperRef.current;
+        const zone = zoneRef.current;
+        if (!paper || !zone || paper.offsetHeight === 0) {
+          raf = requestAnimationFrame(tick);
+          return;
+        }
+        const stripPx = paper.offsetHeight;
+        const elapsed = now - start;
+        const t = Math.min(elapsed / PRINT_DURATION, 1);
+        let eased;
+        if (t < 0.1) eased = (t / 0.1) * (t / 0.1) * 0.05;
+        else if (t < 0.92) eased = 0.05 + ((t - 0.1) / 0.82) * 0.88;
+        else { const tail = (t - 0.92) / 0.08; eased = 0.93 + tail * (1 - tail) * 0.14 + tail * 0.07; }
+        eased = Math.min(eased, 1);
+        const translateY = -stripPx * (1 - eased);
+        const emerged = stripPx * eased;
+        paper.style.transform = `translateY(${translateY.toFixed(1)}px)`;
+        zone.style.height = `${emerged.toFixed(1)}px`;
+        if (t < 1) raf = requestAnimationFrame(tick);
+        else {
+          setPrinting(false);
+          paper.style.transform = "translateY(0)";
+          zone.style.height = `${stripPx}px`;
+          setStatus("Your strip is ready!");
+          setDone(true);
+          setPetals(
+            Array.from({ length: 18 }, (_, i) => ({
+              id: i,
+              left: 10 + Math.random() * 80,
+              color: PETAL_COLORS[i % PETAL_COLORS.length],
+              delay: Math.random() * 0.8,
+              dur: 1.6 + Math.random() * 1.2,
+              rot: Math.random() * 360,
+            }))
+          );
+          setTimeout(() => setPetals([]), 4200);
+        }
+      };
+      raf = requestAnimationFrame(tick);
+    });
+
     return () => {
-      cancelAnimationFrame(raf);
+      cancelled = true;
+      if (raf) cancelAnimationFrame(raf);
       timers.forEach(clearTimeout);
       clearTimeout(buzzT);
     };

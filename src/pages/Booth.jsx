@@ -100,32 +100,37 @@ export default function Booth() {
     if (files.length !== 3 || !selected) return;
     setSaving(true);
     try {
-      const finalUrls = [];
-      for (let i = 0; i < files.length; i++) {
-        const baked = await bakeFilter(files[i], filter);
-        const r = await base44.integrations.Core.UploadFile({ file: baked });
-        finalUrls.push(r.file_url);
-      }
+      // Bake + upload all 3 photos concurrently instead of one at a time.
+      const finalUrls = await Promise.all(
+        files.map((f) =>
+          bakeFilter(f, filter).then((baked) => base44.integrations.Core.UploadFile({ file: baked })).then((r) => r.file_url)
+        )
+      );
       const now = new Date();
-      const current = await base44.entities.Strip.filter({ user_id: user.id, saved: true }, "created_at");
-      await base44.entities.Strip.create({
-        user_id: user.id, template_id: selected.id, photo_urls: finalUrls,
-        created_at: now.toISOString(), expires_at: null, saved: true, filter_applied: filter
-      });
+      const [, current] = await Promise.all([
+        base44.entities.Strip.create({
+          user_id: user.id, template_id: selected.id, photo_urls: finalUrls,
+          created_at: now.toISOString(), expires_at: null, saved: true, filter_applied: filter
+        }),
+        base44.entities.Strip.filter({ user_id: user.id, saved: true }, "created_at"),
+      ]);
+
+      const tasks = [
+        base44.entities.Notification.create({ user_id: user.id, type: "booth_activity", message: "Your strip is ready!", link: "/my-booths", read: false, created_at: now.toISOString() }),
+      ];
       if (!lifetime && current.length >= 10) {
-        await base44.entities.Strip.delete(current[0].id);
-        await base44.entities.Notification.create({ user_id: user.id, type: "storage_eviction", message: "Your oldest strip was removed to make room for your new one.", link: "/my-booths", read: false, created_at: now.toISOString() });
+        tasks.push(base44.entities.Strip.delete(current[0].id));
+        tasks.push(base44.entities.Notification.create({ user_id: user.id, type: "storage_eviction", message: "Your oldest strip was removed to make room for your new one.", link: "/my-booths", read: false, created_at: now.toISOString() }));
       }
       if (!lifetime) {
         const period = currentPeriod();
         const nextUsed = user.sessions_period === period ? used + 1 : 1;
-        await base44.auth.updateMe({ sessions_used_this_month: nextUsed, sessions_period: period });
-        updateUser({ sessions_used_this_month: nextUsed, sessions_period: period });
+        tasks.push(base44.auth.updateMe({ sessions_used_this_month: nextUsed, sessions_period: period }).then(() => updateUser({ sessions_used_this_month: nextUsed, sessions_period: period })));
         if (nextUsed === 8 || nextUsed === 10) {
-          await base44.entities.Notification.create({ user_id: user.id, type: "usage_limit", message: `You've used ${nextUsed} of 10 sessions today.`, link: "/profile", read: false, created_at: now.toISOString() });
+          tasks.push(base44.entities.Notification.create({ user_id: user.id, type: "usage_limit", message: `You've used ${nextUsed} of 10 sessions today.`, link: "/profile", read: false, created_at: now.toISOString() }));
         }
       }
-      await base44.entities.Notification.create({ user_id: user.id, type: "booth_activity", message: "Your strip is ready!", link: "/my-booths", read: false, created_at: now.toISOString() });
+      await Promise.all(tasks);
       setFinalPhotos(finalUrls);
       setStep(4);
     } finally {
