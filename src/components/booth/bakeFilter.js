@@ -42,6 +42,16 @@ function hslToRgb(h, s, l) {
 
 const clamp = (v) => Math.min(255, Math.max(0, v));
 
+// Adds subtle random film grain (like a Lightroom grain edit) by jittering each pixel.
+function addGrain(d, amount = 18) {
+  for (let i = 0; i < d.length; i += 4) {
+    const noise = (Math.random() - 0.5) * amount;
+    d[i] = clamp(d[i] + noise);
+    d[i + 1] = clamp(d[i + 1] + noise);
+    d[i + 2] = clamp(d[i + 2] + noise);
+  }
+}
+
 const FILTERS = {
   bw: (d) => {
     for (let i = 0; i < d.length; i += 4) {
@@ -75,6 +85,7 @@ const FILTERS = {
       nr *= 0.9; ng *= 0.9; nb *= 0.9;
       d[i] = clamp(nr); d[i + 1] = clamp(ng); d[i + 2] = clamp(nb);
     }
+    addGrain(d, 20);
   },
   vivid: (d) => {
     for (let i = 0; i < d.length; i += 4) {

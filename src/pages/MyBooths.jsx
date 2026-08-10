@@ -37,7 +37,7 @@ export default function MyBooths() {
     load();
   };
   const download = (strip) => {
-    downloadStrip(templates[strip.template_id], strip.photo_urls, `vendi-strip-${strip.id}.png`);
+    downloadStrip(templates[strip.template_id], strip.photo_urls, `windy-strip-${strip.id}.png`);
   };
   const share = async (strip) => {
     setSharingId(strip.id);
