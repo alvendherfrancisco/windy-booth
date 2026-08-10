@@ -1,10 +1,12 @@
 import { composeStrip } from "@/components/booth/stripCompositor";
 
 // Downloads the real, full-resolution strip for the given template + photos.
-// Falls back to the first photo if canvas compositing fails (e.g. CORS).
-export async function downloadStrip(template, photos, filename = "vendi-strip.png") {
+// The filter CSS is applied during compositing so the downloaded image matches
+// what the user sees on screen. Falls back to the first photo if canvas
+// compositing fails (e.g. CORS).
+export async function downloadStrip(template, photos, filterCssValue = "none", filename = "windy-strip.png") {
   try {
-    const dataUrl = await composeStrip(template, photos);
+    const dataUrl = await composeStrip(template, photos, filterCssValue);
     const a = document.createElement("a");
     a.href = dataUrl;
     a.download = filename;

@@ -11,9 +11,9 @@ function dataUrlToFile(dataUrl, filename) {
 
 // Shares the finished strip to Instagram (Story/Feed) via the native share
 // sheet when supported. Falls back to saving the image + opening Instagram.
-export async function shareToInstagram(template, photos) {
-  const dataUrl = await composeStrip(template, photos);
-  const file = dataUrlToFile(dataUrl, "vendi-strip.png");
+export async function shareToInstagram(template, photos, filterCssValue = "none") {
+  const dataUrl = await composeStrip(template, photos, filterCssValue);
+  const file = dataUrlToFile(dataUrl, "windy-strip.png");
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
     try {
       await navigator.share({
@@ -29,7 +29,7 @@ export async function shareToInstagram(template, photos) {
   // Fallback: download the strip and open Instagram so the user can post it.
   const a = document.createElement("a");
   a.href = dataUrl;
-  a.download = "vendi-strip.png";
+  a.download = "windy-strip.png";
   a.click();
   window.open("https://www.instagram.com", "_blank");
   return "fallback";

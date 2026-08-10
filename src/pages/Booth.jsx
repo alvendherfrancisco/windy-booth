@@ -93,36 +93,16 @@ export default function Booth() {
     setRawFiles((r) => r.filter((_, idx) => idx !== i));
   };
 
-  // Bakes the currently selected filter into a local File and uploads it.
-  // Used for both camera (raw captured frames) and upload (raw selected files).
-  const bakeFile = async (file) => {
-    const css = filterCss(filter);
-    if (css === "none") {
-      const r = await base44.integrations.Core.UploadFile({ file });
-      return r.file_url;
-    }
-    const img = new Image();
-    img.src = URL.createObjectURL(file);
-    await new Promise((res, rej) => {img.onload = res;img.onerror = rej;});
-    const canvas = document.createElement("canvas");
-    canvas.width = img.naturalWidth || 640;
-    canvas.height = img.naturalHeight || 480;
-    const ctx = canvas.getContext("2d");
-    ctx.filter = css;
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    const blob = await new Promise((res) => canvas.toBlob(res, "image/jpeg", 0.95));
-    const baked = new File([blob], `vendi-${Date.now()}.jpg`, { type: "image/jpeg" });
-    const r = await base44.integrations.Core.UploadFile({ file: baked });
-    return r.file_url;
-  };
-
   const finish = async () => {
     const files = mode === "camera" ? cameraFiles : rawFiles;
     if (files.length !== 3 || !selected) return;
     setSaving(true);
     try {
       const finalUrls = [];
-      for (let i = 0; i < files.length; i++) finalUrls.push(await bakeFile(files[i]));
+      for (let i = 0; i < files.length; i++) {
+        const r = await base44.integrations.Core.UploadFile({ file: files[i] });
+        finalUrls.push(r.file_url);
+      }
       const now = new Date();
       const current = await base44.entities.Strip.filter({ user_id: user.id, saved: true }, "created_at");
       await base44.entities.Strip.create({
@@ -150,7 +130,7 @@ export default function Booth() {
     }
   };
 
-  const download = () => downloadStrip(selected, finalPhotos, "vendi-strip.png");
+  const download = () => downloadStrip(selected, finalPhotos, previewFilterCss, "windy-strip.png");
   const previewFilterCss = filterCss(filter);
 
   return (
@@ -293,7 +273,7 @@ export default function Booth() {
 
       {/* STEP 4 — Print Simulation (auto-redirects to Download on completion) */}
       {step === 4 &&
-        <PrintSimulation template={selected} photos={finalPhotos} onDone={() => setStep(5)} />
+        <PrintSimulation template={selected} photos={finalPhotos} imgFilter={previewFilterCss} onDone={() => setStep(5)} />
       }
 
       {/* STEP 5 — Download */}
@@ -302,7 +282,7 @@ export default function Booth() {
           <div className="animate-pop relative isolate mt-4 overflow-hidden rounded-[18px] bg-[#5080da] p-6 text-white">
           <DownloadFaceScatter />
             <div className="mx-auto w-[180px]">
-              <StripPreview template={selected} photos={finalPhotos} />
+              <StripPreview template={selected} photos={finalPhotos} imgFilter={previewFilterCss} />
             </div>
             <p className="mt-5 font-heading text-xl font-extrabold text-white">Your strip is ready!</p>
             {!lifetime && used >= 10 &&
@@ -312,7 +292,7 @@ export default function Booth() {
               <button onClick={download} className="flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-4 text-sm font-bold text-[#3a6cbf] transition hover:bg-white/90">
                 <Download size={16} />Download Strip
               </button>
-              <button onClick={async () => { try { setSharing(true); await shareToInstagram(selected, finalPhotos); } finally { setSharing(false); } }} disabled={sharing} className="flex w-full items-center justify-center gap-2 rounded-full border border-white px-5 py-3 text-sm font-bold text-white transition hover:bg-white/10 disabled:opacity-60">
+              <button onClick={async () => { try { setSharing(true); await shareToInstagram(selected, finalPhotos, previewFilterCss); } finally { setSharing(false); } }} disabled={sharing} className="flex w-full items-center justify-center gap-2 rounded-full border border-white px-5 py-3 text-sm font-bold text-white transition hover:bg-white/10 disabled:opacity-60">
                 <Instagram size={16} />{sharing ? "Opening share…" : "Share to Instagram"}
               </button>
               <button onClick={resetAll} className="block w-full text-sm font-bold text-white/90 hover:text-white">Start over with a new design →</button>
