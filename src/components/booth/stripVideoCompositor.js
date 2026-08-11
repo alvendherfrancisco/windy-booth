@@ -18,8 +18,8 @@ function loadVideo(src) {
     video.playsInline = true;
     video.loop = true;
     video.src = src;
-    video.oncanplaythrough = () => resolve(video);
-    video.onerror = reject;
+    video.onloadeddata = () => resolve(video);
+    video.onerror = () => reject(new Error("video_load_failed"));
     video.load();
   });
 }
