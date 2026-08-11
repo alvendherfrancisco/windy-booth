@@ -38,7 +38,7 @@ export default function MyBooths() {
     load();
   };
   const download = (strip) => {
-    if (strip.is_video) downloadStripVideo(templates[strip.template_id], strip.video_urls);
+    if (strip.video_urls?.length) downloadStripVideo(templates[strip.template_id], strip.video_urls);
     else downloadStrip(templates[strip.template_id], strip.photo_urls, `windy-strip-${strip.id}.jpg`);
   };
   const share = async (strip) => {
@@ -62,7 +62,7 @@ export default function MyBooths() {
           {strips.map((strip) => (
             <article key={strip.id} className="w-[150px] rounded-[14px] border border-[#D8D9DC] bg-white p-3">
               <p className="mb-2 text-center text-xs text-[#8B8D93]">{dotted(strip.created_at)}</p>
-              <StripPreview template={templates[strip.template_id]} photos={strip.photo_urls} videos={strip.is_video ? strip.video_urls : []} className="mx-auto w-[124px]" />
+              <StripPreview template={templates[strip.template_id]} photos={strip.photo_urls} videos={strip.video_urls?.length ? strip.video_urls : []} className="mx-auto w-[124px]" />
               <div className="mt-3 flex justify-center gap-3">
                 <button onClick={() => download(strip)} aria-label="Download strip" className="text-[#228be6]"><Download size={17} /></button>
                 <button onClick={() => share(strip)} aria-label="Share strip" disabled={sharingId === strip.id} className="text-[#3a6cbf] disabled:opacity-50"><Share2 size={17} /></button>

@@ -159,7 +159,7 @@ export default function Booth() {
     }
   };
 
-  const download = () => isVideoStrip ? downloadStripVideo(selected, finalVideos) : downloadStrip(selected, finalPhotos, "windy-strip.jpg");
+  const download = () => finalVideos.length ? downloadStripVideo(selected, finalVideos) : downloadStrip(selected, finalPhotos, "windy-strip.jpg");
   const previewFilterCss = filterCss(filter);
 
   return (
