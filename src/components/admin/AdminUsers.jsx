@@ -56,22 +56,30 @@ export default function AdminUsers({ users, strips, templates, meId, onChanged }
     setBusy(u.id);
     try {
       const payload = { plan };
-      const grantingLifetime = plan === "lifetime" && u.plan !== "lifetime";
+      const grantingLifetime = plan === "lifetime";
       if (plan === "lifetime") payload.plan_renewed_at = new Date().toISOString();
       await base44.entities.User.update(u.id, payload);
       if (grantingLifetime) {
         const emailBody = buildLifetimeGrantedEmail({ userName: u.full_name || "there" });
-        base44.integrations.Core.SendEmail({
-          to: u.email,
-          subject: "Welcome to Lifetime Pass! 🎉",
-          body: emailBody,
-        }).catch(() => {});
+        try {
+          await base44.integrations.Core.SendEmail({
+            to: u.email,
+            subject: "Welcome to Lifetime Pass! 🎉",
+            body: emailBody,
+          });
+        } catch (e) {
+          console.error("Failed to send lifetime email to user", e);
+        }
         if (u.email !== "alvendherfrancisco01@gmail.com") {
-          base44.integrations.Core.SendEmail({
-            to: "alvendherfrancisco01@gmail.com",
-            subject: `[Copy] Welcome to Lifetime Pass! 🎉 — ${u.email}`,
-            body: `<p>The following congratulatory email was sent to ${u.email}:</p><hr/>${emailBody}`,
-          }).catch(() => {});
+          try {
+            await base44.integrations.Core.SendEmail({
+              to: "alvendherfrancisco01@gmail.com",
+              subject: `[Copy] Welcome to Lifetime Pass! 🎉 — ${u.email}`,
+              body: `<p>The following congratulatory email was sent to ${u.email}:</p><hr/>${emailBody}`,
+            });
+          } catch (e) {
+            console.error("Failed to send admin copy", e);
+          }
         }
       }
       await onChanged();
