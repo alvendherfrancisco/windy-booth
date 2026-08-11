@@ -1,4 +1,5 @@
 import React from "react";
+import { Image } from "@/components/ui/image";
 import { STRIP_SLOTS } from "@/components/booth/stripSlots";
 
 // Renders a strip: the template's design asset with the user's photos
@@ -27,7 +28,7 @@ export default function StripPreview({ template, photos = [], videos = [], imgFi
   }
 
   return (
-    <div className={`relative mx-auto w-full overflow-hidden rounded-md bg-white shadow-[0_8px_24px_rgba(40,30,20,.12)] ${className}`}>
+    <div className={`relative mx-auto w-full aspect-[2/3] overflow-hidden rounded-md bg-white shadow-[0_8px_24px_rgba(40,30,20,.12)] ${className}`}>
       {(isVideo ? videos : photos).slice(0, 3).map((src, i) => (
         <div
           key={i}
@@ -46,7 +47,7 @@ export default function StripPreview({ template, photos = [], videos = [], imgFi
           )}
         </div>
       ))}
-      <img src={thumb} alt={template?.name || "windy the pooh strip"} loading="lazy" decoding="async" className="relative z-10 block w-full" />
+      <Image src={thumb} alt={template?.name || "windy the pooh strip"} fittingType="fit" className="absolute inset-0 z-10 h-full w-full" />
     </div>
   );
 }

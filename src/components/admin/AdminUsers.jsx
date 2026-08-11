@@ -4,6 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import StripPreview from "@/components/booth/StripPreview";
 import { planLabel } from "@/lib/plans";
+import { buildLifetimeGrantedEmail } from "@/lib/emailTemplates";
 
 const fmtDate = (v) => (v ? new Date(v).toLocaleDateString() : "—");
 
@@ -55,8 +56,16 @@ export default function AdminUsers({ users, strips, templates, meId, onChanged }
     setBusy(u.id);
     try {
       const payload = { plan };
+      const grantingLifetime = plan === "lifetime" && u.plan !== "lifetime";
       if (plan === "lifetime") payload.plan_renewed_at = new Date().toISOString();
       await base44.entities.User.update(u.id, payload);
+      if (grantingLifetime) {
+        base44.integrations.Core.SendEmail({
+          to: u.email,
+          subject: "Welcome to Lifetime Pass! 🎉",
+          body: buildLifetimeGrantedEmail({ userName: u.full_name || "there" }),
+        }).catch(() => {});
+      }
       await onChanged();
     } finally { setBusy(null); }
   };

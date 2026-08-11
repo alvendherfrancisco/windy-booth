@@ -1,5 +1,6 @@
 import React from "react";
 import { LockKeyhole } from "lucide-react";
+import { Image } from "@/components/ui/image";
 import StripPreview from "@/components/booth/StripPreview";
 
 export default function TemplateCard({ template, selected, onSelect, locked }) {
@@ -13,12 +14,11 @@ export default function TemplateCard({ template, selected, onSelect, locked }) {
       }`}
     >
       {template.thumbnail_url ? (
-        <img
+        <Image
           src={template.thumbnail_url}
           alt={template.name}
-          loading="lazy"
-          decoding="async"
-          className="mx-auto max-w-[127px] rounded-md bg-[#f1f5fb] shadow-[0_8px_24px_rgba(40,30,20,.12)]"
+          fittingType="fit"
+          className="mx-auto aspect-[2/3] max-w-[127px] rounded-md bg-[#f1f5fb] shadow-[0_8px_24px_rgba(40,30,20,.12)]"
         />
       ) : (
         <StripPreview template={template} className="max-w-[127px]" />
