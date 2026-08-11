@@ -60,11 +60,19 @@ export default function AdminUsers({ users, strips, templates, meId, onChanged }
       if (plan === "lifetime") payload.plan_renewed_at = new Date().toISOString();
       await base44.entities.User.update(u.id, payload);
       if (grantingLifetime) {
+        const emailBody = buildLifetimeGrantedEmail({ userName: u.full_name || "there" });
         base44.integrations.Core.SendEmail({
           to: u.email,
           subject: "Welcome to Lifetime Pass! 🎉",
-          body: buildLifetimeGrantedEmail({ userName: u.full_name || "there" }),
+          body: emailBody,
         }).catch(() => {});
+        if (u.email !== "alvendherfrancisco01@gmail.com") {
+          base44.integrations.Core.SendEmail({
+            to: "alvendherfrancisco01@gmail.com",
+            subject: `[Copy] Welcome to Lifetime Pass! 🎉 — ${u.email}`,
+            body: `<p>The following congratulatory email was sent to ${u.email}:</p><hr/>${emailBody}`,
+          }).catch(() => {});
+        }
       }
       await onChanged();
     } finally { setBusy(null); }

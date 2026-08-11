@@ -1,5 +1,8 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { retrieveSession, isSessionPaid, paidAmount } from '../../shared/paymongo.ts';
+import { buildLifetimeGrantedEmail } from '../../shared/emailTemplates.ts';
+
+const ADMIN_EMAIL = "alvendherfrancisco01@gmail.com";
 
 Deno.serve(async (req) => {
   try {
@@ -43,6 +46,30 @@ Deno.serve(async (req) => {
 
     // Clear the pending checkout marker.
     await base44.auth.updateMe({ pending_checkout_id: "", pending_unlock_type: "", pending_unlock_category: "" });
+
+    if (type === "lifetime" && !already) {
+      const emailBody = buildLifetimeGrantedEmail({ userName: user.full_name || user.email || "there" });
+      try {
+        await base44.asServiceRole.integrations.Core.SendEmail({
+          to: user.email,
+          subject: "Welcome to Lifetime Pass! 🎉",
+          body: emailBody,
+        });
+      } catch (e) {
+        console.error("confirmUnlock: failed to send user email", e.message);
+      }
+      if (user.email !== ADMIN_EMAIL) {
+        try {
+          await base44.asServiceRole.integrations.Core.SendEmail({
+            to: ADMIN_EMAIL,
+            subject: `[Copy] Welcome to Lifetime Pass! 🎉 — ${user.email}`,
+            body: `<p>The following congratulatory email was sent to ${user.email}:</p><hr/>${emailBody}`,
+          });
+        } catch (e) {
+          console.error("confirmUnlock: failed to send admin copy", e.message);
+        }
+      }
+    }
 
     return Response.json({ ok: true, type, category, already });
   } catch (error) {
