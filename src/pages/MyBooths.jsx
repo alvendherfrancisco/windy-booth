@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Download, Printer, Share2, Trash2 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import StripPreview from "@/components/booth/StripPreview";
@@ -11,31 +12,22 @@ import { downloadStripVideo } from "@/components/booth/downloadStripVideo";
 import { shareToInstagram } from "@/components/booth/shareStrip";
 import UpgradeModal from "@/components/upgrade/UpgradeModal";
 import { useTemplatesMap } from "@/hooks/useTemplates";
+import { useStrips } from "@/hooks/useStrips";
 
 const dotted = (v) => { const d = new Date(v); return `${d.getMonth() + 1}.${d.getDate()}.${d.getFullYear()}`; };
 
 export default function MyBooths() {
   const { user, printShopEnabled } = useAuth();
-  const [strips, setStrips] = useState([]);
+  const { strips } = useStrips(user?.id);
+  const queryClient = useQueryClient();
   const { templatesMap: templates } = useTemplatesMap();
   const plan = user?.plan || "free";
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [sharingId, setSharingId] = useState(null);
 
-  const load = async () => {
-    if (!user) return;
-    setStrips(await base44.entities.Strip.filter({ user_id: user.id, saved: true }, "-created_at"));
-  };
-  useEffect(() => {
-    load();
-    const off = base44.entities.Strip.subscribe(load);
-    return off;
-  }, [user?.id]);
-
   const remove = async (id) => {
-    setStrips((prev) => prev.filter((s) => s.id !== id));
+    queryClient.setQueryData(["strips", user.id], (prev) => (prev || []).filter((s) => s.id !== id));
     try { await base44.entities.Strip.delete(id); } catch (e) {}
-    load();
   };
   const download = (strip) => {
     if (strip.video_urls?.length) downloadStripVideo(templates[strip.template_id], strip.video_urls);

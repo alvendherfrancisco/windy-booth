@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { Check, Loader2, Minus, Package, Printer, Truck } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import StripPreview from "@/components/booth/StripPreview";
@@ -9,11 +10,14 @@ import FaceDoodles from "@/components/FaceDoodles";
 import PrintShopInfo from "@/components/printshop/PrintShopInfo";
 import { BUNDLES, formatPrice, computeTotal, FREE_SHIP_THRESHOLD } from "@/lib/printPricing";
 import LocationSelects from "@/components/printshop/LocationSelects";
+import { useStrips } from "@/hooks/useStrips";
+import { useTemplatesMap } from "@/hooks/useTemplates";
 
 export default function PrintShop() {
   const { user, printShopEnabled } = useAuth();
-  const [strips, setStrips] = useState([]);
-  const [templates, setTemplates] = useState({});
+  const queryClient = useQueryClient();
+  const { strips } = useStrips(user?.id);
+  const { templatesMap: templates } = useTemplatesMap();
   const [bundle, setBundle] = useState("classic");
   const [selected, setSelected] = useState({});
   const [paper, setPaper] = useState("matte");
@@ -27,7 +31,7 @@ export default function PrintShop() {
     const params = new URLSearchParams(window.location.search);
     if (params.get("success") === "1") {
       base44.functions.invoke("confirmPrintOrder", {}).
-      then((r) => {const d = r?.data ?? r; if (d?.ok === false) { setError("Payment not yet confirmed. Please try again in a moment."); return; } setDone({ order_id: d?.order_id });}).
+      then((r) => {const d = r?.data ?? r; if (d?.ok === false) { setError("Payment not yet confirmed. Please try again in a moment."); return; } queryClient.invalidateQueries({ queryKey: ["orders", user?.id] }); setDone({ order_id: d?.order_id });}).
       catch((e) => setError(e?.message || "Could not confirm payment"));
       window.history.replaceState({}, "", "/print-shop");
     } else if (params.get("canceled") === "1") {
@@ -35,12 +39,6 @@ export default function PrintShop() {
       window.history.replaceState({}, "", "/print-shop");
     }
   }, []);
-
-  useEffect(() => {
-    if (!user) return;
-    base44.entities.Strip.filter({ user_id: user.id, saved: true }, "-created_at").then(setStrips);
-    base44.entities.Template.list().then((t) => {const m = {};t.forEach((x) => m[x.id] = x);setTemplates(m);});
-  }, [user?.id]);
 
   if (!printShopEnabled) return <Navigate to="/dashboard" replace />;
 
