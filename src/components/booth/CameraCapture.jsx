@@ -82,30 +82,45 @@ const CameraCapture = forwardRef(function CameraCapture(
   // and also grabs a mirrored poster frame for thumbnails/print fallback.
   const captureClip = useCallback(async () => {
     const video = videoRef.current;
-    const stream = streamRef.current;
     const canvas = canvasRef.current;
-    if (!video || !stream || !canvas) return null;
+    if (!video || !canvas) return null;
+
+    // Record from a canvas that we continuously draw mirrored frames onto,
+    // so the saved video file itself is mirrored (not just the live preview).
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+    const ctx = canvas.getContext("2d");
+    const canvasStream = canvas.captureStream(30);
 
     const mimeType = MIME_CANDIDATES.find(t => window.MediaRecorder && MediaRecorder.isTypeSupported(t)) || "";
-    const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+    const recorder = new MediaRecorder(canvasStream, mimeType ? { mimeType } : undefined);
     const chunks = [];
     recorder.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
     const stopped = new Promise(resolve => { recorder.onstop = resolve; });
+
+    let drawing = true;
+    const drawFrame = () => {
+      if (!drawing) return;
+      ctx.save();
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      ctx.restore();
+      requestAnimationFrame(drawFrame);
+    };
+    drawFrame();
+
     recorder.start();
     await new Promise(r => setTimeout(r, CLIP_MS));
     recorder.stop();
+    drawing = false;
     await stopped;
 
     const finalMime = recorder.mimeType || mimeType || "video/webm";
     const ext = finalMime.includes("mp4") ? "mp4" : "webm";
     const videoFile = new File([new Blob(chunks, { type: finalMime })], `vendi-${Date.now()}.${ext}`, { type: finalMime });
 
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 480;
-    const ctx = canvas.getContext("2d");
-    ctx.translate(canvas.width, 0);
-    ctx.scale(-1, 1);
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    // Poster is the last mirrored frame already drawn on the canvas.
     const posterFile = await new Promise(resolve =>
       canvas.toBlob(blob => resolve(new File([blob], `vendi-${Date.now()}.jpg`, { type: "image/jpeg" })), "image/jpeg", 0.9)
     );
