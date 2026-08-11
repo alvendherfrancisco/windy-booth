@@ -15,7 +15,9 @@ import BoothStepper from "@/components/booth/BoothStepper";
 import CameraCapture from "@/components/booth/CameraCapture";
 import { RAINBOW_DOTS_BG } from "@/lib/rainbowDotsBg";
 import { downloadStrip } from "@/components/booth/downloadStrip";
+import { downloadStripVideo } from "@/components/booth/downloadStripVideo";
 import { shareToInstagram } from "@/components/booth/shareStrip";
+import { Switch } from "@/components/ui/switch";
 import PrintSimulation from "@/components/booth/PrintSimulation";
 import DownloadFaceScatter from "@/components/booth/DownloadFaceScatter";
 import PolkaDots from "@/components/PolkaDots";
@@ -36,9 +38,13 @@ export default function Booth() {
   const [mode, setMode] = useState(null);
   const [cameraPhotos, setCameraPhotos] = useState([]);
   const [cameraFiles, setCameraFiles] = useState([]);
+  const [cameraVideoFiles, setCameraVideoFiles] = useState([]);
+  const [liveMode, setLiveMode] = useState(false);
   const [uploadPhotos, setUploadPhotos] = useState([]);
   const [rawFiles, setRawFiles] = useState([]);
   const [finalPhotos, setFinalPhotos] = useState([]);
+  const [finalVideos, setFinalVideos] = useState([]);
+  const [isVideoStrip, setIsVideoStrip] = useState(false);
   const [filter, setFilter] = useState("none");
   const [tier, setTier] = useState("all");
   const [collection, setCollection] = useState("all");
@@ -59,11 +65,11 @@ export default function Booth() {
   useEffect(() => {setStep(1); /* eslint-disable-next-line */}, []);
 
   const resetAll = () => {
-    setStep(1);setSelected(null);setMode(null);setCameraPhotos([]);setCameraFiles([]);setUploadPhotos([]);setRawFiles([]);setFinalPhotos([]);setFilter("none");
+    setStep(1);setSelected(null);setMode(null);setCameraPhotos([]);setCameraFiles([]);setCameraVideoFiles([]);setLiveMode(false);setUploadPhotos([]);setRawFiles([]);setFinalPhotos([]);setFinalVideos([]);setIsVideoStrip(false);setFilter("none");
   };
 
   const retakePhotos = () => {
-    if (mode === "camera") { setCameraPhotos([]); setCameraFiles([]); }
+    if (mode === "camera") { setCameraPhotos([]); setCameraFiles([]); setCameraVideoFiles([]); }
     else { setUploadPhotos([]); setRawFiles([]); }
     setFinalPhotos([]);setFilter("none");setStep(3);
   };
@@ -100,19 +106,30 @@ export default function Booth() {
   const finish = async () => {
     const files = mode === "camera" ? cameraFiles : rawFiles;
     if (files.length !== 3 || !selected) return;
+    const asVideo = mode === "camera" && liveMode;
     setSaving(true);
     try {
-      // Bake + upload all 3 photos concurrently instead of one at a time.
-      const finalUrls = await Promise.all(
-        files.map((f) =>
-          bakeFilter(f, filter).then((baked) => base44.integrations.Core.UploadFile({ file: baked })).then((r) => r.file_url)
-        )
-      );
+      // Live Mode: upload the raw poster frames + recorded clips as-is (no
+      // filter baking — that's pixel-level canvas work meant for stills).
+      // Otherwise bake + upload all 3 photos concurrently.
+      let finalUrls, finalVideoUrls = [];
+      if (asVideo) {
+        [finalUrls, finalVideoUrls] = await Promise.all([
+          Promise.all(files.map((f) => base44.integrations.Core.UploadFile({ file: f }).then((r) => r.file_url))),
+          Promise.all(cameraVideoFiles.map((f) => base44.integrations.Core.UploadFile({ file: f }).then((r) => r.file_url))),
+        ]);
+      } else {
+        finalUrls = await Promise.all(
+          files.map((f) =>
+            bakeFilter(f, filter).then((baked) => base44.integrations.Core.UploadFile({ file: baked })).then((r) => r.file_url)
+          )
+        );
+      }
       const now = new Date();
       const [, current] = await Promise.all([
         base44.entities.Strip.create({
-          user_id: user.id, template_id: selected.id, photo_urls: finalUrls,
-          created_at: now.toISOString(), expires_at: null, saved: true, filter_applied: filter
+          user_id: user.id, template_id: selected.id, photo_urls: finalUrls, video_urls: finalVideoUrls, is_video: asVideo,
+          created_at: now.toISOString(), expires_at: null, saved: true, filter_applied: asVideo ? "none" : filter
         }),
         base44.entities.Strip.filter({ user_id: user.id, saved: true }, "created_at"),
       ]);
@@ -134,13 +151,15 @@ export default function Booth() {
       }
       await Promise.all(tasks);
       setFinalPhotos(finalUrls);
+      setFinalVideos(finalVideoUrls);
+      setIsVideoStrip(asVideo);
       setStep(4);
     } finally {
       setSaving(false);
     }
   };
 
-  const download = () => downloadStrip(selected, finalPhotos, "windy-strip.jpg");
+  const download = () => isVideoStrip ? downloadStripVideo(selected, finalVideos) : downloadStrip(selected, finalPhotos, "windy-strip.jpg");
   const previewFilterCss = filterCss(filter);
 
   return (
@@ -212,9 +231,18 @@ export default function Booth() {
         <>
           <h1 className="mb-5 font-heading text-2xl font-extrabold text-[#1e1b4b]">{mode === "camera" ? "Ready when you are" : "Pick three photos"}</h1>
           {mode === "camera" ? (
-            <CameraCapture ref={captureRef} selected={selected} photos={cameraPhotos} onPhotosChange={setCameraPhotos} onComplete={setCameraFiles} onCapturingChange={setCapturing} imgFilter={previewFilterCss}>
-              <FilterCard filter={filter} onFilterChange={setFilter} disabled={capturing} />
-            </CameraCapture>
+            <>
+              <div className="mb-4 flex items-center justify-between rounded-2xl border border-[#e2e8f0] bg-white p-4">
+                <div>
+                  <p className="text-sm font-bold text-[#1e1b4b]">Live Mode</p>
+                  <p className="text-xs text-[#94a3b8]">Capture short video clips instead of photos</p>
+                </div>
+                <Switch checked={liveMode} onCheckedChange={setLiveMode} disabled={capturing || cameraPhotos.length > 0} />
+              </div>
+              <CameraCapture ref={captureRef} selected={selected} photos={cameraPhotos} onPhotosChange={setCameraPhotos} onComplete={setCameraFiles} onVideoComplete={setCameraVideoFiles} onCapturingChange={setCapturing} imgFilter={previewFilterCss} live={liveMode}>
+                {!liveMode && <FilterCard filter={filter} onFilterChange={setFilter} disabled={capturing} />}
+              </CameraCapture>
+            </>
           ) : (
             <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[1fr_220px] lg:gap-4">
               {/* Upload card — mobile: first, desktop: col 1 row 1 */}
@@ -295,7 +323,7 @@ export default function Booth() {
           <div className="animate-pop relative isolate mt-4 overflow-hidden rounded-[18px] bg-[#5080da] p-6 text-white">
           <DownloadFaceScatter />
             <div className="mx-auto w-[180px]">
-              <StripPreview template={selected} photos={finalPhotos} />
+              <StripPreview template={selected} photos={finalPhotos} videos={isVideoStrip ? finalVideos : []} />
             </div>
             <p className="mt-5 font-heading text-xl font-extrabold text-white">Your strip is ready!</p>
             {!lifetime && used >= 10 &&
@@ -303,7 +331,7 @@ export default function Booth() {
           }
             <div className="mt-6 space-y-3">
               <button onClick={download} className="flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-4 text-sm font-bold text-[#3a6cbf] transition hover:bg-white/90">
-                <Download size={16} />Download Strip
+                <Download size={16} />{isVideoStrip ? "Download Video" : "Download Strip"}
               </button>
               <button onClick={async () => { try { setSharing(true); await shareToInstagram(selected, finalPhotos); } finally { setSharing(false); } }} disabled={sharing} className="flex w-full items-center justify-center gap-2 rounded-full border border-white px-5 py-3 text-sm font-bold text-white transition hover:bg-white/10 disabled:opacity-60">
                 <Instagram size={16} />{sharing ? "Opening share…" : "Share to Instagram"}

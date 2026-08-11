@@ -8,8 +8,11 @@ const TIMERS = [3, 5, 10];
 // The filter is chosen in a later step and baked into the photos at finish time,
 // so capture itself applies no filter. onComplete hands the File[] back to the
 // parent; onPhotosChange receives local object URLs for the live thumbnails.
+const CLIP_MS = 1500;
+const MIME_CANDIDATES = ["video/mp4;codecs=avc1", "video/webm;codecs=vp9", "video/webm"];
+
 const CameraCapture = forwardRef(function CameraCapture(
-  { selected, photos, onPhotosChange, onComplete, onCapturingChange, imgFilter = "none", children },
+  { selected, photos, onPhotosChange, onComplete, onVideoComplete, onCapturingChange, imgFilter = "none", live = false, children },
   ref
 ) {
   const videoRef = useRef(null);
@@ -17,6 +20,7 @@ const CameraCapture = forwardRef(function CameraCapture(
   const streamRef = useRef(null);
   const [timerVal, setTimerVal] = useState(3);
   const [countdown, setCountdown] = useState(null);
+  const [recording, setRecording] = useState(false);
   const [capturing, setCapturing] = useState(false);
   const [uploadingIdx, setUploadingIdx] = useState(null);
   const [camError, setCamError] = useState(null);
@@ -74,12 +78,47 @@ const CameraCapture = forwardRef(function CameraCapture(
     );
   }, []);
 
+  // Records a short muted video clip from the live stream (used in Live Mode)
+  // and also grabs a mirrored poster frame for thumbnails/print fallback.
+  const captureClip = useCallback(async () => {
+    const video = videoRef.current;
+    const stream = streamRef.current;
+    const canvas = canvasRef.current;
+    if (!video || !stream || !canvas) return null;
+
+    const mimeType = MIME_CANDIDATES.find(t => window.MediaRecorder && MediaRecorder.isTypeSupported(t)) || "";
+    const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+    const chunks = [];
+    recorder.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
+    const stopped = new Promise(resolve => { recorder.onstop = resolve; });
+    recorder.start();
+    await new Promise(r => setTimeout(r, CLIP_MS));
+    recorder.stop();
+    await stopped;
+
+    const finalMime = recorder.mimeType || mimeType || "video/webm";
+    const ext = finalMime.includes("mp4") ? "mp4" : "webm";
+    const videoFile = new File([new Blob(chunks, { type: finalMime })], `vendi-${Date.now()}.${ext}`, { type: finalMime });
+
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+    const ctx = canvas.getContext("2d");
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const posterFile = await new Promise(resolve =>
+      canvas.toBlob(blob => resolve(new File([blob], `vendi-${Date.now()}.jpg`, { type: "image/jpeg" })), "image/jpeg", 0.9)
+    );
+    return { posterUrl: URL.createObjectURL(posterFile), posterFile, videoFile };
+  }, []);
+
   const runCapture = useCallback(async () => {
     if (capturing) return;
     setCapturing(true);
     onCapturingChange?.(true);
     let taken = photos.length;
     const capturedFiles = [];
+    const capturedVideos = [];
     while (taken < 3) {
       let t = timerVal;
       setCountdown(t);
@@ -94,11 +133,23 @@ const CameraCapture = forwardRef(function CameraCapture(
         }, 1000);
       });
       setUploadingIdx(taken);
-      const result = await captureFrame();
-      if (result) {
-        capturedFiles.push(result.file);
-        onPhotosChange(prev => [...prev, result.url]);
-        taken++;
+      if (live) {
+        setRecording(true);
+        const result = await captureClip();
+        setRecording(false);
+        if (result) {
+          capturedFiles.push(result.posterFile);
+          capturedVideos.push(result.videoFile);
+          onPhotosChange(prev => [...prev, result.posterUrl]);
+          taken++;
+        }
+      } else {
+        const result = await captureFrame();
+        if (result) {
+          capturedFiles.push(result.file);
+          onPhotosChange(prev => [...prev, result.url]);
+          taken++;
+        }
       }
       setUploadingIdx(null);
       if (taken < 3) await new Promise(r => setTimeout(r, 1200));
@@ -106,7 +157,8 @@ const CameraCapture = forwardRef(function CameraCapture(
     setCapturing(false);
     onCapturingChange?.(false);
     onComplete?.(capturedFiles);
-  }, [capturing, photos.length, timerVal, captureFrame, onPhotosChange, onComplete, onCapturingChange]);
+    if (live) onVideoComplete?.(capturedVideos);
+  }, [capturing, photos.length, timerVal, live, captureFrame, captureClip, onPhotosChange, onComplete, onVideoComplete, onCapturingChange]);
 
   useImperativeHandle(ref, () => ({ capture: runCapture }), [runCapture]);
 
@@ -137,6 +189,12 @@ const CameraCapture = forwardRef(function CameraCapture(
                 <span className="font-heading text-8xl font-extrabold text-white drop-shadow-lg">
                   {countdown}
                 </span>
+              </div>
+            )}
+            {recording && (
+              <div className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-black/50 px-2.5 py-1">
+                <span className="h-2 w-2 animate-pulse rounded-full bg-red-500" />
+                <span className="text-xs font-bold text-white">REC</span>
               </div>
             )}
           </div>

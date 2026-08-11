@@ -4,8 +4,9 @@ import { STRIP_SLOTS } from "@/components/booth/stripSlots";
 // Renders a strip: the template's design asset with the user's photos
 // overlaid into the three measured photo slots (object-cover, centered).
 // Templates without a design asset fall back to a plain photo stack.
-export default function StripPreview({ template, photos = [], imgFilter = "none", className = "" }) {
+export default function StripPreview({ template, photos = [], videos = [], imgFilter = "none", className = "" }) {
   const thumb = template?.canvas_asset_url || template?.thumbnail_url;
+  const isVideo = videos && videos.length > 0;
 
   if (!thumb) {
     return (
@@ -13,8 +14,10 @@ export default function StripPreview({ template, photos = [], imgFilter = "none"
         <div className="space-y-1.5">
           {[0, 1, 2].map((i) => (
             <div key={i} className="aspect-square overflow-hidden bg-[#EFE9DF]">
-              {photos[i] && (
-                <img src={photos[i]} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" style={{ filter: imgFilter }} />
+              {isVideo ? (
+                videos[i] && <video src={videos[i]} poster={photos[i]} autoPlay loop muted playsInline className="h-full w-full object-cover" style={{ filter: imgFilter }} />
+              ) : (
+                photos[i] && <img src={photos[i]} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" style={{ filter: imgFilter }} />
               )}
             </div>
           ))}
@@ -25,7 +28,7 @@ export default function StripPreview({ template, photos = [], imgFilter = "none"
 
   return (
     <div className={`relative mx-auto w-full overflow-hidden rounded-md bg-white shadow-[0_8px_24px_rgba(40,30,20,.12)] ${className}`}>
-      {photos.slice(0, 3).map((p, i) => (
+      {(isVideo ? videos : photos).slice(0, 3).map((src, i) => (
         <div
           key={i}
           className="absolute overflow-hidden"
@@ -36,7 +39,11 @@ export default function StripPreview({ template, photos = [], imgFilter = "none"
             height: `${STRIP_SLOTS.heights[i] * 100}%`,
           }}
         >
-          <img src={p} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" style={{ filter: imgFilter }} />
+          {isVideo ? (
+            <video src={src} poster={photos[i]} autoPlay loop muted playsInline className="h-full w-full object-cover" style={{ filter: imgFilter }} />
+          ) : (
+            <img src={src} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" style={{ filter: imgFilter }} />
+          )}
         </div>
       ))}
       <img src={thumb} alt={template?.name || "windy the pooh strip"} loading="lazy" decoding="async" className="relative z-10 block w-full" />
