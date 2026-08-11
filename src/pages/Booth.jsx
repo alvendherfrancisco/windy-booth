@@ -53,6 +53,7 @@ export default function Booth() {
   const [saving, setSaving] = useState(false);
   const [sharing, setSharing] = useState(false);
   const [capturing, setCapturing] = useState(false);
+  const [downloadView, setDownloadView] = useState("video");
 
   const used = user?.sessions_period === currentPeriod() ? (user?.sessions_used_this_month || 0) : 0;
   const lifetime = isLifetime(user);
@@ -113,7 +114,8 @@ export default function Booth() {
         Promise.all(cameraClips.map(c => base44.integrations.Core.UploadFile({ file: c.posterFile }).then(r => r.file_url))),
       ]);
       const videoBlob = await compositeLiveStrip(selected, videoUrls);
-      const videoFile = new File([videoBlob], `windy-strip-${Date.now()}.webm`, { type: "video/webm" });
+      const ext = videoBlob.type.includes("mp4") ? "mp4" : "webm";
+      const videoFile = new File([videoBlob], `windy-strip-${Date.now()}.${ext}`, { type: videoBlob.type });
       const { file_url: renderedVideoUrl } = await base44.integrations.Core.UploadFile({ file: videoFile });
 
       const now = new Date();
@@ -144,6 +146,7 @@ export default function Booth() {
       await Promise.all(tasks);
       setFinalPhotos(photoUrls);
       setFinalVideoUrl(renderedVideoUrl);
+      setDownloadView("video");
       setStep(4);
     } finally {
       setSaving(false);
@@ -196,6 +199,7 @@ export default function Booth() {
 
   const download = () => downloadStrip(selected, finalPhotos, "windy-strip.jpg");
   const previewFilterCss = filterCss(filter);
+  const isVideoView = !!finalVideoUrl && downloadView === "video";
 
   return (
     <div className="mx-auto max-w-4xl pb-32 md:pb-28">
@@ -355,8 +359,14 @@ export default function Booth() {
       <div className="mx-auto max-w-sm text-center">
           <div className="animate-pop relative isolate mt-4 overflow-hidden rounded-[18px] bg-[#5080da] p-6 text-white">
           <DownloadFaceScatter />
+            {finalVideoUrl &&
+          <div className="relative z-10 mx-auto mb-4 flex w-fit rounded-full bg-white/20 p-1">
+                <button onClick={() => setDownloadView("video")} className={`rounded-full px-4 py-1.5 text-xs font-bold transition ${downloadView === "video" ? "bg-white text-[#3a6cbf]" : "text-white"}`}>Video</button>
+                <button onClick={() => setDownloadView("photo")} className={`rounded-full px-4 py-1.5 text-xs font-bold transition ${downloadView === "photo" ? "bg-white text-[#3a6cbf]" : "text-white"}`}>Photos</button>
+              </div>
+          }
             <div className="mx-auto w-[180px]">
-              {finalVideoUrl ? (
+              {isVideoView ? (
                 <LiveStripPreview videoUrl={finalVideoUrl} />
               ) : (
                 <StripPreview template={selected} photos={finalPhotos} />
@@ -367,15 +377,15 @@ export default function Booth() {
           <p className="mt-2 text-sm text-white/85">Your oldest strip was replaced — download it to keep it.</p>
           }
             <div className="mt-6 space-y-3">
-              <button onClick={() => finalVideoUrl ? downloadVideo(finalVideoUrl, "windy-strip.webm") : download()} className="flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-4 text-sm font-bold text-[#3a6cbf] transition hover:bg-white/90">
-                <Download size={16} />Download Strip
+              <button onClick={() => isVideoView ? downloadVideo(finalVideoUrl) : download()} className="flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-4 text-sm font-bold text-[#3a6cbf] transition hover:bg-white/90">
+                <Download size={16} />Download {isVideoView ? "Video" : "Strip"}
               </button>
-              {!finalVideoUrl &&
+              {!isVideoView &&
           <button onClick={async () => { try { setSharing(true); await shareToInstagram(selected, finalPhotos); } finally { setSharing(false); } }} disabled={sharing} className="flex w-full items-center justify-center gap-2 rounded-full border border-white px-5 py-3 text-sm font-bold text-white transition hover:bg-white/10 disabled:opacity-60">
                   <Instagram size={16} />{sharing ? "Opening share…" : "Share to Instagram"}
                 </button>
           }
-              {printShopEnabled && !finalVideoUrl &&
+              {printShopEnabled && !isVideoView &&
           <Link to="/print-shop" className="flex w-full items-center justify-center gap-2 rounded-full border border-white px-5 py-3 text-sm font-bold text-white transition hover:bg-white/10">
                   <Printer size={16} />Order a Physical Print
                 </Link>

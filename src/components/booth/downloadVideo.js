@@ -3,11 +3,13 @@ const isMobile = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 // Downloads a hosted Live Strip video. On mobile, uses the native share sheet
 // so the user can save it straight to their Photos/Gallery app; falls back to
 // a plain file download.
-export async function downloadVideo(url, filename = "windy-strip.webm") {
+export async function downloadVideo(url, filename) {
   try {
     const res = await fetch(url);
     const blob = await res.blob();
-    const file = new File([blob], filename, { type: blob.type });
+    const ext = blob.type.includes("mp4") ? "mp4" : "webm";
+    const finalName = filename || `windy-strip.${ext}`;
+    const file = new File([blob], finalName, { type: blob.type });
 
     if (isMobile() && navigator.canShare && navigator.canShare({ files: [file] })) {
       try {

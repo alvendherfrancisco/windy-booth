@@ -54,17 +54,23 @@ export async function compositeLiveStrip(template, videoUrls) {
   videos.forEach(v => { if (v) v.playbackRate = 2; });
   await Promise.all(videos.map(v => (v ? v.play().catch(() => {}) : null)));
 
-  const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9") ? "video/webm;codecs=vp9" : "video/webm";
+  const mimeType = MediaRecorder.isTypeSupported("video/mp4")
+    ? "video/mp4"
+    : MediaRecorder.isTypeSupported("video/webm;codecs=vp9") ? "video/webm;codecs=vp9" : "video/webm";
+  const outputType = mimeType.startsWith("video/mp4") ? "video/mp4" : "video/webm";
   const stream = canvas.captureStream(30);
   const recorder = new MediaRecorder(stream, { mimeType });
   const chunks = [];
   recorder.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
   const donePromise = new Promise(resolve => {
-    recorder.onstop = () => resolve(new Blob(chunks, { type: "video/webm" }));
+    recorder.onstop = () => resolve(new Blob(chunks, { type: outputType }));
   });
 
-  const longestDuration = Math.max(...videos.map(v => (v ? v.duration : 0)));
-  const recordMs = Math.max((longestDuration / 2) * 1000, 300); // halved for 2x speed
+  // Recorded webm clips often report duration as Infinity (MediaRecorder container
+  // quirk), so don't rely on video.duration — each clip was recorded for a fixed
+  // length in CameraCapture, so use that known length instead.
+  const CLIP_DURATION_MS = 1200;
+  const recordMs = CLIP_DURATION_MS / 2; // halved for 2x speed
 
   recorder.start();
   let raf;
