@@ -20,10 +20,6 @@ import PrintSimulation from "@/components/booth/PrintSimulation";
 import DownloadFaceScatter from "@/components/booth/DownloadFaceScatter";
 import PolkaDots from "@/components/PolkaDots";
 import FaceDoodles from "@/components/FaceDoodles";
-import { Switch } from "@/components/ui/switch";
-import { compositeLiveStrip } from "@/components/booth/videoCompositor";
-import { downloadVideo } from "@/components/booth/downloadVideo";
-import LiveStripPreview from "@/components/booth/LiveStripPreview";
 import UpgradeModal from "@/components/upgrade/UpgradeModal";
 import { canUseTemplate, currentPeriod, isLifetime, sessionLimitReached } from "@/lib/plans";
 import { useTemplates } from "@/hooks/useTemplates";
@@ -38,14 +34,11 @@ export default function Booth() {
   const templates = useMemo(() => allTemplates.filter((t) => t.active), [allTemplates]);
   const [selected, setSelected] = useState(null);
   const [mode, setMode] = useState(null);
-  const [liveMode, setLiveMode] = useState(false);
   const [cameraPhotos, setCameraPhotos] = useState([]);
   const [cameraFiles, setCameraFiles] = useState([]);
-  const [cameraClips, setCameraClips] = useState([]);
   const [uploadPhotos, setUploadPhotos] = useState([]);
   const [rawFiles, setRawFiles] = useState([]);
   const [finalPhotos, setFinalPhotos] = useState([]);
-  const [finalVideoUrl, setFinalVideoUrl] = useState(null);
   const [filter, setFilter] = useState("none");
   const [tier, setTier] = useState("all");
   const [collection, setCollection] = useState("all");
@@ -53,7 +46,6 @@ export default function Booth() {
   const [saving, setSaving] = useState(false);
   const [sharing, setSharing] = useState(false);
   const [capturing, setCapturing] = useState(false);
-  const [downloadView, setDownloadView] = useState("video");
 
   const used = user?.sessions_period === currentPeriod() ? (user?.sessions_used_this_month || 0) : 0;
   const lifetime = isLifetime(user);
@@ -67,11 +59,11 @@ export default function Booth() {
   useEffect(() => {setStep(1); /* eslint-disable-next-line */}, []);
 
   const resetAll = () => {
-    setStep(1);setSelected(null);setMode(null);setLiveMode(false);setCameraPhotos([]);setCameraFiles([]);setCameraClips([]);setUploadPhotos([]);setRawFiles([]);setFinalPhotos([]);setFinalVideoUrl(null);setFilter("none");
+    setStep(1);setSelected(null);setMode(null);setCameraPhotos([]);setCameraFiles([]);setUploadPhotos([]);setRawFiles([]);setFinalPhotos([]);setFilter("none");
   };
 
   const retakePhotos = () => {
-    if (mode === "camera") { setCameraPhotos([]); setCameraFiles([]); setCameraClips([]); }
+    if (mode === "camera") { setCameraPhotos([]); setCameraFiles([]); }
     else { setUploadPhotos([]); setRawFiles([]); }
     setFinalPhotos([]);setFilter("none");setStep(3);
   };
@@ -105,56 +97,7 @@ export default function Booth() {
     setRawFiles((r) => r.filter((_, idx) => idx !== i));
   };
 
-  const finishLive = async () => {
-    if (cameraClips.length !== 3 || !selected) return;
-    setSaving(true);
-    try {
-      const [videoUrls, photoUrls] = await Promise.all([
-        Promise.all(cameraClips.map(c => base44.integrations.Core.UploadFile({ file: c.videoFile }).then(r => r.file_url))),
-        Promise.all(cameraClips.map(c => base44.integrations.Core.UploadFile({ file: c.posterFile }).then(r => r.file_url))),
-      ]);
-      const videoBlob = await compositeLiveStrip(selected, videoUrls);
-      const ext = videoBlob.type.includes("mp4") ? "mp4" : "webm";
-      const videoFile = new File([videoBlob], `windy-strip-${Date.now()}.${ext}`, { type: videoBlob.type });
-      const { file_url: renderedVideoUrl } = await base44.integrations.Core.UploadFile({ file: videoFile });
-
-      const now = new Date();
-      const [, current] = await Promise.all([
-        base44.entities.Strip.create({
-          user_id: user.id, template_id: selected.id, photo_urls: photoUrls, video_urls: videoUrls,
-          rendered_video_url: renderedVideoUrl, is_live: true,
-          created_at: now.toISOString(), expires_at: null, saved: true, filter_applied: "none"
-        }),
-        base44.entities.Strip.filter({ user_id: user.id, saved: true }, "created_at"),
-      ]);
-
-      const tasks = [
-        base44.entities.Notification.create({ user_id: user.id, type: "booth_activity", message: "Your live strip is ready!", link: "/my-booths", read: false, created_at: now.toISOString() }),
-      ];
-      if (!lifetime && current.length >= 10) {
-        tasks.push(base44.entities.Strip.delete(current[0].id));
-        tasks.push(base44.entities.Notification.create({ user_id: user.id, type: "storage_eviction", message: "Your oldest strip was removed to make room for your new one.", link: "/my-booths", read: false, created_at: now.toISOString() }));
-      }
-      if (!lifetime) {
-        const period = currentPeriod();
-        const nextUsed = user.sessions_period === period ? used + 1 : 1;
-        tasks.push(base44.auth.updateMe({ sessions_used_this_month: nextUsed, sessions_period: period }).then(() => updateUser({ sessions_used_this_month: nextUsed, sessions_period: period })));
-        if (nextUsed === 8 || nextUsed === 10) {
-          tasks.push(base44.entities.Notification.create({ user_id: user.id, type: "usage_limit", message: `You've used ${nextUsed} of 10 sessions today.`, link: "/profile", read: false, created_at: now.toISOString() }));
-        }
-      }
-      await Promise.all(tasks);
-      setFinalPhotos(photoUrls);
-      setFinalVideoUrl(renderedVideoUrl);
-      setDownloadView("video");
-      setStep(4);
-    } finally {
-      setSaving(false);
-    }
-  };
-
   const finish = async () => {
-    if (liveMode && mode === "camera") { await finishLive(); return; }
     const files = mode === "camera" ? cameraFiles : rawFiles;
     if (files.length !== 3 || !selected) return;
     setSaving(true);
@@ -199,7 +142,6 @@ export default function Booth() {
 
   const download = () => downloadStrip(selected, finalPhotos, "windy-strip.jpg");
   const previewFilterCss = filterCss(filter);
-  const isVideoView = !!finalVideoUrl && downloadView === "video";
 
   return (
     <div className="mx-auto max-w-4xl pb-32 md:pb-28">
@@ -252,21 +194,14 @@ export default function Booth() {
       {step === 2 &&
       <>
           <h1 className="font-heading text-2xl font-extrabold text-[#1e1b4b]">How would you like to add your photos?</h1>
-          <div className="mt-5 flex items-center justify-between rounded-2xl border border-[#e2e8f0] bg-white p-4">
-            <div>
-              <p className="text-sm font-bold text-[#1e1b4b]">Live Mode</p>
-              <p className="text-xs text-[#94a3b8]">Capture short video clips and save your strip in motion at 2x speed</p>
-            </div>
-            <Switch checked={liveMode} onCheckedChange={setLiveMode} />
-          </div>
-          <div className="mt-5 grid grid-cols-2 gap-4">
+          <div className="mt-7 grid grid-cols-2 gap-4">
             <button onClick={() => {setMode("camera");setStep(3);}} className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-[18px] border border-[#D8D9DC] bg-white p-8 text-center transition hover:border-[#228be6]" style={{ backgroundImage: RAINBOW_DOTS_BG, backgroundRepeat: "no-repeat" }}>
               <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-[#e7f5ff]"><Camera size={22} className="text-[#228be6]" /></div>
-              <div className="relative z-10"><b className="block text-sm text-[#1e1b4b]">Take Photos</b><small className="text-[#94a3b8]">{liveMode ? "Record short clips" : "Use your camera"}</small></div>
+              <div className="relative z-10"><b className="block text-sm text-[#1e1b4b]">Take Photos</b><small className="text-[#94a3b8]">Use your camera</small></div>
             </button>
-            <button onClick={() => {if (liveMode) return;setMode("upload");setStep(3);}} disabled={liveMode} className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-[18px] border border-[#D8D9DC] bg-white p-8 text-center transition hover:border-[#228be6] disabled:cursor-not-allowed disabled:opacity-40" style={{ backgroundImage: RAINBOW_DOTS_BG, backgroundRepeat: "no-repeat" }}>
+            <button onClick={() => {setMode("upload");setStep(3);}} className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-[18px] border border-[#D8D9DC] bg-white p-8 text-center transition hover:border-[#228be6]" style={{ backgroundImage: RAINBOW_DOTS_BG, backgroundRepeat: "no-repeat" }}>
               <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-[#e7f5ff]"><ImageUp size={22} className="text-[#228be6]" /></div>
-              <div className="relative z-10"><b className="block text-sm text-[#1e1b4b]">Upload Photos</b><small className="text-[#94a3b8]">{liveMode ? "Camera only in Live Mode" : "Choose from gallery"}</small></div>
+              <div className="relative z-10"><b className="block text-sm text-[#1e1b4b]">Upload Photos</b><small className="text-[#94a3b8]">Choose from gallery</small></div>
             </button>
           </div>
         </>
@@ -277,8 +212,8 @@ export default function Booth() {
         <>
           <h1 className="mb-5 font-heading text-2xl font-extrabold text-[#1e1b4b]">{mode === "camera" ? "Ready when you are" : "Pick three photos"}</h1>
           {mode === "camera" ? (
-            <CameraCapture ref={captureRef} selected={selected} photos={cameraPhotos} onPhotosChange={setCameraPhotos} onComplete={setCameraFiles} onLiveComplete={setCameraClips} onCapturingChange={setCapturing} imgFilter={previewFilterCss} liveMode={liveMode}>
-              {!liveMode && <FilterCard filter={filter} onFilterChange={setFilter} disabled={capturing} />}
+            <CameraCapture ref={captureRef} selected={selected} photos={cameraPhotos} onPhotosChange={setCameraPhotos} onComplete={setCameraFiles} onCapturingChange={setCapturing} imgFilter={previewFilterCss}>
+              <FilterCard filter={filter} onFilterChange={setFilter} disabled={capturing} />
             </CameraCapture>
           ) : (
             <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[1fr_220px] lg:gap-4">
@@ -359,33 +294,21 @@ export default function Booth() {
       <div className="mx-auto max-w-sm text-center">
           <div className="animate-pop relative isolate mt-4 overflow-hidden rounded-[18px] bg-[#5080da] p-6 text-white">
           <DownloadFaceScatter />
-            {finalVideoUrl &&
-          <div className="relative z-10 mx-auto mb-4 flex w-fit rounded-full bg-white/20 p-1">
-                <button onClick={() => setDownloadView("video")} className={`rounded-full px-4 py-1.5 text-xs font-bold transition ${downloadView === "video" ? "bg-white text-[#3a6cbf]" : "text-white"}`}>Video</button>
-                <button onClick={() => setDownloadView("photo")} className={`rounded-full px-4 py-1.5 text-xs font-bold transition ${downloadView === "photo" ? "bg-white text-[#3a6cbf]" : "text-white"}`}>Photos</button>
-              </div>
-          }
             <div className="mx-auto w-[180px]">
-              {isVideoView ? (
-                <LiveStripPreview videoUrl={finalVideoUrl} />
-              ) : (
-                <StripPreview template={selected} photos={finalPhotos} />
-              )}
+              <StripPreview template={selected} photos={finalPhotos} />
             </div>
             <p className="mt-5 font-heading text-xl font-extrabold text-white">Your strip is ready!</p>
             {!lifetime && used >= 10 &&
           <p className="mt-2 text-sm text-white/85">Your oldest strip was replaced — download it to keep it.</p>
           }
             <div className="mt-6 space-y-3">
-              <button onClick={() => isVideoView ? downloadVideo(finalVideoUrl) : download()} className="flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-4 text-sm font-bold text-[#3a6cbf] transition hover:bg-white/90">
-                <Download size={16} />Download {isVideoView ? "Video" : "Strip"}
+              <button onClick={download} className="flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-4 text-sm font-bold text-[#3a6cbf] transition hover:bg-white/90">
+                <Download size={16} />Download Strip
               </button>
-              {!isVideoView &&
-          <button onClick={async () => { try { setSharing(true); await shareToInstagram(selected, finalPhotos); } finally { setSharing(false); } }} disabled={sharing} className="flex w-full items-center justify-center gap-2 rounded-full border border-white px-5 py-3 text-sm font-bold text-white transition hover:bg-white/10 disabled:opacity-60">
-                  <Instagram size={16} />{sharing ? "Opening share…" : "Share to Instagram"}
-                </button>
-          }
-              {printShopEnabled && !isVideoView &&
+              <button onClick={async () => { try { setSharing(true); await shareToInstagram(selected, finalPhotos); } finally { setSharing(false); } }} disabled={sharing} className="flex w-full items-center justify-center gap-2 rounded-full border border-white px-5 py-3 text-sm font-bold text-white transition hover:bg-white/10 disabled:opacity-60">
+                <Instagram size={16} />{sharing ? "Opening share…" : "Share to Instagram"}
+              </button>
+              {printShopEnabled &&
           <Link to="/print-shop" className="flex w-full items-center justify-center gap-2 rounded-full border border-white px-5 py-3 text-sm font-bold text-white transition hover:bg-white/10">
                   <Printer size={16} />Order a Physical Print
                 </Link>

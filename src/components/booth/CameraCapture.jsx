@@ -3,14 +3,13 @@ import { STRIP_SLOTS } from "@/components/booth/stripSlots";
 import StripPreview from "@/components/booth/StripPreview";
 
 const TIMERS = [3, 5, 10];
-const CLIP_DURATION = 1200; // ms per video clip in Live Mode
 
 // Captures three raw (unfiltered) frames from the webcam as local File objects.
 // The filter is chosen in a later step and baked into the photos at finish time,
 // so capture itself applies no filter. onComplete hands the File[] back to the
 // parent; onPhotosChange receives local object URLs for the live thumbnails.
 const CameraCapture = forwardRef(function CameraCapture(
-  { selected, photos, onPhotosChange, onComplete, onLiveComplete, onCapturingChange, imgFilter = "none", liveMode = false, children },
+  { selected, photos, onPhotosChange, onComplete, onCapturingChange, imgFilter = "none", children },
   ref
 ) {
   const videoRef = useRef(null);
@@ -75,34 +74,12 @@ const CameraCapture = forwardRef(function CameraCapture(
     );
   }, []);
 
-  // Records a short muted video clip from the live stream for Live Mode,
-  // plus a mirrored poster frame (via captureFrame) for the thumbnail/preview.
-  const captureClip = useCallback(() => {
-    return new Promise(resolve => {
-      const stream = streamRef.current;
-      if (!stream) return resolve(null);
-      const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp8") ? "video/webm;codecs=vp8" : "video/webm";
-      const recorder = new MediaRecorder(stream, { mimeType });
-      const chunks = [];
-      recorder.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
-      recorder.onstop = async () => {
-        const blob = new Blob(chunks, { type: "video/webm" });
-        const videoFile = new File([blob], `windy-clip-${Date.now()}.webm`, { type: "video/webm" });
-        const poster = await captureFrame();
-        resolve({ videoFile, posterFile: poster?.file, posterUrl: poster?.url });
-      };
-      recorder.start();
-      setTimeout(() => recorder.stop(), CLIP_DURATION);
-    });
-  }, [captureFrame]);
-
   const runCapture = useCallback(async () => {
     if (capturing) return;
     setCapturing(true);
     onCapturingChange?.(true);
     let taken = photos.length;
-    const capturedImageFiles = [];
-    const capturedClips = [];
+    const capturedFiles = [];
     while (taken < 3) {
       let t = timerVal;
       setCountdown(t);
@@ -117,29 +94,19 @@ const CameraCapture = forwardRef(function CameraCapture(
         }, 1000);
       });
       setUploadingIdx(taken);
-      if (liveMode) {
-        const result = await captureClip();
-        if (result) {
-          capturedClips.push({ videoFile: result.videoFile, posterFile: result.posterFile });
-          onPhotosChange(prev => [...prev, result.posterUrl]);
-          taken++;
-        }
-      } else {
-        const result = await captureFrame();
-        if (result) {
-          capturedImageFiles.push(result.file);
-          onPhotosChange(prev => [...prev, result.url]);
-          taken++;
-        }
+      const result = await captureFrame();
+      if (result) {
+        capturedFiles.push(result.file);
+        onPhotosChange(prev => [...prev, result.url]);
+        taken++;
       }
       setUploadingIdx(null);
       if (taken < 3) await new Promise(r => setTimeout(r, 1200));
     }
     setCapturing(false);
     onCapturingChange?.(false);
-    if (liveMode) onLiveComplete?.(capturedClips);
-    else onComplete?.(capturedImageFiles);
-  }, [capturing, photos.length, timerVal, captureFrame, captureClip, liveMode, onPhotosChange, onComplete, onLiveComplete, onCapturingChange]);
+    onComplete?.(capturedFiles);
+  }, [capturing, photos.length, timerVal, captureFrame, onPhotosChange, onComplete, onCapturingChange]);
 
   useImperativeHandle(ref, () => ({ capture: runCapture }), [runCapture]);
 
