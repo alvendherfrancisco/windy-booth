@@ -41,6 +41,19 @@
         "warm"
       ],
       "default": "none"
+    },
+    "is_live": {
+      "type": "boolean",
+      "default": false
+    },
+    "video_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rendered_video_url": {
+      "type": "string"
     }
   },
   "required": [
