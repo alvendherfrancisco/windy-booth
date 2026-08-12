@@ -109,6 +109,16 @@ export const AuthProvider = ({ children }) => {
             base44.entities.Strip.update(s.id, { user_id: currentUser.id, is_guest: false })
           ));
           clearGuestStrips();
+          // Carry over the sessions they already used as a guest so the
+          // free-tier cap can't be bypassed by signing up mid-way.
+          if (!isLifetime(currentUser)) {
+            const period = currentPeriod();
+            const already = currentUser.sessions_period === period ? (currentUser.sessions_used_this_month || 0) : 0;
+            const nextUsed = already + guestStrips.length;
+            await base44.auth.updateMe({ sessions_used_this_month: nextUsed, sessions_period: period });
+            currentUser.sessions_used_this_month = nextUsed;
+            currentUser.sessions_period = period;
+          }
         }
       } catch { /* best-effort migration, never blocks login */ }
       // Free-plan session counter resets at the start of each billing month.
