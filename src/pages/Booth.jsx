@@ -25,6 +25,7 @@ import UpgradeModal from "@/components/upgrade/UpgradeModal";
 import { canUseTemplate, currentPeriod, isLifetime, sessionLimitReached } from "@/lib/plans";
 import { useTemplates } from "@/hooks/useTemplates";
 import { addGuestStrip } from "@/lib/guestStrips";
+import { getDeviceId } from "@/lib/deviceId";
 
 export default function Booth() {
   const { user, updateUser, printShopEnabled } = useAuth();
@@ -57,7 +58,7 @@ export default function Booth() {
   const [guestUsed, setGuestUsed] = useState(0);
   useEffect(() => {
     if (user) return;
-    base44.functions.invoke("guestStrip", { action: "usage" }).then((r) => setGuestUsed((r?.data ?? r)?.count || 0)).catch(() => {});
+    base44.functions.invoke("guestStrip", { action: "usage", device_id: getDeviceId() }).then((r) => setGuestUsed((r?.data ?? r)?.count || 0)).catch(() => {});
   }, [user]);
   const limitReached = user ? sessionLimitReached(user) : guestUsed >= 10;
   const [upgradeOpen, setUpgradeOpen] = useState(false);
@@ -160,7 +161,7 @@ export default function Booth() {
         // daily session cap can't be reset by clearing local storage) and
         // kept in a local copy so it can be claimed automatically on signup.
         const res = await base44.functions.invoke("guestStrip", {
-          action: "create", template_id: selected.id, photo_urls: finalUrls, video_urls: finalVideoUrls, is_video: asVideo,
+          action: "create", device_id: getDeviceId(), template_id: selected.id, photo_urls: finalUrls, video_urls: finalVideoUrls, is_video: asVideo,
           filter_applied: asVideo ? "none" : filter
         });
         const guestStrip = (res?.data ?? res)?.strip;

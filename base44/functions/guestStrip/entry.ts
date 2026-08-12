@@ -17,24 +17,27 @@ function todayStartIso() {
   return d.toISOString();
 }
 
-// Server-side guest session tracking, keyed by IP instead of client-side
-// storage — this is what the daily session cap actually enforces, so
-// clearing localStorage/cookies or revisiting the site can't reset it.
+// Server-side guest session tracking, keyed by a stable per-browser device
+// id sent from the client — IP alone can flicker across requests behind
+// proxies/CDNs, causing inconsistent counts. IP is still stored for admin
+// visibility but device_id is what the daily cap enforces.
 export default async function (req) {
   try {
     const base44 = createClientFromRequest(req);
     const body = await req.json();
     const ip = getClientIp(req);
+    const deviceId = body.device_id || null;
     const since = todayStartIso();
+    const matchQuery = deviceId ? { is_guest: true, guest_device_id: deviceId } : { is_guest: true, guest_ip: ip };
 
     if (body.action === 'usage') {
-      const strips = await base44.asServiceRole.entities.Strip.filter({ is_guest: true, guest_ip: ip });
+      const strips = await base44.asServiceRole.entities.Strip.filter(matchQuery);
       const count = strips.filter((s) => s.created_at >= since).length;
       return Response.json({ count, limit: DAILY_LIMIT });
     }
 
     if (body.action === 'create') {
-      const strips = await base44.asServiceRole.entities.Strip.filter({ is_guest: true, guest_ip: ip });
+      const strips = await base44.asServiceRole.entities.Strip.filter(matchQuery);
       const count = strips.filter((s) => s.created_at >= since).length;
       if (count >= DAILY_LIMIT) {
         return Response.json({ error: 'Daily session limit reached' }, { status: 403 });
@@ -47,6 +50,7 @@ export default async function (req) {
       const strip = await base44.asServiceRole.entities.Strip.create({
         is_guest: true,
         guest_ip: ip,
+        guest_device_id: deviceId || undefined,
         template_id,
         photo_urls,
         video_urls: video_urls || [],

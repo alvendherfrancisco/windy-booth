@@ -12,6 +12,9 @@
     "guest_ip": {
       "type": "string"
     },
+    "guest_device_id": {
+      "type": "string"
+    },
     "template_id": {
       "type": "string"
     },
