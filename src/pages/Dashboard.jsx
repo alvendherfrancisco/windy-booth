@@ -12,6 +12,7 @@ import { useTemplatesMap } from "@/hooks/useTemplates";
 import { useStrips } from "@/hooks/useStrips";
 import { useOrders } from "@/hooks/useOrders";
 import { getDeviceId } from "@/lib/deviceId";
+import { getGuestUsageCountToday } from "@/lib/guestStrips";
 
 export default function Dashboard() {
   const { user, printShopEnabled, updateUser } = useAuth();
@@ -24,7 +25,8 @@ export default function Dashboard() {
   const [guestUsed, setGuestUsed] = useState(null);
   useEffect(() => {
     if (user) return;
-    base44.functions.invoke("guestStrip", { action: "usage", device_id: getDeviceId() }).then((r) => setGuestUsed((r?.data ?? r)?.count || 0)).catch(() => setGuestUsed(0));
+    const localCount = getGuestUsageCountToday();
+    base44.functions.invoke("guestStrip", { action: "usage", device_id: getDeviceId() }).then((r) => setGuestUsed(Math.max((r?.data ?? r)?.count || 0, localCount))).catch(() => setGuestUsed(localCount));
   }, [user]);
   const guestUsageLoading = !user && guestUsed === null;
   const used = user ? user?.sessions_used_this_month || 0 : guestUsed || 0;

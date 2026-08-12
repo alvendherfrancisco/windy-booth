@@ -24,7 +24,7 @@ import FaceDoodles from "@/components/FaceDoodles";
 import UpgradeModal from "@/components/upgrade/UpgradeModal";
 import { canUseTemplate, currentPeriod, isLifetime, sessionLimitReached } from "@/lib/plans";
 import { useTemplates } from "@/hooks/useTemplates";
-import { addGuestStrip } from "@/lib/guestStrips";
+import { addGuestStrip, getGuestUsageCountToday } from "@/lib/guestStrips";
 import { getDeviceId } from "@/lib/deviceId";
 
 export default function Booth() {
@@ -58,7 +58,8 @@ export default function Booth() {
   const [guestUsed, setGuestUsed] = useState(0);
   useEffect(() => {
     if (user) return;
-    base44.functions.invoke("guestStrip", { action: "usage", device_id: getDeviceId() }).then((r) => setGuestUsed((r?.data ?? r)?.count || 0)).catch(() => {});
+    const localCount = getGuestUsageCountToday();
+    base44.functions.invoke("guestStrip", { action: "usage", device_id: getDeviceId() }).then((r) => setGuestUsed(Math.max((r?.data ?? r)?.count || 0, localCount))).catch(() => setGuestUsed(localCount));
   }, [user]);
   const limitReached = user ? sessionLimitReached(user) : guestUsed >= 10;
   const [upgradeOpen, setUpgradeOpen] = useState(false);

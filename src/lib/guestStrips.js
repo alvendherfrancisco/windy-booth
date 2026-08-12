@@ -32,3 +32,12 @@ export function deleteGuestStrip(id) {
 export function clearGuestStrips() {
   try { localStorage.removeItem(KEY); } catch { /* storage unavailable */ }
 }
+
+// Local strips created today, per this browser. Used as a floor for the
+// server-reported usage count — the server can lag right after a strip is
+// created, which otherwise makes the count flicker between refreshes.
+export function getGuestUsageCountToday() {
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  return getGuestStrips().filter((s) => s.created_at >= start.toISOString()).length;
+}
