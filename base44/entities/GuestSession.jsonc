@@ -1,0 +1,45 @@
+{
+  "name": "GuestSession",
+  "type": "object",
+  "properties": {
+    "device_id": {
+      "type": "string"
+    },
+    "guest_ip": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string"
+    },
+    "count": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "date",
+    "count"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

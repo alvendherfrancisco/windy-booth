@@ -11,39 +11,43 @@ function getClientIp(req) {
   );
 }
 
-function todayStartIso() {
+// Server-side guest session tracking. Each device/IP gets exactly ONE
+// GuestSession record per day holding a running count — instead of counting
+// every Strip a guest ever created. This guarantees the count stays
+// consistent no matter how many tabs are opened or closed, since it's a
+// single row incremented server-side, not re-derived by scanning strips.
+// Matching by device_id OR ip means clearing browser data (wiping the
+// stored device_id) still resolves to the same day's record via IP, so the
+// daily cap can't be bypassed by a fresh browser profile alone.
+function todayKey() {
   const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d.toISOString();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-// Server-side guest session tracking, keyed by a stable per-browser device
-// id sent from the client — IP alone can flicker across requests behind
-// proxies/CDNs, causing inconsistent counts. IP is still stored for admin
-// visibility but device_id is what the daily cap enforces.
+async function findSession(base44, deviceId, ip, dateKey) {
+  const query = deviceId
+    ? { date: dateKey, $or: [{ device_id: deviceId }, { guest_ip: ip }] }
+    : { date: dateKey, guest_ip: ip };
+  const existing = await base44.asServiceRole.entities.GuestSession.filter(query);
+  return existing[0] || null;
+}
+
 export default async function (req) {
   try {
     const base44 = createClientFromRequest(req);
     const body = await req.json();
     const ip = getClientIp(req);
     const deviceId = body.device_id || null;
-    const since = todayStartIso();
-    // Match by device_id OR ip — if a guest clears their browser data (wiping
-    // the stored device_id), their IP still catches today's usage so the
-    // daily cap can't be bypassed by a fresh browser profile alone.
-    const matchQuery = deviceId
-      ? { is_guest: true, $or: [{ guest_device_id: deviceId }, { guest_ip: ip }] }
-      : { is_guest: true, guest_ip: ip };
+    const dateKey = todayKey();
 
     if (body.action === 'usage') {
-      const strips = await base44.asServiceRole.entities.Strip.filter(matchQuery);
-      const count = strips.filter((s) => s.created_at >= since).length;
-      return Response.json({ count, limit: DAILY_LIMIT });
+      const session = await findSession(base44, deviceId, ip, dateKey);
+      return Response.json({ count: session?.count || 0, limit: DAILY_LIMIT });
     }
 
     if (body.action === 'create') {
-      const strips = await base44.asServiceRole.entities.Strip.filter(matchQuery);
-      const count = strips.filter((s) => s.created_at >= since).length;
+      const session = await findSession(base44, deviceId, ip, dateKey);
+      const count = session?.count || 0;
       if (count >= DAILY_LIMIT) {
         return Response.json({ error: 'Daily session limit reached' }, { status: 403 });
       }
@@ -65,6 +69,20 @@ export default async function (req) {
         saved: true,
         filter_applied: filter_applied || 'none',
       });
+      if (session) {
+        await base44.asServiceRole.entities.GuestSession.update(session.id, {
+          count: count + 1,
+          guest_ip: ip,
+          device_id: deviceId || session.device_id,
+        });
+      } else {
+        await base44.asServiceRole.entities.GuestSession.create({
+          device_id: deviceId || undefined,
+          guest_ip: ip,
+          date: dateKey,
+          count: 1,
+        });
+      }
       return Response.json({ strip });
     }
 
