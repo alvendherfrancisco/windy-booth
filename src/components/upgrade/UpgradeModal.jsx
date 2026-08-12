@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { Check, CheckCircle2, X } from "lucide-react";
 import { getPricing } from "@/lib/plans";
 import { getUserCountry } from "@/lib/geo";
+import { useAuth } from "@/lib/AuthContext";
 import VendiLogo from "@/components/VendiLogo";
 import PaymentStep from "@/components/upgrade/PaymentStep";
 
@@ -13,6 +15,7 @@ const INCLUDED = [
 
 
 export default function UpgradeModal({ open, onClose, variant = "lifetime", collection }) {
+  const { user } = useAuth();
   const [stage, setStage] = useState("plans");
   const [chosenType, setChosenType] = useState(null);
   const [country, setCountry] = useState(null);
@@ -20,6 +23,23 @@ export default function UpgradeModal({ open, onClose, variant = "lifetime", coll
   useEffect(() => {if (open) {setStage("plans");setChosenType(null);getUserCountry().then(setCountry);}}, [open]);
 
   if (!open) return null;
+
+  if (!user) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
+        <div className="relative w-full max-w-sm rounded-[22px] border border-[#e2e8f0] bg-white p-6 text-center animate-modal-in" onClick={(e) => e.stopPropagation()}>
+          <button onClick={onClose} className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full text-[#94a3b8] hover:bg-[#f1f5fb]"><X size={18} /></button>
+          <VendiLogo size={56} className="mx-auto" />
+          <h2 className="mt-3 font-heading text-xl font-extrabold text-[#1e1b4b]">Create a free account</h2>
+          <p className="mt-2 text-sm text-[#475569]">Sign up to unlock {variant === "collection" ? `"${collection || "this collection"}"` : "the Lifetime Pass"} — any strips you've already made will be saved to your new account.</p>
+          <div className="mt-5 space-y-2.5">
+            <Link to="/register" className="block w-full rounded-full bg-[#5080da] px-5 py-3.5 text-sm font-bold text-white transition hover:bg-[#3a6cbf]">Sign up</Link>
+            <Link to="/login" className="block w-full text-sm font-bold text-[#94a3b8] hover:text-[#1e1b4b]">Already have an account? Log in</Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const pricing = getPricing(country);
   const LIFETIME_PRICE = pricing.lifetime;

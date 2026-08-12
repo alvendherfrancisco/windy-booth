@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Download, Printer, Share2, Trash2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -13,12 +13,16 @@ import { shareToInstagram } from "@/components/booth/shareStrip";
 import UpgradeModal from "@/components/upgrade/UpgradeModal";
 import { useTemplatesMap } from "@/hooks/useTemplates";
 import { useStrips } from "@/hooks/useStrips";
+import { getGuestStrips, deleteGuestStrip } from "@/lib/guestStrips";
 
 const dotted = (v) => { const d = new Date(v); return `${d.getMonth() + 1}.${d.getDate()}.${d.getFullYear()}`; };
 
 export default function MyBooths() {
   const { user, printShopEnabled } = useAuth();
-  const { strips } = useStrips(user?.id);
+  const { strips: userStrips } = useStrips(user?.id);
+  const [guestStrips, setGuestStrips] = useState([]);
+  useEffect(() => { if (!user) setGuestStrips(getGuestStrips()); }, [user]);
+  const strips = user ? userStrips : guestStrips;
   const queryClient = useQueryClient();
   const { templatesMap: templates } = useTemplatesMap();
   const plan = user?.plan || "free";
@@ -26,6 +30,11 @@ export default function MyBooths() {
   const [sharingId, setSharingId] = useState(null);
 
   const remove = async (id) => {
+    if (!user) {
+      deleteGuestStrip(id);
+      setGuestStrips((prev) => prev.filter((s) => s.id !== id));
+      return;
+    }
     queryClient.setQueryData(["strips", user.id], (prev) => (prev || []).filter((s) => s.id !== id));
     try { await base44.entities.Strip.delete(id); } catch (e) {}
   };
@@ -46,8 +55,9 @@ export default function MyBooths() {
     <div>
       <header className="mb-6">
         <h1 className="font-heading text-3xl font-extrabold">Strips</h1>
-        {plan === "free" && <p className="mt-1 text-sm text-[#8B8D93]">Your 10 newest strips live here. New strips replace the oldest.</p>}
-        {plan === "free" && <button onClick={() => setUpgradeOpen(true)} className="mt-4 inline-block rounded-full bg-[#fff3bf] px-4 py-2 text-sm font-bold text-[#e67700]">Get Lifetime Pass</button>}
+        {!user && <p className="mt-1 text-sm text-[#8B8D93]">These strips are only saved on this device — sign up to keep them forever.</p>}
+        {user && plan === "free" && <p className="mt-1 text-sm text-[#8B8D93]">Your 10 newest strips live here. New strips replace the oldest.</p>}
+        {user && plan === "free" && <button onClick={() => setUpgradeOpen(true)} className="mt-4 inline-block rounded-full bg-[#fff3bf] px-4 py-2 text-sm font-bold text-[#e67700]">Get Lifetime Pass</button>}
       </header>
       {strips.length ? (
         <div className="flex flex-wrap justify-center gap-4">

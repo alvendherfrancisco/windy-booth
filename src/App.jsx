@@ -45,17 +45,18 @@ const AuthenticatedApp = () => {
     <Route path="/register" element={<Register />} />
     <Route path="/forgot-password" element={<ForgotPassword />} />
     <Route path="/reset-password" element={<ResetPassword />} />
-    <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
-      <Route element={<BoothWizardProvider><AppShell /></BoothWizardProvider>}>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/booth" element={<Booth />} />
-        <Route path="/my-booths" element={<MyBooths />} />
+    <Route element={<BoothWizardProvider><AppShell /></BoothWizardProvider>}>
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/booth" element={<Booth />} />
+      <Route path="/my-booths" element={<MyBooths />} />
+      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route path="/print-shop" element={<PrintShop />} />
         <Route path="/orders" element={<Orders />} />
-
         <Route path="/profile" element={<Profile />} />
       </Route>
+    </Route>
+    <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
       <Route path="/admin" element={<Admin />} />
     </Route>
     <Route path="*" element={<PageNotFound />} />

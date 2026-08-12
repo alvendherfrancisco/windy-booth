@@ -25,6 +25,7 @@ import FaceDoodles from "@/components/FaceDoodles";
 import UpgradeModal from "@/components/upgrade/UpgradeModal";
 import { canUseTemplate, currentPeriod, isLifetime, sessionLimitReached } from "@/lib/plans";
 import { useTemplates } from "@/hooks/useTemplates";
+import { addGuestStrip } from "@/lib/guestStrips";
 
 export default function Booth() {
   const { user, updateUser, printShopEnabled } = useAuth();
@@ -126,30 +127,35 @@ export default function Booth() {
         );
       }
       const now = new Date();
-      const [, current] = await Promise.all([
-        base44.entities.Strip.create({
-          user_id: user.id, template_id: selected.id, photo_urls: finalUrls, video_urls: finalVideoUrls, is_video: asVideo,
-          created_at: now.toISOString(), expires_at: null, saved: true, filter_applied: asVideo ? "none" : filter
-        }),
-        base44.entities.Strip.filter({ user_id: user.id, saved: true }, "created_at"),
-      ]);
+      if (user) {
+        const [, current] = await Promise.all([
+          base44.entities.Strip.create({
+            user_id: user.id, template_id: selected.id, photo_urls: finalUrls, video_urls: finalVideoUrls, is_video: asVideo,
+            created_at: now.toISOString(), expires_at: null, saved: true, filter_applied: asVideo ? "none" : filter
+          }),
+          base44.entities.Strip.filter({ user_id: user.id, saved: true }, "created_at"),
+        ]);
 
-      const tasks = [
-        base44.entities.Notification.create({ user_id: user.id, type: "booth_activity", message: "Your strip is ready!", link: "/my-booths", read: false, created_at: now.toISOString() }),
-      ];
-      if (!lifetime && current.length >= 10) {
-        tasks.push(base44.entities.Strip.delete(current[0].id));
-        tasks.push(base44.entities.Notification.create({ user_id: user.id, type: "storage_eviction", message: "Your oldest strip was removed to make room for your new one.", link: "/my-booths", read: false, created_at: now.toISOString() }));
-      }
-      if (!lifetime) {
-        const period = currentPeriod();
-        const nextUsed = user.sessions_period === period ? used + 1 : 1;
-        tasks.push(base44.auth.updateMe({ sessions_used_this_month: nextUsed, sessions_period: period }).then(() => updateUser({ sessions_used_this_month: nextUsed, sessions_period: period })));
-        if (nextUsed === 8 || nextUsed === 10) {
-          tasks.push(base44.entities.Notification.create({ user_id: user.id, type: "usage_limit", message: `You've used ${nextUsed} of 10 sessions today.`, link: "/profile", read: false, created_at: now.toISOString() }));
+        const tasks = [
+          base44.entities.Notification.create({ user_id: user.id, type: "booth_activity", message: "Your strip is ready!", link: "/my-booths", read: false, created_at: now.toISOString() }),
+        ];
+        if (!lifetime && current.length >= 10) {
+          tasks.push(base44.entities.Strip.delete(current[0].id));
+          tasks.push(base44.entities.Notification.create({ user_id: user.id, type: "storage_eviction", message: "Your oldest strip was removed to make room for your new one.", link: "/my-booths", read: false, created_at: now.toISOString() }));
         }
+        if (!lifetime) {
+          const period = currentPeriod();
+          const nextUsed = user.sessions_period === period ? used + 1 : 1;
+          tasks.push(base44.auth.updateMe({ sessions_used_this_month: nextUsed, sessions_period: period }).then(() => updateUser({ sessions_used_this_month: nextUsed, sessions_period: period })));
+          if (nextUsed === 8 || nextUsed === 10) {
+            tasks.push(base44.entities.Notification.create({ user_id: user.id, type: "usage_limit", message: `You've used ${nextUsed} of 10 sessions today.`, link: "/profile", read: false, created_at: now.toISOString() }));
+          }
+        }
+        await Promise.all(tasks);
+      } else {
+        // Guest: save locally so it can be claimed automatically once they sign up.
+        addGuestStrip({ template_id: selected.id, photo_urls: finalUrls, video_urls: finalVideoUrls, is_video: asVideo, created_at: now.toISOString(), filter_applied: asVideo ? "none" : filter });
       }
-      await Promise.all(tasks);
       setFinalPhotos(finalUrls);
       setFinalVideos(finalVideoUrls);
       setIsVideoStrip(asVideo);

@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { appParams } from '@/lib/app-params';
 import { createAxiosClient } from '@base44/sdk/dist/utils/axios-client';
 import { currentPeriod, isLifetime } from '@/lib/plans';
+import { getGuestStrips, clearGuestStrips } from '@/lib/guestStrips';
 
 const AuthContext = createContext();
 
@@ -98,6 +99,26 @@ export const AuthProvider = ({ children }) => {
       const currentUser = await base44.auth.me();
       setUser(currentUser);
       setIsAuthenticated(true);
+      // Claim any strips made as a guest before signing up/logging in.
+      try {
+        const guestStrips = getGuestStrips();
+        if (guestStrips.length) {
+          await Promise.all(guestStrips.map((s) =>
+            base44.entities.Strip.create({
+              user_id: currentUser.id,
+              template_id: s.template_id,
+              photo_urls: s.photo_urls || [],
+              video_urls: s.video_urls || [],
+              is_video: !!s.is_video,
+              created_at: s.created_at,
+              expires_at: null,
+              saved: true,
+              filter_applied: s.filter_applied || "none",
+            })
+          ));
+          clearGuestStrips();
+        }
+      } catch { /* best-effort migration, never blocks login */ }
       // Free-plan session counter resets at the start of each billing month.
       if (!isLifetime(currentUser) && currentUser.sessions_period !== currentPeriod()) {
         try {
