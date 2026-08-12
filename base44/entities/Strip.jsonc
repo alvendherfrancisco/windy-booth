@@ -5,6 +5,10 @@
     "user_id": {
       "type": "string"
     },
+    "is_guest": {
+      "type": "boolean",
+      "default": false
+    },
     "template_id": {
       "type": "string"
     },
@@ -54,7 +58,6 @@
     }
   },
   "required": [
-    "user_id",
     "template_id",
     "photo_urls",
     "created_at",
@@ -82,6 +85,9 @@
           "user_condition": {
             "role": "admin"
           }
+        },
+        {
+          "data.is_guest": true
         }
       ]
     },
@@ -94,6 +100,9 @@
           "user_condition": {
             "role": "admin"
           }
+        },
+        {
+          "data.is_guest": true
         }
       ]
     },
@@ -106,6 +115,9 @@
           "user_condition": {
             "role": "admin"
           }
+        },
+        {
+          "data.is_guest": true
         }
       ]
     }
