@@ -83,7 +83,7 @@ export default function Booth() {
     if (collection !== "all" && t.code !== collection) return false;
     const q = query.toLowerCase();
     return t.name.toLowerCase().includes(q) || (t.code || "").toLowerCase().includes(q);
-  });
+  }).sort((a, b) => (a.tier === "free" ? 0 : 1) - (b.tier === "free" ? 0 : 1));
 
   const choose = (t) => {
     if (!canUseTemplate(user, t)) { setLockedTemplate(t); return; }
