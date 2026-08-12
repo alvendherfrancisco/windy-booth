@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Camera, Check, Crown, Package, Sparkles } from "lucide-react";
+import { ArrowRight, Camera, Check, Crown, LogIn, Package, Sparkles } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import StripPreview from "@/components/booth/StripPreview";
@@ -39,7 +39,7 @@ export default function Dashboard() {
     }
   }, []);
   const orderStrip = allStrips.find((strip) => order?.strip_ids?.includes(strip.id));
-  return <div className="space-y-7"><section><div className="mt-1 flex items-center gap-3"><h1 className="font-heading text-3xl font-extrabold">Your booth</h1><span className="rounded-full bg-[#fff3bf] px-3 py-1 text-xs font-bold text-[#e67700]">{planLabel(user)}</span></div></section>
+  return <div className="space-y-7"><section><div className="mt-1 flex items-center justify-between gap-3"><div className="flex items-center gap-3"><h1 className="font-heading text-3xl font-extrabold">Your booth</h1>{user && <span className="rounded-full bg-[#fff3bf] px-3 py-1 text-xs font-bold text-[#e67700]">{planLabel(user)}</span>}</div>{!user && <Link to="/login" className="flex items-center gap-1.5 rounded-full bg-[#5080da] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#3a6cbf]"><LogIn size={15} />Log in / Sign up</Link>}</div></section>
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(280px,0.8fr)]"><Link to="/booth" className="relative isolate block overflow-hidden rounded-[18px] bg-[#5080da] p-6 text-white transition hover:bg-[#3a6cbf]"><HeroFaceScatter /><Camera size={25} className="hidden" /><h2 className="mt-8 font-heading text-2xl font-extrabold">Start a new booth</h2><p className="mt-1 text-sm text-white/85">Pick a frame, strike a pose, take it with you.</p><span className="mt-5 inline-flex items-center gap-2 text-sm font-bold">Begin <ArrowRight size={16} /></span></Link>
       <section className="rounded-[18px] border border-[#D8D9DC] bg-white p-5" style={{ backgroundImage: RAINBOW_DOTS_BG, backgroundRepeat: "no-repeat" }}>{plan === "free" ? <><div className="flex justify-between"><div><p className="font-bold">This day's sessions</p><p className="text-sm text-[#8B8D93]">{Math.max(0, 10 - used)} remaining</p></div><b className="text-2xl">{used}<span className="text-base text-[#8B8D93]"> / 10</span></b></div><div className="mt-4 h-2 overflow-hidden rounded-full bg-[#F1F0EC]"><span className="block h-full bg-[#fcc419]" style={{ width: `${Math.min(100, used * 10)}%` }} /></div><button onClick={() => setUpgradeOpen(true)} className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[#228be6]"><Crown size={15} />Get Lifetime Pass</button></> : <><p className="font-bold">This month's sessions</p><p className="mt-5 font-heading text-3xl font-extrabold">Unlimited</p><p className="mt-1 text-sm text-[#8B8D93]">Make as many memories as you like.</p></>}</section></div>
     
