@@ -17,7 +17,6 @@ import { RAINBOW_DOTS_BG } from "@/lib/rainbowDotsBg";
 import { downloadStrip } from "@/components/booth/downloadStrip";
 import { downloadStripVideo } from "@/components/booth/downloadStripVideo";
 import { shareToInstagram } from "@/components/booth/shareStrip";
-import { Switch } from "@/components/ui/switch";
 import PrintSimulation from "@/components/booth/PrintSimulation";
 import DownloadFaceScatter from "@/components/booth/DownloadFaceScatter";
 import PolkaDots from "@/components/PolkaDots";
@@ -40,7 +39,6 @@ export default function Booth() {
   const [cameraPhotos, setCameraPhotos] = useState([]);
   const [cameraFiles, setCameraFiles] = useState([]);
   const [cameraVideoFiles, setCameraVideoFiles] = useState([]);
-  const [liveMode, setLiveMode] = useState(false);
   const [uploadPhotos, setUploadPhotos] = useState([]);
   const [rawFiles, setRawFiles] = useState([]);
   const [finalPhotos, setFinalPhotos] = useState([]);
@@ -59,7 +57,7 @@ export default function Booth() {
   const [guestUsed, setGuestUsed] = useState(0);
   useEffect(() => {
     if (user) return;
-    base44.functions.invoke("guestStrip", { action: "usage" }).then((r) => setGuestUsed(r?.data?.count || 0)).catch(() => {});
+    base44.functions.invoke("guestStrip", { action: "usage" }).then((r) => setGuestUsed((r?.data ?? r)?.count || 0)).catch(() => {});
   }, [user]);
   const limitReached = user ? sessionLimitReached(user) : guestUsed >= 10;
   const [upgradeOpen, setUpgradeOpen] = useState(false);
@@ -71,7 +69,7 @@ export default function Booth() {
   useEffect(() => {setStep(1); /* eslint-disable-next-line */}, []);
 
   const resetAll = () => {
-    setStep(1);setSelected(null);setMode(null);setCameraPhotos([]);setCameraFiles([]);setCameraVideoFiles([]);setLiveMode(false);setUploadPhotos([]);setRawFiles([]);setFinalPhotos([]);setFinalVideos([]);setIsVideoStrip(false);setFilter("none");
+    setStep(1);setSelected(null);setMode(null);setCameraPhotos([]);setCameraFiles([]);setCameraVideoFiles([]);setUploadPhotos([]);setRawFiles([]);setFinalPhotos([]);setFinalVideos([]);setIsVideoStrip(false);setFilter("none");
   };
 
   const retakePhotos = () => {
@@ -112,7 +110,7 @@ export default function Booth() {
   const finish = async () => {
     const files = mode === "camera" ? cameraFiles : rawFiles;
     if (files.length !== 3 || !selected) return;
-    const asVideo = mode === "camera" && liveMode;
+    const asVideo = false;
     setSaving(true);
     try {
       // Live Mode: upload the raw poster frames + recorded clips as-is (no
@@ -165,7 +163,7 @@ export default function Booth() {
           action: "create", template_id: selected.id, photo_urls: finalUrls, video_urls: finalVideoUrls, is_video: asVideo,
           filter_applied: asVideo ? "none" : filter
         });
-        const guestStrip = res?.data?.strip;
+        const guestStrip = (res?.data ?? res)?.strip;
         addGuestStrip(guestStrip);
         setGuestUsed((u) => u + 1);
       }
@@ -250,18 +248,9 @@ export default function Booth() {
         <>
           <h1 className="mb-5 font-heading text-2xl font-extrabold text-[#1e1b4b]">{mode === "camera" ? "Ready when you are" : "Pick three photos"}</h1>
           {mode === "camera" ? (
-            <>
-              <div className="mb-4 flex items-center justify-between rounded-2xl border border-[#e2e8f0] bg-white p-4">
-                <div>
-                  <p className="text-sm font-bold text-[#1e1b4b]">Live Mode</p>
-                  <p className="text-xs text-[#94a3b8]">Capture short video clips instead of photos</p>
-                </div>
-                <Switch checked={liveMode} onCheckedChange={setLiveMode} disabled={capturing || cameraPhotos.length > 0} />
-              </div>
-              <CameraCapture ref={captureRef} selected={selected} photos={cameraPhotos} onPhotosChange={setCameraPhotos} onComplete={setCameraFiles} onVideoComplete={setCameraVideoFiles} onCapturingChange={setCapturing} imgFilter={previewFilterCss} live={liveMode}>
-                {!liveMode && <FilterCard filter={filter} onFilterChange={setFilter} disabled={capturing} />}
-              </CameraCapture>
-            </>
+            <CameraCapture ref={captureRef} selected={selected} photos={cameraPhotos} onPhotosChange={setCameraPhotos} onComplete={setCameraFiles} onVideoComplete={setCameraVideoFiles} onCapturingChange={setCapturing} imgFilter={previewFilterCss}>
+              <FilterCard filter={filter} onFilterChange={setFilter} disabled={capturing} />
+            </CameraCapture>
           ) : (
             <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[1fr_220px] lg:gap-4">
               {/* Upload card — mobile: first, desktop: col 1 row 1 */}

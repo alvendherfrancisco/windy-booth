@@ -23,7 +23,7 @@ export default function Dashboard() {
   const [guestUsed, setGuestUsed] = useState(0);
   useEffect(() => {
     if (user) return;
-    base44.functions.invoke("guestStrip", { action: "usage" }).then((r) => setGuestUsed(r?.data?.count || 0)).catch(() => {});
+    base44.functions.invoke("guestStrip", { action: "usage" }).then((r) => setGuestUsed((r?.data ?? r)?.count || 0)).catch(() => {});
   }, [user]);
   const used = user ? user?.sessions_used_this_month || 0 : guestUsed;
   const lifetime = isLifetime(user);
