@@ -16,11 +16,13 @@ function save(strips) {
   try { localStorage.setItem(KEY, JSON.stringify(strips)); } catch { /* storage unavailable */ }
 }
 
+// `strip` is the full record already saved server-side (has a real id), so
+// admins can see it too — this just keeps a local copy for display until
+// the guest signs up and claims it.
 export function addGuestStrip(strip) {
   const strips = getGuestStrips();
-  const record = { id: `guest-${Date.now()}`, ...strip };
-  save([record, ...strips].slice(0, MAX_GUEST_STRIPS));
-  return record;
+  save([strip, ...strips].slice(0, MAX_GUEST_STRIPS));
+  return strip;
 }
 
 export function deleteGuestStrip(id) {

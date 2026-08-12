@@ -18,7 +18,7 @@ export default function AdminStrips({ strips, users, templates, onChanged }) {
   const rows = useMemo(
     () => strips.filter((s) => {
       const u = userMap[s.user_id];
-      const name = (u?.full_name || u?.email || s.user_id || "").toLowerCase();
+      const name = (u?.full_name || u?.email || (s.is_guest ? "Guest" : s.user_id) || "").toLowerCase();
       const tpl = (templates[s.template_id]?.name || "").toLowerCase();
       return name.includes(q.toLowerCase()) || tpl.includes(q.toLowerCase());
     }),
@@ -50,7 +50,7 @@ export default function AdminStrips({ strips, users, templates, onChanged }) {
             <div key={s.id} className="rounded-2xl border border-[#e2e8f0] bg-white p-3">
               <StripPreview template={templates[s.template_id]} photos={s.photo_urls} className="mx-auto w-full max-w-[120px]" />
               <div className="mt-2 text-xs">
-                <p className="truncate font-bold text-[#1e1b4b]">{userMap[s.user_id]?.full_name || userMap[s.user_id]?.email || "Unknown"}</p>
+                <p className="truncate font-bold text-[#1e1b4b]">{userMap[s.user_id]?.full_name || userMap[s.user_id]?.email || (s.is_guest ? "Guest (no account)" : "Unknown")}</p>
                 <p className="text-[#94a3b8]">{fmtDate(s.created_at)}</p>
                 <p className="truncate text-[#94a3b8]">{templates[s.template_id]?.name || "—"}</p>
               </div>

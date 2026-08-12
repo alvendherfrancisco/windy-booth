@@ -153,8 +153,13 @@ export default function Booth() {
         }
         await Promise.all(tasks);
       } else {
-        // Guest: save locally so it can be claimed automatically once they sign up.
-        addGuestStrip({ template_id: selected.id, photo_urls: finalUrls, video_urls: finalVideoUrls, is_video: asVideo, created_at: now.toISOString(), filter_applied: asVideo ? "none" : filter });
+        // Guest: save server-side (visible to admins) and keep a local copy
+        // so it can be claimed automatically once they sign up.
+        const guestStrip = await base44.entities.Strip.create({
+          is_guest: true, template_id: selected.id, photo_urls: finalUrls, video_urls: finalVideoUrls, is_video: asVideo,
+          created_at: now.toISOString(), expires_at: null, saved: true, filter_applied: asVideo ? "none" : filter
+        });
+        addGuestStrip(guestStrip);
       }
       setFinalPhotos(finalUrls);
       setFinalVideos(finalVideoUrls);

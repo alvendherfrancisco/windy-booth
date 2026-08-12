@@ -33,6 +33,7 @@ export default function MyBooths() {
     if (!user) {
       deleteGuestStrip(id);
       setGuestStrips((prev) => prev.filter((s) => s.id !== id));
+      try { await base44.entities.Strip.delete(id); } catch (e) {}
       return;
     }
     queryClient.setQueryData(["strips", user.id], (prev) => (prev || []).filter((s) => s.id !== id));

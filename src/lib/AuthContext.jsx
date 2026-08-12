@@ -99,22 +99,14 @@ export const AuthProvider = ({ children }) => {
       const currentUser = await base44.auth.me();
       setUser(currentUser);
       setIsAuthenticated(true);
-      // Claim any strips made as a guest before signing up/logging in.
+      // Claim any strips made as a guest before signing up/logging in — these
+      // already exist as Strip records (saved server-side when created), so
+      // just attach ownership instead of creating duplicates.
       try {
         const guestStrips = getGuestStrips();
         if (guestStrips.length) {
           await Promise.all(guestStrips.map((s) =>
-            base44.entities.Strip.create({
-              user_id: currentUser.id,
-              template_id: s.template_id,
-              photo_urls: s.photo_urls || [],
-              video_urls: s.video_urls || [],
-              is_video: !!s.is_video,
-              created_at: s.created_at,
-              expires_at: null,
-              saved: true,
-              filter_applied: s.filter_applied || "none",
-            })
+            base44.entities.Strip.update(s.id, { user_id: currentUser.id, is_guest: false })
           ));
           clearGuestStrips();
         }
