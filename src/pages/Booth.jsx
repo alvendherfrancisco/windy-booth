@@ -56,7 +56,12 @@ export default function Booth() {
 
   const used = user?.sessions_period === currentPeriod() ? (user?.sessions_used_this_month || 0) : 0;
   const lifetime = isLifetime(user);
-  const limitReached = sessionLimitReached(user);
+  const [guestUsed, setGuestUsed] = useState(0);
+  useEffect(() => {
+    if (user) return;
+    base44.functions.invoke("guestStrip", { action: "usage" }).then((r) => setGuestUsed(r?.data?.count || 0)).catch(() => {});
+  }, [user]);
+  const limitReached = user ? sessionLimitReached(user) : guestUsed >= 10;
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [lockedTemplate, setLockedTemplate] = useState(null);
   const photos = mode === "camera" ? cameraPhotos : uploadPhotos;
@@ -153,13 +158,16 @@ export default function Booth() {
         }
         await Promise.all(tasks);
       } else {
-        // Guest: save server-side (visible to admins) and keep a local copy
-        // so it can be claimed automatically once they sign up.
-        const guestStrip = await base44.entities.Strip.create({
-          is_guest: true, template_id: selected.id, photo_urls: finalUrls, video_urls: finalVideoUrls, is_video: asVideo,
-          created_at: now.toISOString(), expires_at: null, saved: true, filter_applied: asVideo ? "none" : filter
+        // Guest: created server-side (stamped with the caller's IP so the
+        // daily session cap can't be reset by clearing local storage) and
+        // kept in a local copy so it can be claimed automatically on signup.
+        const res = await base44.functions.invoke("guestStrip", {
+          action: "create", template_id: selected.id, photo_urls: finalUrls, video_urls: finalVideoUrls, is_video: asVideo,
+          filter_applied: asVideo ? "none" : filter
         });
+        const guestStrip = res?.data?.strip;
         addGuestStrip(guestStrip);
+        setGuestUsed((u) => u + 1);
       }
       setFinalPhotos(finalUrls);
       setFinalVideos(finalVideoUrls);

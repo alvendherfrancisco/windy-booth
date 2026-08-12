@@ -9,6 +9,9 @@
       "type": "boolean",
       "default": false
     },
+    "guest_ip": {
+      "type": "string"
+    },
     "template_id": {
       "type": "string"
     },

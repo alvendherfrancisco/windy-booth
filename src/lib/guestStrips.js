@@ -32,10 +32,3 @@ export function deleteGuestStrip(id) {
 export function clearGuestStrips() {
   try { localStorage.removeItem(KEY); } catch { /* storage unavailable */ }
 }
-
-// Counts guest strips created today (local day), mirroring the signed-in
-// free-plan daily session counter so the dashboard can show real usage.
-export function getGuestSessionsToday() {
-  const todayKey = new Date().toDateString();
-  return getGuestStrips().filter((s) => s.created_at && new Date(s.created_at).toDateString() === todayKey).length;
-}
