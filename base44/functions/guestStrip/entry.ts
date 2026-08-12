@@ -28,7 +28,12 @@ export default async function (req) {
     const ip = getClientIp(req);
     const deviceId = body.device_id || null;
     const since = todayStartIso();
-    const matchQuery = deviceId ? { is_guest: true, guest_device_id: deviceId } : { is_guest: true, guest_ip: ip };
+    // Match by device_id OR ip — if a guest clears their browser data (wiping
+    // the stored device_id), their IP still catches today's usage so the
+    // daily cap can't be bypassed by a fresh browser profile alone.
+    const matchQuery = deviceId
+      ? { is_guest: true, $or: [{ guest_device_id: deviceId }, { guest_ip: ip }] }
+      : { is_guest: true, guest_ip: ip };
 
     if (body.action === 'usage') {
       const strips = await base44.asServiceRole.entities.Strip.filter(matchQuery);
