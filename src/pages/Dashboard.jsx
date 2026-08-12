@@ -11,6 +11,7 @@ import { isLifetime, planLabel } from "@/lib/plans";
 import { useTemplatesMap } from "@/hooks/useTemplates";
 import { useStrips } from "@/hooks/useStrips";
 import { useOrders } from "@/hooks/useOrders";
+import { getGuestSessionsToday } from "@/lib/guestStrips";
 
 export default function Dashboard() {
   const { user, printShopEnabled, updateUser } = useAuth();
@@ -20,7 +21,7 @@ export default function Dashboard() {
   const order = orders[0];
   const { templatesMap: templates } = useTemplatesMap();
   const plan = user?.plan || "free";
-  const used = user?.sessions_used_this_month || 0;
+  const used = user ? user?.sessions_used_this_month || 0 : getGuestSessionsToday();
   const lifetime = isLifetime(user);
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [unlockResult, setUnlockResult] = useState(null);
