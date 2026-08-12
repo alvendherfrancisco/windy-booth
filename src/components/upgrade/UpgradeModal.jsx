@@ -30,9 +30,16 @@ export default function UpgradeModal({ open, onClose, variant = "lifetime", coll
         <div className="relative w-full max-w-sm rounded-[22px] border border-[#e2e8f0] bg-white p-6 text-center animate-modal-in" onClick={(e) => e.stopPropagation()}>
           <button onClick={onClose} className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full text-[#94a3b8] hover:bg-[#f1f5fb]"><X size={18} /></button>
           <VendiLogo size={56} className="mx-auto" />
-          <h2 className="mt-3 font-heading text-xl font-extrabold text-[#1e1b4b]">Create a free account</h2>
-          <p className="mt-2 text-sm text-[#475569]">Sign up to unlock {variant === "collection" ? `"${collection || "this collection"}"` : "the Lifetime Pass"} — any strips you've already made will be saved to your new account.</p>
-          <div className="mt-5 space-y-2.5">
+          <h2 className="mt-3 font-heading text-xl font-extrabold text-[#1e1b4b]">{variant === "collection" ? `Unlock "${collection || "this collection"}"` : "Unlock Everything"}</h2>
+          <p className="mt-1.5 text-sm text-[#475569]">{variant === "collection" ? "Or get the Lifetime Pass for full access to every collection." : "Create without limits and access every artist-designed collection, forever."}</p>
+          <ul className="mt-4 space-y-2 text-left">
+            {INCLUDED.map((t) =>
+            <li key={t} className="flex items-center gap-2 text-sm text-[#1e1b4b]"><span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#ebfbee] text-[#37b24d]"><Check size={12} /></span>{t}</li>
+            )}
+          </ul>
+          <p className="mt-5 text-sm font-bold text-[#1e1b4b]">Create a free account to continue</p>
+          <p className="mt-1 text-xs text-[#94a3b8]">Any strips you've already made will be saved to your new account.</p>
+          <div className="mt-4 space-y-2.5">
             <Link to="/register" className="block w-full rounded-full bg-[#5080da] px-5 py-3.5 text-sm font-bold text-white transition hover:bg-[#3a6cbf]">Sign up</Link>
             <Link to="/login" className="block w-full text-sm font-bold text-[#94a3b8] hover:text-[#1e1b4b]">Already have an account? Log in</Link>
           </div>
