@@ -24,8 +24,9 @@ import FaceDoodles from "@/components/FaceDoodles";
 import UpgradeModal from "@/components/upgrade/UpgradeModal";
 import { canUseTemplate, currentPeriod, isLifetime, sessionLimitReached } from "@/lib/plans";
 import { useTemplates } from "@/hooks/useTemplates";
-import { addGuestStrip, getGuestUsageCountToday } from "@/lib/guestStrips";
+import { addGuestStrip } from "@/lib/guestStrips";
 import { getDeviceId } from "@/lib/deviceId";
+import { useGuestUsage } from "@/hooks/useGuestUsage";
 
 export default function Booth() {
   const { user, updateUser, printShopEnabled } = useAuth();
@@ -55,13 +56,8 @@ export default function Booth() {
 
   const used = user?.sessions_period === currentPeriod() ? (user?.sessions_used_this_month || 0) : 0;
   const lifetime = isLifetime(user);
-  const [guestUsed, setGuestUsed] = useState(0);
-  useEffect(() => {
-    if (user) return;
-    const localCount = getGuestUsageCountToday();
-    base44.functions.invoke("guestStrip", { action: "usage", device_id: getDeviceId() }).then((r) => setGuestUsed(Math.max((r?.data ?? r)?.count || 0, localCount))).catch(() => setGuestUsed(localCount));
-  }, [user]);
-  const limitReached = user ? sessionLimitReached(user) : guestUsed >= 10;
+  const [guestUsed, setGuestUsed] = useGuestUsage(!user);
+  const limitReached = user ? sessionLimitReached(user) : (guestUsed || 0) >= 10;
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [lockedTemplate, setLockedTemplate] = useState(null);
   const photos = mode === "camera" ? cameraPhotos : uploadPhotos;

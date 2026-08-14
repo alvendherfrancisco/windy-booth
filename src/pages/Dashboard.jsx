@@ -11,8 +11,7 @@ import { isLifetime, planLabel } from "@/lib/plans";
 import { useTemplatesMap } from "@/hooks/useTemplates";
 import { useStrips } from "@/hooks/useStrips";
 import { useOrders } from "@/hooks/useOrders";
-import { getDeviceId } from "@/lib/deviceId";
-import { getGuestUsageCountToday } from "@/lib/guestStrips";
+import { useGuestUsage } from "@/hooks/useGuestUsage";
 
 export default function Dashboard() {
   const { user, printShopEnabled, updateUser } = useAuth();
@@ -22,12 +21,7 @@ export default function Dashboard() {
   const order = orders[0];
   const { templatesMap: templates } = useTemplatesMap();
   const plan = user?.plan || "free";
-  const [guestUsed, setGuestUsed] = useState(null);
-  useEffect(() => {
-    if (user) return;
-    const localCount = getGuestUsageCountToday();
-    base44.functions.invoke("guestStrip", { action: "usage", device_id: getDeviceId() }).then((r) => setGuestUsed(Math.max((r?.data ?? r)?.count || 0, localCount))).catch(() => setGuestUsed(localCount));
-  }, [user]);
+  const [guestUsed] = useGuestUsage(!user);
   const guestUsageLoading = !user && guestUsed === null;
   const used = user ? user?.sessions_used_this_month || 0 : guestUsed || 0;
   const lifetime = isLifetime(user);
